@@ -1,0 +1,149 @@
+{
+  "projectType": "saas",
+  "projectName": "Kin Conecta",
+  "projectDescription": "A travel social network connecting tourists with local guides for authentic experiences in Mexico.",
+  "theme": "almond",
+  "primaryColor": "#F59E0B",
+  "lightColor": "#FCD34D",
+  "darkColor": "#D97706",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "For Tourists",
+            "pages": [
+              "tourists/getting-started",
+              "tourists/finding-guides",
+              "tourists/booking-tours",
+              "tourists/profile-management"
+            ]
+          },
+          {
+            "group": "For Guides",
+            "pages": [
+              "guides/getting-started",
+              "guides/creating-tours",
+              "guides/managing-bookings",
+              "guides/profile-verification",
+              "guides/calendar-availability"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/matching-algorithm",
+              "features/messaging-system",
+              "features/reviews-ratings",
+              "features/notifications",
+              "features/search-filters"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Developer",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              "api/overview",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Users",
+            "pages": [
+              "api/users/endpoints",
+              "api/users/tourist-profile",
+              "api/users/guide-profile"
+            ]
+          },
+          {
+            "group": "Tours & Bookings",
+            "pages": [
+              "api/tours/endpoints",
+              "api/tours/destinations",
+              "api/tours/categories",
+              "api/bookings/endpoints"
+            ]
+          },
+          {
+            "group": "Matching & Communication",
+            "pages": [
+              "api/matching/endpoints",
+              "api/messaging/endpoints",
+              "api/reviews/endpoints"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "api/support/faq",
+              "api/support/tickets",
+              "api/support/contact"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Help & Support",
+            "pages": [
+              "resources/faq",
+              "resources/troubleshooting",
+              "resources/contact-support"
+            ]
+          },
+          {
+            "group": "About",
+            "pages": [
+              "resources/team",
+              "resources/contributing"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "User roles for tourists and guides with authentication",
+    "Intelligent matching algorithm for tourist-guide compatibility",
+    "Tour creation and management system with categories and destinations",
+    "Trip booking system with status tracking",
+    "Real-time messaging between tourists and guides",
+    "Review and rating system for completed tours",
+    "Calendar management and availability tracking for guides",
+    "Search and filter functionality by location and interests",
+    "Support ticket system with FAQ",
+    "Income transaction tracking for guides"
+  ],
+  "publicApiSurface": [
+    "POST /kinconecta/api/user/login",
+    "GET /kinconecta/api/user",
+    "POST /kinconecta/api/user",
+    "GET /api/tours",
+    "POST /api/tours",
+    "GET /api/tours/{tourId}",
+    "GET /api/matching/tourist/{touristUserId}/guides",
+    "GET /api/matching/guide/{guideUserId}/tourists",
+    "GET /api/chat-messages",
+    "POST /api/chat-messages",
+    "GET /api/trip-bookings",
+    "POST /api/trip-bookings",
+    "GET /api/reviews",
+    "POST /api/reviews",
+    "GET /api/faq-categories",
+    "GET /api/support-tickets"
+  ]
+}
