@@ -1,0 +1,361 @@
+---
+title: 'Guide Calendar API'
+description: 'Manage guide availability, bookings, and blocked time slots'
+---
+
+## Overview
+
+The Guide Calendar API manages calendar events for guides, including booked tours, blocked time slots, and availability. This helps guides manage their schedule and prevents double-booking.
+
+## Base URL
+
+```
+/api/guide_calendar_events
+```
+
+## Create Calendar Event
+
+Add a new event to a guide's calendar. Events can be booked tours or blocked time slots.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.kinconecta.com/api/guide_calendar_events" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "guideProfileId": 123,
+    "eventType": "blocked",
+    "title": "Personal Time Off",
+    "startDateTime": "2024-03-15T09:00:00Z",
+    "endDateTime": "2024-03-15T18:00:00Z",
+    "description": "Family commitment",
+    "isAllDay": false
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/guide_calendar_events', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    guideProfileId: 123,
+    eventType: 'blocked',
+    title: 'Personal Time Off',
+    startDateTime: '2024-03-15T09:00:00Z',
+    endDateTime: '2024-03-15T18:00:00Z',
+    description: 'Family commitment',
+    isAllDay: false
+  })
+});
+const event = await response.json();
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="guideProfileId" type="Long" required>
+  ID of the guide profile this event belongs to
+</ParamField>
+
+<ParamField body="eventType" type="String" required>
+  Type of calendar event:
+  - `booked` - Confirmed tour booking
+  - `blocked` - Blocked time slot (unavailable)
+  - `tentative` - Pending booking
+</ParamField>
+
+<ParamField body="title" type="String" required>
+  Event title (e.g., "Tour with John Smith", "Blocked - Personal")
+</ParamField>
+
+<ParamField body="startDateTime" type="DateTime" required>
+  Start date and time of the event (ISO 8601 format)
+</ParamField>
+
+<ParamField body="endDateTime" type="DateTime" required>
+  End date and time of the event (ISO 8601 format)
+</ParamField>
+
+<ParamField body="description" type="String">
+  Additional notes or description for the event
+</ParamField>
+
+<ParamField body="isAllDay" type="Boolean">
+  Whether this is an all-day event (default: false)
+</ParamField>
+
+<ParamField body="tripBookingId" type="Long">
+  Associated trip booking ID (for booked events)
+</ParamField>
+
+<ParamField body="tourId" type="Long">
+  Associated tour ID (for booked events)
+</ParamField>
+
+<ParamField body="location" type="String">
+  Meeting location or event location
+</ParamField>
+
+<ParamField body="googleEventId" type="String">
+  Google Calendar event ID if synced with Google Calendar
+</ParamField>
+
+### Response
+
+Returns the created calendar event with generated ID.
+
+```json
+{
+  "id": 789,
+  "guideProfileId": 123,
+  "eventType": "blocked",
+  "title": "Personal Time Off",
+  "startDateTime": "2024-03-15T09:00:00Z",
+  "endDateTime": "2024-03-15T18:00:00Z",
+  "description": "Family commitment",
+  "isAllDay": false,
+  "location": null,
+  "tripBookingId": null,
+  "tourId": null,
+  "googleEventId": null,
+  "createdAt": "2024-03-10T15:30:00Z",
+  "updatedAt": "2024-03-10T15:30:00Z"
+}
+```
+
+## Get All Calendar Events
+
+Retrieve all calendar events for all guides (admin use).
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/guide_calendar_events" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/guide_calendar_events', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const events = await response.json();
+```
+</CodeGroup>
+
+### Response
+
+Returns an array of all calendar events.
+
+<Tip>
+To get events for a specific guide, filter by `guideProfileId` on the client side or use query parameters if supported.
+</Tip>
+
+## Get Calendar Event by ID
+
+Retrieve a specific calendar event.
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/guide_calendar_events/{id}" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const eventId = 789;
+const response = await fetch(`https://api.kinconecta.com/api/guide_calendar_events/${eventId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const event = await response.json();
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The ID of the calendar event
+</ParamField>
+
+### Response
+
+Returns a single calendar event object.
+
+## Update Calendar Event
+
+Update an existing calendar event.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT "https://api.kinconecta.com/api/guide_calendar_events/{id}" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated: Personal Time Off",
+    "endDateTime": "2024-03-15T20:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+const eventId = 789;
+const response = await fetch(`https://api.kinconecta.com/api/guide_calendar_events/${eventId}`, {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: 'Updated: Personal Time Off',
+    endDateTime: '2024-03-15T20:00:00Z'
+  })
+});
+const updated = await response.json();
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The ID of the calendar event to update
+</ParamField>
+
+### Request Body
+
+Same fields as create, all optional. Only include fields you want to update.
+
+### Response
+
+Returns the updated calendar event object.
+
+## Delete Calendar Event
+
+Remove an event from a guide's calendar.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://api.kinconecta.com/api/guide_calendar_events/{id}" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const eventId = 789;
+const response = await fetch(`https://api.kinconecta.com/api/guide_calendar_events/${eventId}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The ID of the calendar event to delete
+</ParamField>
+
+### Response
+
+Returns 204 No Content on success.
+
+<Note>
+Deleting a booked event does not cancel the associated trip booking. Handle booking cancellations separately through the Trip Bookings API.
+</Note>
+
+## Event Types
+
+<CardGroup cols={3}>
+  <Card title="Booked" icon="calendar-check" color="#10b981">
+    Confirmed tour bookings automatically create calendar events
+  </Card>
+  
+  <Card title="Blocked" icon="ban" color="#ef4444">
+    Time slots when the guide is unavailable (vacation, personal time)
+  </Card>
+  
+  <Card title="Tentative" icon="clock" color="#f59e0b">
+    Pending bookings or holds while awaiting confirmation
+  </Card>
+</CardGroup>
+
+## Calendar Management Best Practices
+
+<Steps>
+  <Step title="Block Unavailable Time">
+    Create blocked events for vacations, personal commitments, or days off to prevent booking conflicts.
+  </Step>
+  
+  <Step title="Sync with Google Calendar">
+    Use the `googleEventId` field to sync events with Google Calendar for unified schedule management.
+  </Step>
+  
+  <Step title="Set Buffer Time">
+    Add buffer time between tours by creating short blocked events to allow for travel and preparation.
+  </Step>
+  
+  <Step title="Regular Updates">
+    Keep your calendar updated to ensure accurate availability for tourists browsing tours.
+  </Step>
+</Steps>
+
+## Integration Examples
+
+### Creating a Blocked Day
+
+```javascript
+// Block an entire day for vacation
+const response = await fetch('https://api.kinconecta.com/api/guide_calendar_events', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    guideProfileId: 123,
+    eventType: 'blocked',
+    title: 'Vacation',
+    startDateTime: '2024-04-01T00:00:00Z',
+    endDateTime: '2024-04-01T23:59:59Z',
+    description: 'Family vacation in Cancún',
+    isAllDay: true
+  })
+});
+```
+
+### Auto-Creating Event from Booking
+
+```javascript
+// When a tour is booked, automatically create a calendar event
+async function createBookingEvent(tripBooking) {
+  const response = await fetch('https://api.kinconecta.com/api/guide_calendar_events', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      guideProfileId: tripBooking.guideId,
+      eventType: 'booked',
+      title: `Tour: ${tripBooking.tourName}`,
+      startDateTime: tripBooking.startDateTime,
+      endDateTime: tripBooking.endDateTime,
+      tripBookingId: tripBooking.id,
+      tourId: tripBooking.tourId,
+      location: tripBooking.meetingPoint
+    })
+  });
+  return response.json();
+}
+```
+
+## Related Endpoints
+
+- [Guide Profile](/api/users/guide-profile) - Main guide profile management
+- [Calendar Availability](/guides/calendar-availability) - User guide for managing calendar
+- [Trip Bookings](/api/bookings/endpoints) - Manage tour bookings that populate calendar

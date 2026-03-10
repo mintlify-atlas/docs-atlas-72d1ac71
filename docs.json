@@ -76,7 +76,9 @@
             "pages": [
               "api/users/endpoints",
               "api/users/tourist-profile",
-              "api/users/guide-profile"
+              "api/users/guide-profile",
+              "api/users/guide-certifications",
+              "api/users/guide-calendar"
             ]
           },
           {
@@ -85,6 +87,7 @@
               "api/tours/endpoints",
               "api/tours/destinations",
               "api/tours/categories",
+              "api/tours/favorite-tours",
               "api/bookings/endpoints"
             ]
           },
