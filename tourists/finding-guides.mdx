@@ -1,0 +1,376 @@
+---
+title: Finding Guides
+description: Discover how to search, filter, and connect with local guides that match your travel style
+---
+
+## Explore Page
+
+The Explore page (`dashboard-explore.html`) is your gateway to discovering experiences and guides across Mexico. It provides comprehensive filtering and search capabilities to find exactly what you're looking for.
+
+## Search and Filters
+
+### Category Filters
+
+Filter experiences by category to narrow your search:
+
+<CardGroup cols={2}>
+  <Card title="All" icon="grid">
+    View all available experiences
+  </Card>
+  
+  <Card title="Gastronomía" icon="utensils">
+    Culinary tours, food markets, cooking classes
+  </Card>
+  
+  <Card title="Aventura" icon="mountain">
+    Hiking, cenotes, outdoor activities
+  </Card>
+  
+  <Card title="Historia" icon="landmark">
+    Historical sites, architecture tours
+  </Card>
+  
+  <Card title="Cultura" icon="palette">
+    Art workshops, traditional crafts, cultural immersion
+  </Card>
+</CardGroup>
+
+```javascript
+// Category filtering implementation
+function filterItems() {
+  const query = searchInput.value.trim().toLowerCase();
+  return items.filter(item => {
+    const passFilter = 
+      activeFilter === 'all' || item.category === activeFilter;
+    
+    if (!passFilter) return false;
+    
+    if (!query) return true;
+    return (
+      item.title.toLowerCase().includes(query) ||
+      item.location.toLowerCase().includes(query) ||
+      item.tags.some(tag => tag.toLowerCase().includes(query))
+    );
+  });
+}
+```
+
+### Text Search
+
+The search input filters results in real-time by:
+- **Experience titles**: "Sabores de Oaxaca", "Ruta de Cenotes"
+- **Locations**: "Ciudad de México", "Tulum"
+- **Tags**: "Gastronomía", "Naturaleza", "Fotografía"
+
+<Tip>
+  Combine category filters with text search for precise results. For example, select "Aventura" and search "cenotes" to find cenote adventures.
+</Tip>
+
+## Experience Cards
+
+Each experience card displays comprehensive information:
+
+### Card Structure
+
+```javascript
+// Experience data model
+{
+  "id": "exp_1",
+  "title": "Sabores de Oaxaca",
+  "location": "Oaxaca, México",
+  "category": "gastronomia",
+  "tags": ["Gastronomía", "Cultura"],
+  "rating": 4.9,
+  "priceLabel": "$850 MXN / persona",
+  "image": "experience-image-url"
+}
+```
+
+### Visual Elements
+
+<Steps>
+  <Step title="Cover Image">
+    High-quality photos showcasing the experience with background-image styling
+  </Step>
+  
+  <Step title="Rating Badge">
+    Star icon with numeric rating displayed in the top-right corner
+    ```html
+    <span class="explore-card__rating">
+      <span class="material-symbols-outlined">star</span>
+      4.9
+    </span>
+    ```
+  </Step>
+  
+  <Step title="Favorite Button">
+    Heart icon button to save experiences to your favorites
+    ```javascript
+    const toggleFavorite = async (itemId) => {
+      await api.post(`/tourist/explore/favorites/${itemId}/toggle`);
+    };
+    ```
+  </Step>
+  
+  <Step title="Experience Badge">
+    Label indicating this is an "Experiencia" (experience)
+  </Step>
+</Steps>
+
+### Card Body
+
+The card body includes:
+- **Title**: Experience name in heading format
+- **Location**: Pin icon with city/region
+- **Tags**: Categorization chips (e.g., "Aventura", "Naturaleza")
+- **Price**: Per-person cost in Mexican Pesos
+
+```html
+<div class="explore-card__body">
+  <h3 class="explore-card__title">Ruta de Cenotes</h3>
+  <p class="explore-card__meta">
+    <span class="material-symbols-outlined">location_on</span>
+    Tulum, Quintana Roo
+  </p>
+  <div class="explore-card__tags">
+    <span class="explore-card__tag">Aventura</span>
+    <span class="explore-card__tag">Naturaleza</span>
+  </div>
+  <div class="explore-card__footer">
+    <span class="explore-card__price">$1,240 MXN / persona</span>
+  </div>
+</div>
+```
+
+## Favorites System
+
+### Adding to Favorites
+
+Click the heart icon on any experience card to save it to your favorites:
+
+```javascript
+// Toggle favorite handler
+card.querySelector('[data-toggle-favorite]')?.addEventListener('click', async (event) => {
+  event.stopPropagation();
+  const itemId = event.currentTarget.getAttribute('data-toggle-favorite');
+  
+  try {
+    if (window.KCTouristApi) {
+      await window.KCTouristApi.explore.toggleFavorite(itemId);
+    }
+  } catch (error) {
+    console.warn('Toggle favorite error:', error);
+  }
+});
+```
+
+### Managing Favorites
+
+Access your saved items from:
+- **Dashboard sidebar**: "Favorites" navigation item
+- **Dashboard home**: "Saved Guides" section
+- **Dedicated favorites page**: `dashboard-favorites.html`
+
+<Warning>
+  Favorites are stored per-user account. Make sure you're logged in to save favorites across sessions.
+</Warning>
+
+## Guide Discovery
+
+### From Dashboard Recommendations
+
+The home dashboard shows personalized guide recommendations:
+
+```javascript
+// Recommended guides data structure
+{
+  "id": "g_1",
+  "name": "Ana García",
+  "rating": 4.9,
+  "tags": ["Montaña", "Historia"],
+  "desc": "Especialista en rutas de senderismo y patrimonio en Hidalgo y Puebla.",
+  "priceMXN": 450,
+  "image": "guide-profile-image"
+}
+```
+
+### Guide Card Features
+
+<Accordion title="Rating Display">
+  Shows guide rating with star icon:
+  ```html
+  <div class="guide-card__rating">
+    <span class="material-symbols-outlined">star</span>
+    <span>4.9</span>
+  </div>
+  ```
+</Accordion>
+
+<Accordion title="Specialization Tags">
+  Quick-view chips showing guide expertise:
+  ```html
+  <div class="guide-card__tags">
+    <span class="guide-card__tag">Montaña</span>
+    <span class="guide-card__tag">Historia</span>
+  </div>
+  ```
+</Accordion>
+
+<Accordion title="Description">
+  Brief bio explaining the guide's specialization and coverage area
+</Accordion>
+
+<Accordion title="Pricing">
+  Hourly rate in Mexican Pesos:
+  ```javascript
+  const formatMoneyMXN = (value) =>
+    new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      maximumFractionDigits: 0
+    }).format(value);
+  ```
+</Accordion>
+
+<Accordion title="Contact Button">
+  Direct message button that opens the chat widget:
+  ```javascript
+  card.querySelector('[data-guide-id]')?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    window.dispatchEvent(new CustomEvent('tourist-chat:open'));
+  });
+  ```
+</Accordion>
+
+## API Endpoints for Guide Discovery
+
+The platform uses these endpoints to fetch guide and experience data:
+
+### Dashboard Endpoints
+
+```javascript
+const dashboard = {
+  // Get personalized guide recommendations
+  getRecommendedGuides: (query) =>
+    api.get('/tourist/dashboard/guides/recommended', { params: query }),
+  
+  // Get popular destinations
+  getPopularDestinations: (query) =>
+    api.get('/tourist/dashboard/destinations/popular', { params: query }),
+  
+  // Get your saved guides
+  getSavedGuides: (query) =>
+    api.get('/tourist/dashboard/guides/saved', { params: query })
+};
+```
+
+### Explore Endpoints
+
+```javascript
+const explore = {
+  // List all experiences with filters
+  listExperiences: (query) =>
+    api.get('/tourist/explore/experiences', { params: query }),
+  
+  // List guides with filters
+  listGuides: (query) =>
+    api.get('/tourist/explore/guides', { params: query }),
+  
+  // Get available categories
+  listCategories: () =>
+    api.get('/tourist/explore/categories'),
+  
+  // Toggle favorite status
+  toggleFavorite: (itemId) =>
+    api.post(`/tourist/explore/favorites/${itemId}/toggle`)
+};
+```
+
+### Query Parameters
+
+Supported pagination and filtering:
+
+```javascript
+// Example query parameters
+{
+  "page": 0,
+  "size": 24,
+  "category": "gastronomia",
+  "location": "Oaxaca",
+  "minRating": 4.5,
+  "maxPrice": 1000
+}
+```
+
+## Chat Integration
+
+Contact guides directly from any guide card or experience page:
+
+<Steps>
+  <Step title="Click Contact Button">
+    Click "Contactar" on any guide card to open the chat widget
+  </Step>
+  
+  <Step title="Start Conversation">
+    The chat panel opens with the guide's conversation thread
+  </Step>
+  
+  <Step title="Send Message">
+    Type your inquiry and send. Common questions:
+    - Availability for specific dates
+    - Custom itinerary requests
+    - Group size and pricing
+    - Accessibility accommodations
+  </Step>
+</Steps>
+
+```javascript
+// Chat widget trigger
+window.dispatchEvent(new CustomEvent('tourist-chat:open'));
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Be Specific" icon="magnifying-glass">
+    Use detailed search terms like "food market tour" instead of just "food"
+  </Card>
+  
+  <Card title="Check Ratings" icon="star">
+    Prioritize guides with 4.5+ ratings and multiple reviews
+  </Card>
+  
+  <Card title="Read Descriptions" icon="book">
+    Guide specializations vary - ensure they match your interests
+  </Card>
+  
+  <Card title="Save Favorites" icon="heart">
+    Build a collection of guides for future trip planning
+  </Card>
+</CardGroup>
+
+## Empty States
+
+If no results match your filters:
+
+```html
+<div class="guide-loading guide-loading--compact" role="status">
+  <span>No se encontraron experiencias con esos filtros.</span>
+</div>
+```
+
+<Tip>
+  Try broadening your search by selecting "All" categories or using fewer keywords.
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Booking Tours" icon="calendar-check" href="/tourists/booking-tours">
+    Learn how to book and manage your trips
+  </Card>
+  
+  <Card title="Profile Management" icon="user" href="/tourists/profile-management">
+    Optimize your profile for better recommendations
+  </Card>
+</CardGroup>

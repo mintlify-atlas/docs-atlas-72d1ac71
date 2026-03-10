@@ -1,0 +1,345 @@
+---
+title: 'Contact Messages'
+description: 'Manage contact form submissions with status tracking'
+---
+
+# Contact Messages API
+
+The Contact Messages API handles submissions from contact forms across the platform, tracking message source and status.
+
+## Get All Contact Messages
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/contact-messages \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/contact-messages', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+### Response
+
+<ResponseField name="id" type="long" required>
+  Unique identifier for the contact message
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Name of the person submitting the message (max 150 characters)
+</ResponseField>
+
+<ResponseField name="email" type="string" required>
+  Contact email address (max 190 characters)
+</ResponseField>
+
+<ResponseField name="subject" type="string" required>
+  Message subject (max 180 characters)
+</ResponseField>
+
+<ResponseField name="message" type="string" required>
+  Message content (text field)
+</ResponseField>
+
+<ResponseField name="sourcePage" type="string">
+  Page where the contact form was submitted (max 120 characters)
+</ResponseField>
+
+<ResponseField name="status" type="enum" required>
+  Message status
+  <Expandable title="values">
+    - `new` - Unread message (default)
+    - `read` - Message has been read
+    - `archived` - Message has been archived
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="createdAt" type="date" required>
+  Timestamp when message was created
+</ResponseField>
+
+<Expandable title="Example Response">
+```json
+[
+  {
+    "id": 1,
+    "name": "Laura Fernandez",
+    "email": "laura.fernandez@example.com",
+    "subject": "Partnership Opportunity",
+    "message": "Hi, I represent a local hotel and would like to discuss partnership opportunities with your platform.",
+    "sourcePage": "/about/contact",
+    "status": "new",
+    "createdAt": "2026-03-10T09:45:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Pedro Sanchez",
+    "email": "pedro.sanchez@example.com",
+    "subject": "Feature Request",
+    "message": "It would be great if you could add a feature to filter tours by difficulty level.",
+    "sourcePage": "/feedback",
+    "status": "read",
+    "createdAt": "2026-03-09T16:20:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Sofia Torres",
+    "email": "sofia.torres@example.com",
+    "subject": "General Inquiry",
+    "message": "Do you offer corporate group tours?",
+    "sourcePage": "/tours",
+    "status": "archived",
+    "createdAt": "2026-03-08T11:30:00Z"
+  }
+]
+```
+</Expandable>
+
+---
+
+## Get Contact Message by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/contact-messages/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/contact-messages/1', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The contact message ID
+</ParamField>
+
+### Response
+
+Returns a single contact message object or 404 if not found.
+
+<Expandable title="Example Response">
+```json
+{
+  "id": 1,
+  "name": "Laura Fernandez",
+  "email": "laura.fernandez@example.com",
+  "subject": "Partnership Opportunity",
+  "message": "Hi, I represent a local hotel and would like to discuss partnership opportunities with your platform.",
+  "sourcePage": "/about/contact",
+  "status": "new",
+  "createdAt": "2026-03-10T09:45:00Z"
+}
+```
+</Expandable>
+
+---
+
+## Create Contact Message
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.kinconecta.com/api/contact-messages \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Miguel Alvarez",
+    "email": "miguel.alvarez@example.com",
+    "subject": "Technical Issue",
+    "message": "I am experiencing issues with the mobile app crashing on startup.",
+    "sourcePage": "/support/contact",
+    "status": "new",
+    "createdAt": "2026-03-10T12:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/contact-messages', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Miguel Alvarez',
+    email: 'miguel.alvarez@example.com',
+    subject: 'Technical Issue',
+    message: 'I am experiencing issues with the mobile app crashing on startup.',
+    sourcePage: '/support/contact',
+    status: 'new',
+    createdAt: '2026-03-10T12:00:00Z'
+  })
+})
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Name of the person submitting the message (max 150 characters)
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  Contact email address (max 190 characters)
+</ParamField>
+
+<ParamField body="subject" type="string" required>
+  Message subject (max 180 characters)
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Message content (text field, no length limit)
+</ParamField>
+
+<ParamField body="sourcePage" type="string">
+  Page URL or identifier where the form was submitted (max 120 characters)
+</ParamField>
+
+<ParamField body="status" type="enum" default="new">
+  Initial message status: `new`, `read`, or `archived`
+</ParamField>
+
+<ParamField body="createdAt" type="date" required>
+  Timestamp when message is created (ISO 8601 format)
+</ParamField>
+
+### Response
+
+Returns the created contact message object with assigned ID.
+
+<Expandable title="Example Response">
+```json
+{
+  "id": 4,
+  "name": "Miguel Alvarez",
+  "email": "miguel.alvarez@example.com",
+  "subject": "Technical Issue",
+  "message": "I am experiencing issues with the mobile app crashing on startup.",
+  "sourcePage": "/support/contact",
+  "status": "new",
+  "createdAt": "2026-03-10T12:00:00Z"
+}
+```
+</Expandable>
+
+---
+
+## Update Contact Message
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.kinconecta.com/api/contact-messages/{id} \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Miguel Alvarez",
+    "email": "miguel.alvarez@example.com",
+    "subject": "Technical Issue - RESOLVED",
+    "message": "I am experiencing issues with the mobile app crashing on startup.",
+    "sourcePage": "/support/contact",
+    "status": "archived",
+    "createdAt": "2026-03-10T12:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/contact-messages/4', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Miguel Alvarez',
+    email: 'miguel.alvarez@example.com',
+    subject: 'Technical Issue - RESOLVED',
+    message: 'I am experiencing issues with the mobile app crashing on startup.',
+    sourcePage: '/support/contact',
+    status: 'archived',
+    createdAt: '2026-03-10T12:00:00Z'
+  })
+})
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The contact message ID to update
+</ParamField>
+
+### Request Body
+
+All fields from the create request. Typically used to update the status field.
+
+<ParamField body="status" type="enum">
+  Updated message status: `new`, `read`, or `archived`
+</ParamField>
+
+### Response
+
+Returns the updated contact message object or 404 if not found.
+
+---
+
+## Delete Contact Message
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE https://api.kinconecta.com/api/contact-messages/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/contact-messages/1', {
+  method: 'DELETE',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The contact message ID to delete
+</ParamField>
+
+### Response
+
+Returns 204 No Content on success.
+
+---
+
+## Message Status Workflow
+
+<Note>
+  Contact messages typically follow this lifecycle:
+  1. **new** - Message submitted and unread
+  2. **read** - Message has been reviewed by staff
+  3. **archived** - Message resolved and archived for records
+</Note>
+
+## Source Page Tracking
+
+The `sourcePage` field helps track where users are contacting you from, enabling analytics on which pages generate the most inquiries. Common values include:
+
+- `/contact` - Main contact page
+- `/support` - Support center
+- `/tours/{id}` - Specific tour pages
+- `/about` - About page
+- `/pricing` - Pricing page
+
+<Tip>
+  Use the `sourcePage` field to identify patterns in user inquiries and improve user experience on high-contact pages.
+</Tip>

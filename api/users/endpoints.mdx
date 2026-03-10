@@ -1,0 +1,468 @@
+---
+title: User Management
+description: Core user management endpoints for authentication and CRUD operations
+---
+
+## Overview
+
+The User Management API provides endpoints for user authentication, registration, and profile management. All endpoints are prefixed with `/kinconecta/api/user`.
+
+## Authentication
+
+### Login User
+
+Validates user credentials and returns authentication status.
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securePassword123"
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'securePassword123'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `POST /kinconecta/api/user/login`
+
+<ParamField body="email" type="string" required>
+  User's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password
+</ParamField>
+
+<ResponseField name="response" type="boolean">
+  Returns `true` if credentials are valid, `false` otherwise
+</ResponseField>
+
+---
+
+## User Operations
+
+### Get All Users
+
+Retrieve a list of all registered users in the system.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/user
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /kinconecta/api/user`
+
+<ResponseField name="response" type="array">
+  Array of user objects
+  
+  <Expandable title="User Object">
+    <ResponseField name="id" type="long">
+      Unique user identifier
+    </ResponseField>
+    
+    <ResponseField name="role" type="enum">
+      User role: `TOURIST`, `GUIDE`, or `ADMIN`
+    </ResponseField>
+    
+    <ResponseField name="fullName" type="string">
+      User's full name
+    </ResponseField>
+    
+    <ResponseField name="dateOfBirth" type="date">
+      User's date of birth (SQL Date format)
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      User's email address
+    </ResponseField>
+    
+    <ResponseField name="countryCode" type="string">
+      Country code for phone number
+    </ResponseField>
+    
+    <ResponseField name="phoneNumber" type="string">
+      User's phone number
+    </ResponseField>
+    
+    <ResponseField name="phoneE164" type="string">
+      Phone number in E.164 format
+    </ResponseField>
+    
+    <ResponseField name="preferedLanguageCode" type="enum">
+      Preferred language code
+    </ResponseField>
+    
+    <ResponseField name="accountStatus" type="enum">
+      Account status: `ONLINE` or `OFFLINE`
+    </ResponseField>
+    
+    <ResponseField name="emailVerifiedAt" type="datetime">
+      Timestamp of email verification
+    </ResponseField>
+    
+    <ResponseField name="lastLogin" type="datetime">
+      Timestamp of last login
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="datetime">
+      Account creation timestamp
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="datetime">
+      Last update timestamp
+    </ResponseField>
+    
+    <ResponseField name="notifications" type="array">
+      List of user notifications
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+### Get User by ID
+
+Retrieve a specific user by their ID.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/user/John_Doe_123
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user/John_Doe_123')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /kinconecta/api/user/{fullName}_{userId}`
+
+<ParamField path="fullName" type="string" required>
+  User's full name (used in URL path)
+</ParamField>
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+<ResponseField name="response" type="object">
+  User object with all fields (see structure in Get All Users)
+</ResponseField>
+
+---
+
+### Create User
+
+Register a new user in the system.
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/user \
+  -H "Content-Type: application/json" \
+  -d '{
+    "role": "TOURIST",
+    "fullName": "John Doe",
+    "dateOfBirth": "1990-05-15",
+    "email": "john.doe@example.com",
+    "password": "securePassword123",
+    "countryCode": "+1",
+    "phoneNumber": "5551234567",
+    "phoneE164": "+15551234567",
+    "preferedLanguageCode": "EN",
+    "accountStatus": "OFFLINE",
+    "emailVerifiedAt": "2024-03-10T10:00:00Z",
+    "lastLogin": "2024-03-10T10:00:00Z",
+    "createdAt": "2024-03-10T10:00:00Z",
+    "updatedAt": "2024-03-10T10:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    role: 'TOURIST',
+    fullName: 'John Doe',
+    dateOfBirth: '1990-05-15',
+    email: 'john.doe@example.com',
+    password: 'securePassword123',
+    countryCode: '+1',
+    phoneNumber: '5551234567',
+    phoneE164: '+15551234567',
+    preferedLanguageCode: 'EN',
+    accountStatus: 'OFFLINE',
+    emailVerifiedAt: '2024-03-10T10:00:00Z',
+    lastLogin: '2024-03-10T10:00:00Z',
+    createdAt: '2024-03-10T10:00:00Z',
+    updatedAt: '2024-03-10T10:00:00Z'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `POST /kinconecta/api/user`
+
+<ParamField body="role" type="enum" required>
+  User role: `TOURIST`, `GUIDE`, or `ADMIN`
+</ParamField>
+
+<ParamField body="fullName" type="string" required>
+  User's full name
+</ParamField>
+
+<ParamField body="dateOfBirth" type="date" required>
+  User's date of birth (YYYY-MM-DD format)
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  User's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password
+</ParamField>
+
+<ParamField body="countryCode" type="string" required>
+  Country code for phone number (e.g., +1, +52)
+</ParamField>
+
+<ParamField body="phoneNumber" type="string" required>
+  User's phone number
+</ParamField>
+
+<ParamField body="phoneE164" type="string" required>
+  Phone number in E.164 international format
+</ParamField>
+
+<ParamField body="preferedLanguageCode" type="enum" required>
+  Preferred language code
+</ParamField>
+
+<ParamField body="accountStatus" type="enum" required>
+  Account status: `ONLINE` or `OFFLINE`
+</ParamField>
+
+<ParamField body="emailVerifiedAt" type="datetime" required>
+  Email verification timestamp
+</ParamField>
+
+<ParamField body="lastLogin" type="datetime" required>
+  Last login timestamp
+</ParamField>
+
+<ParamField body="createdAt" type="datetime" required>
+  Account creation timestamp
+</ParamField>
+
+<ParamField body="updatedAt" type="datetime" required>
+  Last update timestamp
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Created user object with generated ID
+</ResponseField>
+
+---
+
+### Update User
+
+Update an existing user's information.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/kinconecta/api/user/John_Doe_123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName": "John Updated Doe",
+    "email": "john.updated@example.com",
+    "accountStatus": "ONLINE",
+    "updatedAt": "2024-03-10T15:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user/John_Doe_123', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fullName: 'John Updated Doe',
+    email: 'john.updated@example.com',
+    accountStatus: 'ONLINE',
+    updatedAt: '2024-03-10T15:00:00Z'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `PUT /kinconecta/api/user/{fullName}_{userId}`
+
+<ParamField path="fullName" type="string" required>
+  User's full name (used in URL path)
+</ParamField>
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+<ParamField body="user" type="object" required>
+  User object with fields to update (same structure as Create User)
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Updated user object
+</ResponseField>
+
+---
+
+### Delete User
+
+Delete a user from the system.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/kinconecta/api/user/John_Doe_123
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user/John_Doe_123', {
+  method: 'DELETE'
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `DELETE /kinconecta/api/user/{fullName}_{userId}`
+
+<ParamField path="fullName" type="string" required>
+  User's full name (used in URL path)
+</ParamField>
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Deleted user object
+</ResponseField>
+
+---
+
+## Notifications
+
+### Add Notification
+
+Add a notification to a user's account.
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/user/123/add-notification \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "booking",
+    "title": "New Booking Request",
+    "body": "You have a new booking request from John Doe",
+    "relatedEntityType": "BOOKING",
+    "relatedEntityId": 456,
+    "idRead": false,
+    "createdAt": "2024-03-10T14:00:00",
+    "readAt": null
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/kinconecta/api/user/123/add-notification', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    type: 'booking',
+    title: 'New Booking Request',
+    body: 'You have a new booking request from John Doe',
+    relatedEntityType: 'BOOKING',
+    relatedEntityId: 456,
+    idRead: false,
+    createdAt: '2024-03-10T14:00:00',
+    readAt: null
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `POST /kinconecta/api/user/{userId}/add-notification`
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Notification type (e.g., "booking", "message", "review")
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Notification title
+</ParamField>
+
+<ParamField body="body" type="string" required>
+  Notification message body
+</ParamField>
+
+<ParamField body="relatedEntityType" type="string">
+  Type of related entity (e.g., "BOOKING", "MESSAGE")
+</ParamField>
+
+<ParamField body="relatedEntityId" type="long">
+  ID of the related entity
+</ParamField>
+
+<ParamField body="idRead" type="boolean">
+  Whether the notification has been read
+</ParamField>
+
+<ParamField body="createdAt" type="datetime">
+  Notification creation timestamp
+</ParamField>
+
+<ParamField body="readAt" type="datetime">
+  Timestamp when notification was read (null if unread)
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Updated user object with the new notification added
+</ResponseField>

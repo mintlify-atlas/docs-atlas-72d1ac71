@@ -1,0 +1,726 @@
+---
+title: 'Calendar & Availability'
+description: 'Manage your schedule, block dates, and sync with Google Calendar'
+icon: 'calendar-days'
+---
+
+## Calendar Management Overview
+
+Your calendar is the central tool for managing availability and bookings. Keep it updated to avoid double-bookings and ensure tourists can see when you're available.
+
+<Note>
+  The calendar syncs in real-time with the backend API and can integrate with Google Calendar for unified scheduling.
+</Note>
+
+## Accessing Your Calendar
+
+Navigate to the calendar section from your guide dashboard.
+
+```javascript
+// From dashboard-calendar.js
+const state = {
+  guideId: "guide_001",
+  view: "month",  // month | week | list
+  cursorDate: new Date(),
+  selectedDateISO: null,
+  events: {}  // Organized by date
+};
+```
+
+<CardGroup cols={3}>
+  <Card title="Month View" icon="calendar">
+    **Default Calendar View**
+
+    Shows a full month grid with all events and bookings displayed.
+
+    - 6-week grid layout
+    - Event chips for each day
+    - Color-coded by type
+    - Click dates for details
+  </Card>
+
+  <Card title="Week View" icon="calendar-week">
+    **Detailed Weekly Schedule**
+
+    Focus on the current week with hourly breakdown.
+
+    - Hour-by-hour timeline
+    - All day events shown
+    - Easier time management
+    - Currently in development
+  </Card>
+
+  <Card title="List View" icon="list">
+    **Chronological Event List**
+
+    All upcoming events in list format.
+
+    - Sortable by date
+    - Filterable by type
+    - Easy scanning
+    - Currently in development
+  </Card>
+</CardGroup>
+
+## Understanding Calendar Events
+
+The calendar displays two types of events:
+
+### Event Types
+
+<AccordionGroup>
+  <Accordion title="Booked Tours" icon="calendar-check" defaultOpen>
+    **Confirmed Tourist Bookings**
+
+    Tours that tourists have booked and confirmed appear as green events.
+
+    ```javascript
+    // From dashboard-calendar.js
+    const bookedEvent = {
+      id: uid(),
+      source: "internal",
+      type: "booked",
+      title: "Centro Historico",
+      start: "10:00",
+      end: "12:00",
+      organizer: "Juan P."
+    };
+    ```
+
+    **Display Features**:
+    - Green color chip
+    - Shows start time
+    - Displays tour title
+    - Organizer name visible
+    - Click to view full details
+
+    ```javascript
+    // Rendering booked events
+    const chip = document.createElement("div");
+    chip.className = "chip chip--booked";
+    chip.textContent = `${event.start || "--:--"} - ${shorten(event.title, 18)}`;
+    ```
+  </Accordion>
+
+  <Accordion title="Blocked Time" icon="ban">
+    **Unavailable Time Slots**
+
+    Dates and times you've manually blocked or imported from Google Calendar.
+
+    ```javascript
+    const blockedEvent = {
+      id: uid(),
+      source: "internal",
+      type: "blocked",
+      title: "Bloqueo personal",
+      start: "14:00",
+      end: "18:00"
+    };
+    ```
+
+    **Display Features**:
+    - Red/gray color chip
+    - Shows time range
+    - Custom title
+    - No bookings accepted
+    - Can be deleted
+
+    **Common Uses**:
+    - Personal time off
+    - Travel between locations
+    - Administrative tasks
+    - Equipment maintenance
+  </Accordion>
+</AccordionGroup>
+
+## Calendar Grid Display
+
+### Month Grid Structure
+
+The calendar displays 42 cells (6 weeks) to show the complete month context:
+
+```javascript
+// From dashboard-calendar.js
+function renderMonth() {
+  const start = startOfMonthGrid(state.cursorDate);
+  const cursorMonth = state.cursorDate.getMonth();
+  const todayISO = toISODate(new Date());
+  const totalCells = 42;
+
+  for (let i = 0; i < totalCells; i += 1) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const iso = toISODate(d);
+    const isOutside = d.getMonth() !== cursorMonth;
+    const events = state.events[iso] || [];
+
+    // Create calendar cell with events
+    const cell = document.createElement("div");
+    cell.className = "calendar-cell";
+    if (isOutside) cell.classList.add("calendar-cell--outside");
+    if (state.selectedDateISO === iso) cell.classList.add("calendar-cell--selected");
+  }
+}
+```
+
+### Event Chips on Calendar
+
+Each date shows up to 2 event chips with overflow indicator:
+
+```javascript
+// Event chip rendering
+if (events.length) {
+  const chips = document.createElement("div");
+  chips.className = "calendar-cell__chips";
+
+  // Show first 2 events
+  events.slice(0, 2).forEach((event) => {
+    const chip = document.createElement("div");
+    chip.className = `chip ${
+      event.type === "booked" ? "chip--booked" : "chip--blocked"
+    }`;
+    chip.textContent = 
+      event.type === "booked"
+        ? `${event.start || "--:--"} - ${shorten(event.title, 18)}`
+        : shorten(event.title, 18);
+    chips.appendChild(chip);
+  });
+
+  // Show "+ more" if > 2 events
+  if (events.length > 2) {
+    const more = document.createElement("div");
+    more.className = "chip";
+    more.textContent = `+${events.length - 2} mas`;
+    chips.appendChild(more);
+  }
+}
+```
+
+<Tip>
+  Today's date is highlighted with a colored indicator for easy reference.
+</Tip>
+
+## Day Details Timeline
+
+When you select a date, a detailed timeline appears showing all events for that day.
+
+### Timeline View
+
+```javascript
+// From dashboard-calendar.js
+function renderDetails() {
+  const iso = state.selectedDateISO;
+  if (!iso) {
+    dom.timeline.innerHTML = '<div class="timeline__empty">No hay fecha seleccionada</div>';
+    return;
+  }
+
+  dom.selectedDateLabel.textContent = formatSelectedDate(iso);
+  const events = (state.events[iso] || []).slice().sort((a, b) => 
+    (a.start || "").localeCompare(b.start || "")
+  );
+
+  const bookedCount = events.filter((event) => event.type === "booked").length;
+  dom.selectedDateMeta.textContent = events.length
+    ? `${bookedCount} tours confirmados - ${events.length - bookedCount} bloqueos`
+    : "Sin reservas";
+}
+```
+
+### Timeline Item Structure
+
+Each event displays as a timeline item:
+
+```javascript
+// Timeline rendering
+events.forEach((event) => {
+  const item = document.createElement("div");
+  item.className = "timeline__item";
+
+  // Dot indicator (booked = green, blocked = red)
+  const dot = document.createElement("div");
+  dot.className = `timeline__dot ${
+    event.type === "booked" ? "timeline__dot--booked" : "timeline__dot--blocked"
+  }`;
+
+  // Time and details
+  const time = document.createElement("div");
+  time.className = "timeline__time";
+  time.textContent = 
+    event.type === "booked"
+      ? `${event.start || "--:--"} - ${event.end || "--:--"}`
+      : `Bloqueado - ${event.start || "--:--"} - ${event.end || "--:--"}`;
+
+  // Title and organizer
+  const title = document.createElement("p");
+  title.className = "timeline__title";
+  title.textContent = event.title;
+
+  const sub = document.createElement("span");
+  sub.textContent = event.organizer
+    ? `${event.organizer} (organizador)`
+    : event.type === "booked" ? "Recorrido" : "No disponible";
+});
+```
+
+<Note>
+  Click on timeline items to view full details or take actions like viewing booking information or deleting blocks.
+</Note>
+
+## Blocking Time
+
+Manually block dates when you're unavailable for tours.
+
+<Steps>
+  <Step title="Select a Date">
+    Click on the date you want to block in the month grid.
+
+    ```javascript
+    function selectDate(iso) {
+      state.selectedDateISO = iso;
+      dom.monthGrid
+        ?.querySelectorAll(".calendar-cell--selected")
+        .forEach((element) => element.classList.remove("calendar-cell--selected"));
+      const selectedElement = dom.monthGrid?.querySelector(`[data-date="${iso}"]`);
+      if (selectedElement) selectedElement.classList.add("calendar-cell--selected");
+      renderDetails();
+    }
+    ```
+  </Step>
+
+  <Step title="Add Block Time">
+    Click the **"Bloquear tiempo"** button in the day details panel.
+
+    ```javascript
+    async function addBlockToSelectedDay() {
+      // Opens modal to specify block details
+      // Time range, reason, recurring options
+    }
+    ```
+  </Step>
+
+  <Step title="Specify Details">
+    Enter block information:
+    - **Start time**: When the block begins
+    - **End time**: When the block ends
+    - **Title/Reason**: Why you're unavailable
+    - **Recurring**: Optional repeat pattern
+  </Step>
+
+  <Step title="Save Block">
+    The block is saved to your calendar and synced with the backend.
+
+    ```javascript
+    // API call from guide-api-services.js
+    createBlock: (guideId, payload) =>
+      api.post(path("/guides/{guideId}/calendar/blocks", { guideId }), payload)
+    ```
+  </Step>
+</Steps>
+
+### Removing Blocks
+
+Delete blocks from the timeline when you become available:
+
+```javascript
+// From dashboard-calendar.js
+async function removeBlockedEvent(blockId) {
+  if (!state.selectedDateISO) return;
+
+  try {
+    if (window.KCGuideApi) {
+      await window.KCGuideApi.calendar.removeBlock(state.guideId, blockId);
+    }
+  } catch (error) {
+    console.warn("Remove block pending backend implementation:", error);
+  }
+
+  // Remove from local state
+  state.events[state.selectedDateISO] = 
+    (state.events[state.selectedDateISO] || []).filter((item) => item.id !== blockId);
+
+  renderMonth();
+  renderDetails();
+}
+```
+
+<Warning>
+  You cannot delete booked tours from the calendar. To cancel a booking, use the booking management interface.
+</Warning>
+
+## Google Calendar Integration
+
+Sync with Google Calendar to automatically import external events as blocks.
+
+### Setup Process
+
+<Steps>
+  <Step title="Open Google Sync Modal">
+    Click **"Conectar calendario"** or **"Sincronizar Google"** in the calendar toolbar.
+
+    ```javascript
+    // From dashboard-calendar.js
+    function openGoogleModal() {
+      if (!dom.googleModal) return;
+      dom.googleModal.hidden = false;
+      dom.googleModal.setAttribute("aria-hidden", "false");
+      dom.googleModal.classList.add("gcal-modal--open");
+      document.body.classList.add("gcal-modal-open");
+      updateGoogleModalState();
+    }
+    ```
+  </Step>
+
+  <Step title="Connect Google Account">
+    Authorize Kin Conecta to access your Google Calendar.
+
+    ```javascript
+    // Google OAuth flow
+    const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+
+    async function requestGoogleAccessToken(forceConsent = false) {
+      const tokenClient = await ensureGoogleTokenClient();
+      return new Promise((resolve, reject) => {
+        tokenClient.callback = (response) => {
+          if (!response || !response.access_token) {
+            reject(new Error("Google no devolvio access token."));
+            return;
+          }
+          resolve(response);
+        };
+        tokenClient.requestAccessToken({
+          prompt: forceConsent || !state.google.accessToken ? "consent" : "",
+        });
+      });
+    }
+    ```
+
+    <Note>
+      Kin Conecta only requests read-only access to your calendar. We cannot modify or delete your Google Calendar events.
+    </Note>
+  </Step>
+
+  <Step title="Select Calendar">
+    Choose which Google Calendar to sync (default: primary).
+
+    ```javascript
+    // Calendar ID configuration
+    const state = {
+      google: {
+        clientId: "",
+        calendarId: "primary",  // or specific calendar ID
+        accessToken: "",
+        expiresAt: 0,
+        lastSyncAt: "",
+        backendConnected: false
+      }
+    };
+    ```
+  </Step>
+
+  <Step title="Sync Events">
+    Import Google Calendar events as blocked time.
+
+    ```javascript
+    async function syncGoogleCalendar() {
+      const range = getMonthRangeISO(state.cursorDate);
+      const googleEvents = await fetchGoogleEventsByRange(range);
+
+      // Merge into calendar
+      mergeGoogleEventsIntoState(googleEvents);
+      renderMonth();
+      renderDetails();
+
+      // Sync with backend
+      if (window.KCGuideApi?.calendar?.syncGoogle) {
+        await window.KCGuideApi.calendar.syncGoogle(state.guideId, {
+          source: "google-calendar",
+          calendarId: state.google.calendarId,
+          from: range.from,
+          to: range.to,
+          events: serializeGoogleEventsForBackend(googleEvents)
+        });
+      }
+
+      state.google.lastSyncAt = new Date().toISOString();
+      persistGoogleSession();
+    }
+    ```
+  </Step>
+</Steps>
+
+### Google Event Processing
+
+Google Calendar events are converted to blocked time:
+
+```javascript
+// From dashboard-calendar.js
+function mapGoogleEventToUiEvent(item) {
+  const startRaw = item?.start?.dateTime || item?.start?.date;
+  if (!startRaw) return null;
+
+  const isAllDay = Boolean(item?.start?.date && !item?.start?.dateTime);
+  const startDate = parseDateTimeSafe(startRaw, "00:00:00");
+  const endDate = parseDateTimeSafe(item?.end?.dateTime || item?.end?.date, "23:59:00");
+
+  return {
+    id: `google_${item.id}`,
+    externalId: item.id,
+    source: "google",
+    type: "blocked",
+    title: item.summary || item.description || "Evento de Google Calendar",
+    startDate: toISODate(startDate),
+    start: isAllDay ? "Todo el dia" : `${pad2(startDate.getHours())}:${pad2(startDate.getMinutes())}`,
+    end: isAllDay ? "Todo el dia" : `${pad2(endDate.getHours())}:${pad2(endDate.getMinutes())}`,
+    organizer: item.organizer?.displayName || item.organizer?.email || "Google Calendar",
+    isAllDay
+  };
+}
+```
+
+### Managing Google Sync
+
+<CardGroup cols={2}>
+  <Card title="Sync Status" icon="circle-check">
+    View connection and sync status:
+
+    ```javascript
+    // Status display
+    if (dom.googleConnectionStatus) {
+      dom.googleConnectionStatus.value = connected ? "Conectado" : "No conectado";
+    }
+
+    if (dom.googleLastSyncAt) {
+      dom.googleLastSyncAt.textContent = state.google.lastSyncAt
+        ? `Ultima sincronizacion: ${formatDateTimeLabel(state.google.lastSyncAt)}`
+        : "Ultima sincronizacion: aun no realizada";
+    }
+    ```
+  </Card>
+
+  <Card title="Manual Sync" icon="rotate">
+    Trigger sync on demand:
+
+    - Click "Sincronizar" button
+    - Imports new events
+    - Updates existing blocks
+    - Shows sync timestamp
+  </Card>
+
+  <Card title="Disconnect" icon="link-slash">
+    Remove Google Calendar connection:
+
+    ```javascript
+    async function disconnectGoogleCalendar() {
+      const currentToken = state.google.accessToken;
+      clearGoogleSession();
+
+      // Revoke token
+      if (currentToken && window.google?.accounts?.oauth2?.revoke) {
+        await new Promise((resolve) => 
+          window.google.accounts.oauth2.revoke(currentToken, resolve)
+        );
+      }
+
+      // Notify backend
+      if (window.KCGuideApi?.calendar?.disconnectGoogle) {
+        await window.KCGuideApi.calendar.disconnectGoogle(state.guideId);
+      }
+
+      renderMonth();
+      renderDetails();
+    }
+    ```
+  </Card>
+
+  <Card title="Session Storage" icon="database">
+    Sync settings persist across sessions:
+
+    ```javascript
+    const GOOGLE_SESSION_KEY = "kc_guide_google_calendar_session_v1";
+
+    function persistGoogleSession() {
+      try {
+        window.sessionStorage.setItem(
+          GOOGLE_SESSION_KEY, 
+          JSON.stringify(getGoogleSessionSnapshot())
+        );
+      } catch (error) {
+        console.warn("No fue posible guardar sesion.", error);
+      }
+    }
+    ```
+  </Card>
+</CardGroup>
+
+## API Integration
+
+The calendar communicates with the backend through dedicated endpoints:
+
+```javascript
+// From guide-api-services.js
+calendar: {
+  eventsByRange: "/guides/{guideId}/calendar/events",
+  createBlock: "/guides/{guideId}/calendar/blocks",
+  removeBlock: "/guides/{guideId}/calendar/blocks/{blockId}",
+  syncGoogle: "/guides/{guideId}/calendar/google/sync",
+  googleStatus: "/guides/{guideId}/calendar/google/status",
+  googleOAuthUrl: "/guides/{guideId}/calendar/google/oauth/url",
+  googleOAuthExchange: "/guides/{guideId}/calendar/google/oauth/exchange",
+  googleDisconnect: "/guides/{guideId}/calendar/google/disconnect"
+}
+```
+
+### Fetching Events
+
+```javascript
+// From dashboard-calendar.js
+async function hydrateMonthFromApi(options = {}) {
+  const { includeGoogleOverlay = true } = options;
+
+  if (!window.KCGuideApi) {
+    seedFallbackEvents();
+    if (includeGoogleOverlay) await applyGoogleOverlayToCurrentMonth();
+    return;
+  }
+
+  try {
+    const range = getMonthRangeISO(state.cursorDate);
+    const response = await window.KCGuideApi.calendar.getEventsByRange(
+      state.guideId, 
+      {
+        from: range.from,
+        to: range.to,
+        view: state.view
+      }
+    );
+    const apiEvents = response?.data?.items || response?.data || [];
+    mapApiEventsToState(apiEvents);
+    if (includeGoogleOverlay) await applyGoogleOverlayToCurrentMonth();
+  } catch (error) {
+    console.warn("Calendar API fallback enabled:", error);
+    seedFallbackEvents();
+  }
+}
+```
+
+## Navigation Controls
+
+Move between months and change views:
+
+```javascript
+// Month navigation
+async function changeMonth(delta) {
+  const nextDate = new Date(state.cursorDate);
+  nextDate.setMonth(nextDate.getMonth() + delta);
+  state.cursorDate = nextDate;
+  renderCalendarLoading();
+  await hydrateMonthFromApi();
+  renderMonth();
+  renderDetails();
+}
+
+// View switching
+function setView(view) {
+  state.view = view;
+  dom.viewButtons.forEach((button) => {
+    const isActive = button.dataset.view === view;
+    button.classList.toggle("view-toggle__btn--active", isActive);
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+}
+```
+
+<Tip>
+  Use keyboard shortcuts: Arrow keys to navigate dates, Escape to close modals.
+</Tip>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Keep Calendar Updated" icon="refresh">
+    - Block unavailable dates immediately
+    - Sync Google Calendar regularly
+    - Review weekly schedule
+    - Update blocked time when plans change
+  </Card>
+
+  <Card title="Plan Ahead" icon="calendar-plus">
+    - Block holidays and vacations early
+    - Leave buffer time between tours
+    - Account for travel time
+    - Plan maintenance windows
+  </Card>
+
+  <Card title="Use Google Sync" icon="link">
+    - Prevents double-bookings
+    - Centralizes scheduling
+    - Automatic updates
+    - Single source of truth
+  </Card>
+
+  <Card title="Review Daily" icon="check">
+    - Check schedule each morning
+    - Confirm all bookings
+    - Verify meeting times
+    - Prepare tour materials
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Google Sync Not Working" icon="triangle-exclamation">
+    **Common Issues**:
+
+    1. **Token Expired**: Reconnect your Google account
+    2. **Wrong Calendar**: Check calendar ID in settings
+    3. **Permissions**: Ensure read access is granted
+    4. **Network Issues**: Check internet connection
+
+    ```javascript
+    // Check token validity
+    function hasValidGoogleToken() {
+      if (!state.google.accessToken) return false;
+      if (!state.google.expiresAt) return false;
+      return state.google.expiresAt - Date.now() > GOOGLE_TOKEN_SKEW_MS;
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Events Not Appearing" icon="eye-slash">
+    **Troubleshooting Steps**:
+
+    1. Refresh the calendar page
+    2. Check date range (events outside current month are hidden)
+    3. Verify API connection status
+    4. Clear cache and reload
+    5. Check browser console for errors
+  </Accordion>
+
+  <Accordion title="Cannot Delete Block" icon="ban">
+    **Possible Causes**:
+
+    - Block is from Google Calendar (disconnect Google sync to manage)
+    - Network connection lost
+    - Backend API error
+    - Insufficient permissions
+
+    <Warning>
+      Google Calendar events cannot be deleted from Kin Conecta. Delete them in Google Calendar and re-sync.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+With your calendar configured:
+
+1. [Accept and manage bookings](/guides/managing-bookings)
+2. [Create tours](/guides/creating-tours) to fill your calendar
+3. Monitor your booking trends
+4. Optimize your availability for peak times
+
+<Tip>
+  Guides who keep their calendars updated receive 60% more bookings than those with outdated availability.
+</Tip>

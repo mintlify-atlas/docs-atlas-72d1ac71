@@ -1,0 +1,499 @@
+---
+title: Booking Tours
+description: Complete guide to booking experiences, managing trips, and communicating with guides
+---
+
+## Trips Overview
+
+The Trips page (`dashboard-trips.html`) is your central hub for managing all bookings, viewing trip details, and communicating with guides.
+
+## Trip Management Interface
+
+### Featured Trip Card
+
+Your most relevant trip is prominently displayed with:
+
+```javascript
+// Featured trip data structure
+{
+  "id": "trip_100",
+  "title": "Historic Center Photo Tour",
+  "location": "Ciudad de Mexico",
+  "dateLabel": "15 Feb 2026",
+  "status": "confirmed",
+  "statusLabel": "Confirmado",
+  "guideId": "guide_210",
+  "guideName": "Luis Martinez",
+  "guideAvatar": "guide-avatar-url",
+  "image": "trip-cover-image"
+}
+```
+
+<Steps>
+  <Step title="Trip Image">
+    Full-width background image showcasing the destination
+  </Step>
+  
+  <Step title="Trip Details">
+    Title, location (with pin icon), and travel dates
+  </Step>
+  
+  <Step title="Guide Information">
+    Guide avatar and name as a clickable link to their profile
+  </Step>
+  
+  <Step title="Action Buttons">
+    - **Ver detalles**: View full trip details
+    - **Contactar guía**: Open chat with your guide
+  </Step>
+</Steps>
+
+### Trip List
+
+All your trips are displayed in a scrollable list below the featured card:
+
+```javascript
+// Trip item rendering
+state.trips.forEach((trip) => {
+  const status = normalizeStatus(trip.status);
+  const statusClass = 
+    status === 'cancelled' ? 'is-cancelled' :
+    status === 'pending' || status === 'pending_change' ? 'is-pending' : '';
+  
+  const canChat = canContactGuide(trip);
+  const canRequest = canRequestTripChange(trip);
+  // ... render trip card
+});
+```
+
+## Trip Statuses
+
+Trips can have the following status values:
+
+<Accordion title="Confirmed">
+  Trip is booked and confirmed with the guide. All details are finalized.
+  
+  ```javascript
+  status: "confirmed"
+  statusLabel: "Confirmado"
+  ```
+</Accordion>
+
+<Accordion title="Pending">
+  Trip request sent to guide, awaiting confirmation.
+  
+  ```javascript
+  status: "pending"
+  statusLabel: "Pendiente"
+  ```
+</Accordion>
+
+<Accordion title="Pending Change">
+  You've requested modifications to a confirmed trip.
+  
+  ```javascript
+  status: "pending_change"
+  statusLabel: "Cambio solicitado"
+  ```
+</Accordion>
+
+<Accordion title="Cancelled">
+  Trip has been cancelled by you or the guide.
+  
+  ```javascript
+  status: "cancelled"
+  statusLabel: "Cancelado"
+  ```
+  
+  <Warning>
+    You cannot contact guides or request changes for cancelled trips.
+  </Warning>
+</Accordion>
+
+## Trip Actions
+
+### View Details
+
+Click "Ver detalles" to open the full trip information:
+
+```javascript
+async function openTripDetails(tripId, options) {
+  const trip = findTripById(tripId);
+  if (!trip) return;
+  
+  setFeaturedTrip(trip);
+  await hydrateTripDetail(trip);
+  renderFeatured();
+  renderTripList();
+  
+  if (options.scrollToFeatured) {
+    document.querySelector('.trip-featured')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+  
+  showActionNotice(`Mostrando detalles de: ${trip.title}`, 'info');
+}
+```
+
+This action:
+1. Sets the trip as featured
+2. Fetches additional details from the API
+3. Scrolls to the featured card
+4. Shows a confirmation notice
+
+### Contact Guide
+
+Click "Contactar guía" to open the chat widget:
+
+```javascript
+if (action === 'chat') {
+  const tripTarget = findTripById(tripId);
+  if (!canContactGuide(tripTarget)) {
+    showActionNotice('No puedes contactar al guia en un viaje cancelado.', 'error');
+    return;
+  }
+  window.dispatchEvent(new CustomEvent('tourist-chat:open'));
+}
+```
+
+<Note>
+  Chat is only available for active trips. Cancelled trips disable the contact button.
+</Note>
+
+### Request Changes
+
+Modify trip details by clicking "Solicitar cambio":
+
+<Steps>
+  <Step title="Confirm Request">
+    A confirmation dialog appears:
+    ```javascript
+    const shouldContinue = window.confirm(
+      'Se enviara una solicitud de cambio para este viaje. Deseas continuar?'
+    );
+    ```
+  </Step>
+  
+  <Step title="Send Request">
+    The system sends your change request to the guide:
+    ```javascript
+    await api.update(trip.id, { status: 'pending_change' });
+    ```
+  </Step>
+  
+  <Step title="Update Status">
+    Trip status updates to "Cambio solicitado" and the button becomes disabled
+  </Step>
+</Steps>
+
+```javascript
+async function requestTripChange(tripId, triggerButton) {
+  const trip = findTripById(tripId);
+  if (!trip || !canRequestTripChange(trip)) return;
+  
+  const shouldContinue = window.confirm(
+    'Se enviara una solicitud de cambio para este viaje. Deseas continuar?'
+  );
+  if (!shouldContinue) return;
+  
+  triggerButton.disabled = true;
+  triggerButton.setAttribute('aria-busy', 'true');
+  
+  try {
+    await window.KCTouristApi.trips.update(trip.id, { status: 'pending_change' });
+    
+    trip.status = 'pending_change';
+    trip.statusLabel = 'Cambio solicitado';
+    setFeaturedTrip(trip);
+    showActionNotice('Solicitud de cambio enviada correctamente.', 'success');
+  } catch (error) {
+    showActionNotice('No fue posible solicitar el cambio. Intenta nuevamente.', 'error');
+  } finally {
+    triggerButton.removeAttribute('aria-busy');
+  }
+}
+```
+
+<Warning>
+  You cannot request changes for:
+  - Cancelled trips
+  - Trips already in "pending_change" status
+</Warning>
+
+## Guide Profile Integration
+
+Click on any guide's name to view their full profile:
+
+```javascript
+function resolveGuideProfileHref(guideId) {
+  const encodedGuideId = encodeURIComponent(String(guideId || '').trim());
+  return encodedGuideId
+    ? `../guia/profileGuide.html?guideId=${encodedGuideId}`
+    : '../guia/profileGuide.html';
+}
+```
+
+The guide profile displays:
+- Full bio and expertise areas
+- Photo gallery of past tours
+- Reviews from other tourists
+- Available experiences
+- Contact button
+
+## API Endpoints
+
+### List Trips
+
+Fetch all your trips with pagination:
+
+```javascript
+const trips = {
+  list: (query) => api.get('/tourist/trips', { params: query })
+};
+
+// Example request
+const response = await trips.list({ page: 0, size: 20 });
+const data = response?.data?.items || response?.data || [];
+```
+
+### Trip Detail
+
+Get detailed information for a specific trip:
+
+```javascript
+const trips = {
+  detail: (tripId) => api.get(`/tourist/trips/${tripId}`)
+};
+
+// Hydrate trip with full details
+async function hydrateTripDetail(trip) {
+  const response = await window.KCTouristApi.trips.detail(trip.id);
+  const detail = response?.data || {};
+  
+  trip.location = detail.location || trip.location;
+  trip.dateLabel = detail.dateLabel || trip.dateLabel;
+  trip.status = normalizeStatus(detail.status || trip.status);
+  trip.statusLabel = detail.statusLabel || trip.statusLabel;
+  trip.guideId = detail.guide?.id || trip.guideId;
+  trip.guideName = detail.guide?.name || trip.guideName;
+}
+```
+
+### Create Trip
+
+Book a new experience:
+
+```javascript
+const trips = {
+  create: (payload) => api.post('/tourist/trips', payload)
+};
+
+// Example payload
+const newTrip = {
+  "guideId": "guide_210",
+  "experienceId": "exp_1",
+  "datePreference": "2026-03-15",
+  "numberOfPeople": 2,
+  "message": "Interested in morning departure"
+};
+```
+
+### Update Trip
+
+Modify an existing booking:
+
+```javascript
+const trips = {
+  update: (tripId, payload) => api.put(`/tourist/trips/${tripId}`, payload)
+};
+
+// Request changes
+await trips.update('trip_100', { status: 'pending_change' });
+```
+
+### Cancel Trip
+
+Cancel a booking:
+
+```javascript
+const trips = {
+  cancel: (tripId, payload) => api.post(`/tourist/trips/${tripId}/cancel`, payload)
+};
+
+// Cancel with reason
+await trips.cancel('trip_100', { reason: 'Schedule conflict' });
+```
+
+## Action Notices
+
+User feedback is displayed via toast-style notices:
+
+```javascript
+function showActionNotice(message, tone) {
+  const notice = document.getElementById('tripActionNotice');
+  
+  const normalizedTone = 
+    tone === 'error' ? 'is-error' :
+    tone === 'success' ? 'is-success' : 'is-info';
+  
+  notice.classList.add(normalizedTone);
+  notice.textContent = message;
+  
+  // Auto-dismiss after 3.6 seconds
+  setTimeout(() => {
+    notice.textContent = '';
+    notice.classList.remove('is-error', 'is-success', 'is-info');
+  }, 3600);
+}
+```
+
+Notice types:
+- **Success**: Green background - "Solicitud de cambio enviada correctamente."
+- **Error**: Red background - "No fue posible solicitar el cambio."
+- **Info**: Blue background - "Mostrando detalles de: [Trip Title]"
+
+## Chat Widget
+
+The integrated chat system allows real-time communication with guides:
+
+### Opening Chat
+
+```javascript
+// Trigger chat from anywhere
+window.dispatchEvent(new CustomEvent('tourist-chat:open'));
+```
+
+### Chat Features
+
+<CardGroup cols={2}>
+  <Card title="Thread List" icon="messages">
+    View all your active conversations with guides
+  </Card>
+  
+  <Card title="Real-time Messages" icon="comment">
+    Send and receive messages instantly
+  </Card>
+  
+  <Card title="Guide Avatars" icon="user-circle">
+    Visual identification of conversation participants
+  </Card>
+  
+  <Card title="Mobile Optimized" icon="mobile">
+    Full-screen chat on mobile devices
+  </Card>
+</CardGroup>
+
+### Chat Implementation
+
+```javascript
+// Chat widget structure
+const threadData = {
+  'maria': [
+    { from: 'guest', text: 'Hola, me gustaría confirmar el punto de encuentro.' },
+    { from: 'guide', text: 'Claro, te comparto la ubicación exacta en un momento.' }
+  ]
+};
+
+const threadProfiles = {
+  'maria': {
+    name: 'María R.',
+    avatarUrl: 'avatar-url'
+  }
+};
+```
+
+### Sending Messages
+
+```javascript
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const apiThreadId = threadIdsByKey[activeThread];
+  
+  try {
+    if (window.KCTouristApi?.chat?.sendMessage && apiThreadId) {
+      await window.KCTouristApi.chat.sendMessage(apiThreadId, { message: text });
+    }
+  } catch (error) {
+    console.warn('Send message error:', error);
+  }
+  
+  // Update UI optimistically
+  const collection = threadData[activeThread] || [];
+  collection.push({ from: 'guide', text });
+  renderMessages(messagesEl, collection);
+  input.value = '';
+});
+```
+
+## URL Parameters
+
+Deep link to specific trips using query parameters:
+
+```javascript
+// Example URL: /trips.html?tripId=trip_100
+
+function hydrateTripFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const selectedTripId = params.get('tripId');
+  
+  if (!selectedTripId) return;
+  
+  const selected = findTripById(selectedTripId);
+  if (selected) setFeaturedTrip(selected);
+}
+```
+
+<Tip>
+  Share trip URLs with guides to reference specific bookings in your conversations.
+</Tip>
+
+## Empty States
+
+If you have no trips:
+
+```html
+<div class="guide-loading guide-loading--compact" role="status">
+  <span>No hay viajes para mostrar por ahora.</span>
+</div>
+```
+
+<Note>
+  Start exploring guides and experiences to book your first trip!
+</Note>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Book in Advance" icon="clock">
+    Contact guides at least 1-2 weeks before your desired dates
+  </Card>
+  
+  <Card title="Clear Communication" icon="message">
+    Provide details about group size, interests, and special needs
+  </Card>
+  
+  <Card title="Review Trip Details" icon="list-check">
+    Verify all information before confirming the booking
+  </Card>
+  
+  <Card title="Stay Responsive" icon="bell">
+    Check notifications for guide responses and updates
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Profile Management" icon="user" href="/tourists/profile-management">
+    Update your travel preferences and profile
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api-reference/tourist/trips">
+    Explore trip management endpoints
+  </Card>
+</CardGroup>

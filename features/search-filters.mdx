@@ -1,0 +1,476 @@
+---
+title: 'Search & Filters'
+description: 'Powerful discovery tools helping users find perfect guides and tours'
+icon: 'magnifying-glass'
+---
+
+# Search & Filters
+
+The search and filtering system enables users to discover guides, tours, and experiences that match their specific interests and requirements. Combined with the intelligent matching algorithm, these tools help tourists find their ideal local guide quickly and efficiently.
+
+<Note>
+  The search system works alongside the matching algorithm: while matching recommends compatible profiles, search allows users to actively explore based on their criteria.
+</Note>
+
+## System Overview
+
+Kin Conecta provides multiple discovery methods to help users find what they're looking for:
+
+<CardGroup cols={2}>
+  <Card title="Location-Based Search" icon="location-dot">
+    Find guides and tours in specific cities, states, or regions across Mexico.
+  </Card>
+  
+  <Card title="Category Filtering" icon="filter">
+    Filter by interest categories like culture, gastronomy, nature, adventure, and more.
+  </Card>
+  
+  <Card title="Tour Search" icon="map">
+    Browse available tour packages by destination, price, duration, and group size.
+  </Card>
+  
+  <Card title="Guide Discovery" icon="user-magnifying-glass">
+    Search for guides by expertise, language, rating, experience level, and availability.
+  </Card>
+</CardGroup>
+
+## Search Types
+
+The platform supports different search approaches depending on what users need:
+
+### 1. Guide Search
+
+Find local guides based on multiple criteria:
+
+<Steps>
+  <Step title="Location">
+    Primary filter: Select city or state where you need a guide (CDMX, Guadalajara, Oaxaca, etc.).
+  </Step>
+  
+  <Step title="Expertise & Interests">
+    Filter by guide expertise areas that match your interests:
+    - **Culture**: Museums, historical sites, architecture
+    - **Gastronomy**: Food tours, cooking classes, market visits
+    - **Nature**: Parks, beaches, eco-tourism
+    - **Adventure**: Hiking, diving, extreme sports
+    - **Art**: Galleries, street art, artisan workshops
+  </Step>
+  
+  <Step title="Languages">
+    Filter guides by spoken languages (Spanish, English, French, German, etc.).
+  </Step>
+  
+  <Step title="Additional Filters">
+    Refine results by:
+    - **Rating**: Minimum star rating (4+, 4.5+, etc.)
+    - **Experience Level**: Beginner-friendly, intermediate, expert
+    - **Group Size**: Solo, couples, small groups, large groups
+    - **Price Range**: Budget, moderate, premium
+    - **Certifications**: Official tourism certifications
+  </Step>
+</Steps>
+
+### 2. Tour Search
+
+Browse pre-packaged tour offerings:
+
+```json
+{
+  "tourId": 789,
+  "title": "Tour Gastronómico CDMX: Mercados y Taquerías",
+  "description": "Explora la auténtica gastronomía mexicana...",
+  "guideId": 12,
+  "categoryId": 2,
+  "location": "CDMX Centro",
+  "price": 850.00,
+  "currency": "MXN",
+  "durationHours": 4.0,
+  "maxGroupSize": 8,
+  "ratingAvg": 4.8,
+  "bookingsCount": 156,
+  "coverImage": "https://..."
+}
+```
+
+**Search Criteria:**
+
+<CardGroup cols={2}>
+  <Card title="Destination" icon="map-pin">
+    Filter tours by city, neighborhood, or specific landmarks.
+  </Card>
+  
+  <Card title="Category" icon="tag">
+    Browse by tour type: culture, food, nature, adventure, art, nightlife.
+  </Card>
+  
+  <Card title="Price Range" icon="coins">
+    Set minimum and maximum price to fit your budget.
+  </Card>
+  
+  <Card title="Duration" icon="clock">
+    Filter by tour length: half-day, full-day, multi-day experiences.
+  </Card>
+  
+  <Card title="Group Size" icon="users">
+    Find tours that accommodate your party size (max group size).
+  </Card>
+  
+  <Card title="Rating" icon="star">
+    Show only highly-rated tours (4+ stars, 4.5+ stars).
+  </Card>
+  
+  <Card title="Availability" icon="calendar">
+    Filter by available dates and times.
+  </Card>
+  
+  <Card title="Special Features" icon="sparkles">
+    Tours with food included, transportation, photography, etc.
+  </Card>
+</CardGroup>
+
+### 3. Combined Search
+
+The most powerful approach combines both guide and tour filtering:
+
+1. **Start with Matching**: Get personalized recommendations
+2. **Apply Location Filter**: Narrow to specific destinations
+3. **Add Interest Filters**: Focus on preferred activities
+4. **Refine Results**: Use additional filters for perfect match
+
+## Filter Implementation
+
+Filters are implemented based on profile and tour attributes:
+
+### Guide Profile Filters
+
+Based on `GuideProfileEntity` fields:
+
+```java
+// Location
+locationLabel: "CDMX Centro"
+locations: Set<GuideLocationEntity>
+
+// Languages
+languages: Set<LanguageEntity> // español, english, français
+
+// Expertise Areas
+expertiseAreas: Set<GuideExpertiseAreaEntity> // cultura, gastronomía, etc.
+
+// Experience & Style
+experienceLevel: "Expert" // Beginner, Intermediate, Expert
+style: "Cultural" // Cultural, Adventure, Relaxed
+
+// Group & Logistics
+groupSize: "Small groups (2-6)" // Solo-friendly, Couples, Small, Large
+tourIntensity: "Moderate" // Low, Moderate, High
+transportOffered: "Walking + Metro"
+
+// Trust Signals
+ratingAvg: 4.8
+reviewsCount: 24
+certifications: Set<GuideCertificationEntity>
+
+// Accessibility
+adaptations: Set<GuideAdaptationEntity>
+```
+
+### Tourist Profile Filters
+
+When guides search for compatible tourists:
+
+```java
+// Location
+location: "CDMX"
+
+// Languages
+languages: Set<LanguageEntity>
+
+// Interests
+interests: Set<InterestEntity>
+
+// Travel Preferences
+travelStyle: "Cultural" // Cultural, Adventure, Gastronomic
+tripType: "City break" // Weekend, Week-long, Extended
+paceAndCompany: "Moderate pace"
+activityLevel: "Moderate"
+
+// Group Dynamics
+groupPreference: "Small groups"
+
+// Special Needs
+accessibility: "Wheelchair accessible"
+dietaryPreferences: "Vegetarian"
+```
+
+### Tour Filters
+
+Based on `Tour` entity:
+
+```java
+// Basic Info
+title: String
+description: Text
+categoryId: Integer
+
+// Location (through TourDestinations)
+tourDestinations: List<TourDestinations>
+
+// Pricing & Logistics
+price: BigDecimal
+currency: "MXN"
+durationHours: BigDecimal
+maxGroupSize: Short
+
+// Trust & Popularity
+ratingAvg: BigDecimal
+bookingsCount: Integer
+
+// Status
+status: ENUM('active', 'inactive', 'pending')
+```
+
+## Search UI/UX
+
+The search interface provides an intuitive discovery experience:
+
+<Steps>
+  <Step title="Search Bar">
+    Prominent search input for keywords, location, or guide names.
+  </Step>
+  
+  <Step title="Filter Panel">
+    Collapsible sidebar or modal with all filter options organized by category.
+  </Step>
+  
+  <Step title="Results Grid">
+    Card-based layout showing guide profiles or tour packages with key information.
+  </Step>
+  
+  <Step title="Sort Options">
+    Dropdown to sort results by:
+    - **Relevance** (default)
+    - **Rating** (high to low)
+    - **Price** (low to high / high to low)
+    - **Popularity** (most bookings)
+    - **Newest** (recently added)
+  </Step>
+  
+  <Step title="Active Filters Display">
+    Show currently applied filters as removable tags above results.
+  </Step>
+</Steps>
+
+## Implementation Architecture
+
+### Backend Query Building
+
+Search queries are built dynamically based on applied filters:
+
+```java
+public List<GuideProfile> searchGuides(
+    String location,
+    Set<String> languages,
+    Set<String> expertiseAreas,
+    BigDecimal minRating,
+    String experienceLevel,
+    String groupSize,
+    BigDecimal minPrice,
+    BigDecimal maxPrice
+) {
+    // Build dynamic query with JPA Criteria API or QueryDSL
+    // Apply filters only if provided
+    // Return filtered and sorted results
+}
+```
+
+### Service Layer
+
+The `TourService` handles tour searches:
+
+```
+socialNetwork/src/main/java/org/generation/socialNetwork/tours/service/TourService.java
+```
+
+Key methods:
+- `getAllTours()`: Retrieve all active tours
+- `getTourById(Long id)`: Get specific tour details
+- Additional filtering methods (to be implemented)
+
+<Tip>
+  For optimal performance, implement database indexes on frequently filtered fields like `location`, `categoryId`, `ratingAvg`, and `price`.
+</Tip>
+
+## Search Optimization
+
+### Indexing Strategy
+
+```sql
+-- Guide search optimization
+CREATE INDEX idx_guide_location ON guide_profiles(location_label);
+CREATE INDEX idx_guide_rating ON guide_profiles(rating_avg DESC);
+CREATE INDEX idx_guide_active ON guide_profiles(user_id) WHERE account_status = 'active';
+
+-- Tour search optimization
+CREATE INDEX idx_tour_category ON tours(category_id);
+CREATE INDEX idx_tour_price ON tours(price);
+CREATE INDEX idx_tour_rating ON tours(rating_avg DESC);
+CREATE INDEX idx_tour_active ON tours(status) WHERE status = 'active';
+
+-- Full-text search
+CREATE FULLTEXT INDEX idx_tour_search ON tours(title, description);
+```
+
+### Caching
+
+Cache frequently accessed filter options:
+
+- List of locations (cities/states)
+- Available categories
+- Language options
+- Popular search queries
+
+## User Experience Flow
+
+<Steps>
+  <Step title="Start Search">
+    User enters a keyword or selects a location to begin their search.
+  </Step>
+  
+  <Step title="View Initial Results">
+    System displays relevant results sorted by relevance or matching score.
+  </Step>
+  
+  <Step title="Apply Filters">
+    User refines results using filter panel (interests, price, rating, etc.).
+  </Step>
+  
+  <Step title="Browse Results">
+    User scrolls through filtered results, viewing guide/tour cards with key information.
+  </Step>
+  
+  <Step title="View Details">
+    Clicking a card opens detailed profile/tour page with full information.
+  </Step>
+  
+  <Step title="Compare Options">
+    User can bookmark favorites or open multiple tabs to compare options.
+  </Step>
+  
+  <Step title="Take Action">
+    User messages guide, requests booking, or adds tour to favorites.
+  </Step>
+</Steps>
+
+## Search + Matching Integration
+
+The search system complements the matching algorithm:
+
+<CardGroup cols={2}>
+  <Card title="Matching First" icon="wand-magic-sparkles">
+    Start with personalized recommendations from the matching algorithm, then refine with search filters.
+  </Card>
+  
+  <Card title="Search First" icon="magnifying-glass">
+    Browse guides/tours using search, then see compatibility scores from matching algorithm in results.
+  </Card>
+  
+  <Card title="Hybrid Approach" icon="shuffle">
+    Mix matched and searched results, showing high-compatibility matches first followed by broader search results.
+  </Card>
+  
+  <Card title="Learning System" icon="brain">
+    Search behavior informs matching algorithm to improve future recommendations.
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+### For Tourists
+
+<CardGroup cols={2}>
+  <Card title="Start Broad" icon="expand">
+    Begin with general criteria (location, category) then narrow down with additional filters.
+  </Card>
+  
+  <Card title="Use Matching" icon="heart">
+    Check recommended matches before searching broadly - you might find perfect matches.
+  </Card>
+  
+  <Card title="Read Reviews" icon="star">
+    Don't rely solely on filters - read reviews to understand guide quality and style.
+  </Card>
+  
+  <Card title="Save Favorites" icon="bookmark">
+    Bookmark interesting profiles to compare later before making a decision.
+  </Card>
+</CardGroup>
+
+### For Implementation
+
+<Warning>
+  - Always filter out inactive or deleted profiles/tours
+  - Implement pagination for large result sets (don't load thousands at once)
+  - Provide feedback when no results match criteria (suggest relaxing filters)
+  - Log popular search terms to improve categories and matching
+</Warning>
+
+## API Examples
+
+### Search Guides
+
+```bash
+GET /api/guides/search?
+  location=CDMX&
+  languages=español,english&
+  expertiseAreas=cultura,gastronomía&
+  minRating=4.0&
+  limit=20&
+  offset=0
+```
+
+### Search Tours
+
+```bash
+GET /api/tours/search?
+  categoryId=2&
+  minPrice=500&
+  maxPrice=1500&
+  minRating=4.5&
+  maxGroupSize=8&
+  sortBy=rating&
+  limit=20&
+  offset=0
+```
+
+### Combined Search
+
+```bash
+GET /api/search?
+  q=gastronomía+CDMX&
+  type=all&
+  filters=rating:4+,price:500-1500&
+  limit=20
+```
+
+## Future Enhancements
+
+Planned improvements to search and filtering:
+
+- **Smart Search**: Natural language queries ("Find a food tour guide in Mexico City under $50")
+- **Autocomplete**: Suggest locations, categories, and guides as user types
+- **Search History**: Save recent searches for quick access
+- **Saved Filters**: Create and save custom filter combinations
+- **Map View**: Display results on an interactive map
+- **Advanced Filters**: Date ranges, specific amenities, accessibility features
+- **Faceted Search**: Show count of results for each filter option
+- **Similar Results**: "More like this" recommendations based on viewed profiles
+- **AI-Powered**: Machine learning to understand intent and improve relevance
+- **Voice Search**: Speak search queries instead of typing
+
+---
+
+<Card title="Related Documentation" icon="book">
+  - [Matching Algorithm](/features/matching-algorithm)
+  - [Tours API Reference](/api-reference/tours/search-tours)
+  - [Guides API Reference](/api-reference/guides/search-guides)
+</Card>

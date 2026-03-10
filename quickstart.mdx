@@ -1,80 +1,518 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: "Get Started with Kin Conecta"
+description: "Start your journey as a tourist or guide in minutes"
 ---
 
-## Get started in three steps
+## Welcome to Kin Conecta
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+Kin Conecta connects travelers with authentic local experiences in Mexico. Whether you're a tourist looking for personalized adventures or a guide ready to share your expertise, this guide will get you started quickly.
 
 <CardGroup cols={2}>
+  <Card title="I'm a Tourist" icon="plane" iconType="duotone">
+    Looking to discover authentic experiences with local guides
+  </Card>
+  <Card title="I'm a Guide" icon="map-location-dot" iconType="duotone">
+    Ready to share my local expertise and create tours
+  </Card>
+</CardGroup>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+---
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+## For Tourists
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
+### Step 1: Create Your Account
 
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
+<Steps>
+  <Step title="Navigate to Registration">
+    Visit the Kin Conecta homepage and click **Registrarse** (Sign Up) in the top navigation.
+  </Step>
+  
+  <Step title="Select Tourist Role">
+    Choose **Turista** from the role selection screen. This unlocks features for browsing guides and booking tours.
+  </Step>
+  
+  <Step title="Complete Your Profile">
+    Fill in your registration details:
+    
+    - **Full name**: Your complete name
+    - **Date of birth**: Required for age verification
+    - **Country code**: Select your phone's country code (e.g., +52 for Mexico)
+    - **Phone number**: 10-digit mobile number
+    - **Email**: Your primary email address
+    - **Password**: Minimum 8 characters
+    
+    <Warning>
+      Make sure your email is valid - you'll need it to verify your account and receive booking confirmations.
+    </Warning>
+  </Step>
+</Steps>
 
+### Step 2: Set Up Your Tourist Profile
+
+Once registered, enhance your profile to get better tour recommendations:
+
+<AccordionGroup>
+  <Accordion title="Travel Preferences" icon="heart">
+    Tell us what kind of traveler you are:
+    
+    - **Travel Style**: Cultural, Gastronomic, Adventure, Nature, Historical
+    - **Activity Level**: Low, Moderate, or High intensity
+    - **Group Preference**: Solo, couples, small groups, or large groups
+    - **Planning Level**: How much detail you prefer in itineraries
+  </Accordion>
+  
+  <Accordion title="Languages & Interests" icon="language">
+    - Select languages you speak (Spanish, English, French, German, Italian)
+    - Choose your interests: Culture, Gastronomy, Adventure, Nature, Photography
+    - Add dietary preferences if applicable
+  </Accordion>
+  
+  <Accordion title="Profile Photo" icon="image">
+    Upload a profile photo to personalize your account. This helps guides recognize you during tours.
+  </Accordion>
+</AccordionGroup>
+
+### Step 3: Find Your Perfect Tour
+
+<Steps>
+  <Step title="Browse the Explore Page">
+    Navigate to **Explorar** from your dashboard sidebar. Here you'll find:
+    
+    - Featured destinations across Mexico
+    - Top-rated guides and tours
+    - Search functionality by destination, guide, or activity type
+    - Category filters: Gastronomía, Aventura, Historia, Cultura
+  </Step>
+  
+  <Step title="Search and Filter">
+    Use the search bar to find specific experiences:
+    
+    ```plaintext
+    Search examples:
+    - "cenotes Puerto Morelos"
+    - "food tour Guadalajara"
+    - "historic center CDMX"
+    - "colonial architecture Mérida"
+    ```
+    
+    Filter results by categories to narrow down options.
+  </Step>
+  
+  <Step title="Review Tour Details">
+    Click on any tour to view:
+    
+    - **Duration**: Typical tours run 4 hours
+    - **Price**: Listed in MXN (Mexican Pesos)
+    - **Group size**: Maximum number of participants
+    - **Meeting point**: Where the tour starts
+    - **Included items**: What's provided (guide, entrance fees, tastings, equipment)
+    - **Guide profile**: Experience level, languages, certifications, ratings
+  </Step>
+  
+  <Step title="Check Guide Compatibility">
+    Review the guide's profile:
+    
+    - **Rating**: Average from previous tourists
+    - **Reviews**: Read experiences from other travelers
+    - **Tour style**: Intensity level, group dynamics, pace
+    - **Languages**: Communication options
+    - **Certifications**: Professional qualifications
+    - **Adaptations**: Special accommodations offered
+  </Step>
+</Steps>
+
+### Step 4: Book Your Experience
+
+<Steps>
+  <Step title="Select Date and Time">
+    Choose your preferred booking date. The system will show available time slots based on the guide's calendar.
+    
+    <Note>
+      Tours are booked in 4-hour blocks. Plan accordingly for travel time to the meeting point.
+    </Note>
+  </Step>
+  
+  <Step title="Add Special Notes">
+    Include any special requests or requirements:
+    
+    - Dietary restrictions (gluten-free, vegetarian, allergies)
+    - Mobility considerations
+    - Specific interests to prioritize
+    - Group composition details
+  </Step>
+  
+  <Step title="Review and Confirm">
+    Double-check your booking details:
+    
+    - Tour name and guide
+    - Date, time, and meeting point
+    - Total price and included items
+    - Cancellation policy
+    
+    Submit your booking request. The status will be **pending** until the guide confirms.
+  </Step>
+  
+  <Step title="Wait for Confirmation">
+    You'll receive a notification when the guide:
+    
+    - **Confirms** your booking (status: confirmed)
+    - **Requests changes** to date/time (status: change_requested)
+    - Declines due to unavailability
+    
+    <Tip>
+      Most guides respond within 1-3 hours during business hours.
+    </Tip>
+  </Step>
+</Steps>
+
+### Step 5: Communicate and Prepare
+
+Once confirmed, you can:
+
+- **Message your guide** directly through the chat system
+- Ask questions about what to bring, wear, or expect
+- Coordinate pickup details if applicable
+- View the meeting point on your trip details
+
+### Step 6: Enjoy Your Tour
+
+On tour day:
+
+1. Arrive at the meeting point 5-10 minutes early
+2. Look for your guide (their profile photo is in your booking)
+3. Introduce yourself and confirm the itinerary
+4. Enjoy your authentic local experience!
+
+### Step 7: Leave a Review
+
+After your tour:
+
+<Steps>
+  <Step title="Rate Your Experience">
+    Navigate to **Mis Viajes** (My Trips) and select the completed tour. Rate your experience from 1-5 stars.
+  </Step>
+  
+  <Step title="Write a Review">
+    Share your thoughts to help other tourists:
+    
+    - What you loved about the experience
+    - How the guide performed
+    - Accuracy of the tour description
+    - Value for money
+    
+    <Tip>
+      Detailed reviews help guides improve and assist other tourists in making informed decisions.
+    </Tip>
+  </Step>
+</Steps>
+
+---
+
+## For Guides
+
+### Step 1: Create Your Guide Account
+
+<Steps>
+  <Step title="Navigate to Registration">
+    Visit the Kin Conecta homepage and click **Registrarse** (Sign Up).
+  </Step>
+  
+  <Step title="Select Guide Role">
+    Choose **Guía** from the role selection screen. This gives you access to tour management and booking tools.
+  </Step>
+  
+  <Step title="Complete Registration">
+    Provide your personal information:
+    
+    - Full name
+    - Date of birth
+    - Country code and phone number
+    - Email address
+    - Secure password (minimum 8 characters)
+  </Step>
+</Steps>
+
+### Step 2: Build Your Guide Profile
+
+Your profile is your storefront - make it compelling!
+
+<AccordionGroup>
+  <Accordion title="Professional Information" icon="briefcase">
+    Complete your professional details:
+    
+    - **Summary**: Brief introduction (50-100 words)
+    - **Story**: Your background and guiding philosophy (200+ words)
+    - **Status text**: Current availability (e.g., "Available this week", "Booking 2 weeks ahead")
+    - **Hourly rate**: Your base rate in MXN
+    - **Experience level**: Beginner, Intermediate, Advanced, or Senior
+  </Accordion>
+  
+  <Accordion title="Service Details" icon="list-check">
+    Define your tour style:
+    
+    - **Tour intensity**: Low (relaxed), Moderate, or High (active)
+    - **Group size**: Preferred number of participants (e.g., "2-6 people", "4-10 people")
+    - **Tour style**: Your guiding approach (e.g., "Historical narrative with photo stops")
+    - **Transport offered**: Walking, metro, van, private vehicle
+    - **Photo style**: Architecture, food, portraits, nature, street photography
+  </Accordion>
+  
+  <Accordion title="Languages & Expertise" icon="globe">
+    - Add all languages you speak fluently
+    - Select expertise areas:
+      - Local History
+      - Gastronomy Tours
+      - Colonial Architecture
+      - Urban Art
+      - Nature & Cenotes
+      - Cultural Experiences
+  </Accordion>
+  
+  <Accordion title="Locations & Certifications" icon="award">
+    - **Locations**: Cities and areas where you guide
+    - **Certifications**: Professional credentials (e.g., "Certified Cultural Guide CDMX", "Food Safety Certification", "First Aid Certified")
+    - **Adaptations**: Special accommodations you offer (e.g., "Flexible pace for seniors", "Vegetarian options", "Bilingual support")
+  </Accordion>
+  
+  <Accordion title="Photos & Branding" icon="camera">
+    Upload high-quality images:
+    
+    - **Profile photo**: Professional headshot showing your face clearly
+    - **Cover photo**: Showcase your best tour moments or destinations
+    - **Tour photos**: Images of locations, food, or experiences you offer
+    
+    <Tip>
+      High-quality photos increase your booking rate by up to 70%. Use natural lighting and show authentic moments.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+### Step 3: Create Your First Tour
+
+<Steps>
+  <Step title="Access Tour Management">
+    From your guide dashboard, navigate to **Tours** in the sidebar and click **Create New Tour**.
+  </Step>
+  
+  <Step title="Basic Tour Information">
+    Fill in the essential details:
+    
+    ```yaml
+    Title: "Historic Center and Museums Walk"
+    Category: Historia y cultura
+    Description: Detailed tour description including highlights, 
+                 what makes it unique, and what tourists will learn
+    Duration: 4.0 hours
+    Max group size: 8 people
+    ```
+  </Step>
+  
+  <Step title="Pricing and Logistics">
+    Set your tour parameters:
+    
+    - **Price**: Total tour price in MXN (not per person - clarify in description)
+    - **Currency**: MXN (Mexican Peso)
+    - **Meeting point**: Specific, easy-to-find location (e.g., "Palacio de Bellas Artes main entrance")
+    - **Cover image**: Eye-catching photo representing the tour
+  </Step>
+  
+  <Step title="What's Included">
+    List everything included in the tour price:
+    
+    <CodeGroup>
+    ```plaintext Example: Cultural Tour
+    - Bilingual guide service
+    - Basic entrance fees to 2 museums
+    - Printed historical timeline
+    - Water and snacks
+    ```
+    
+    ```plaintext Example: Food Tour
+    - Expert food guide
+    - Tastings at 5 locations
+    - Market access and stories
+    - Recipe card for 1 dish
+    ```
+    
+    ```plaintext Example: Nature Tour
+    - Certified nature guide
+    - Basic equipment (snorkel, life vest)
+    - Hydration drinks
+    - Transportation from meeting point
+    - First aid kit on hand
+    ```
+    </CodeGroup>
+  </Step>
+  
+  <Step title="Select Destinations">
+    Link your tour to destination(s):
+    
+    - Choose from existing destinations in the system
+    - Multiple destinations can be selected for multi-city tours
+    - This helps tourists find your tour when searching by location
+  </Step>
+  
+  <Step title="Set Tour Status">
+    Choose your tour status:
+    
+    - **Draft**: Not visible to tourists (work in progress)
+    - **Pending**: Submitted for review (if platform requires approval)
+    - **Active**: Live and bookable by tourists
+    - **Inactive**: Temporarily unavailable
+    
+    <Warning>
+      Start with "Draft" to review everything before making it live. You can activate it later.
+    </Warning>
+  </Step>
+</Steps>
+
+### Step 4: Manage Your Calendar
+
+Keep your availability up to date:
+
+<Steps>
+  <Step title="Open Calendar View">
+    Navigate to **Calendario** in your dashboard sidebar.
+  </Step>
+  
+  <Step title="Block Unavailable Times">
+    Mark dates when you're unavailable:
+    
+    - Personal time off
+    - Other commitments
+    - Fully booked days
+    
+    This prevents double-booking and sets tourist expectations.
+  </Step>
+  
+  <Step title="Review Booking Requests">
+    When tourists book your tours:
+    
+    - You'll receive a notification
+    - Review the booking details and tourist profile
+    - Check for any special requests in the notes
+    - Confirm or request changes within 24 hours
+  </Step>
+</Steps>
+
+### Step 5: Communicate with Tourists
+
+<Steps>
+  <Step title="Respond to Messages">
+    Tourists can message you before and after booking. Quick responses improve your rating and booking rate.
+    
+    <Tip>
+      Guides who respond within 1 hour have 3x higher confirmation rates.
+    </Tip>
+  </Step>
+  
+  <Step title="Confirm Tour Details">
+    Before the tour, clarify:
+    
+    - Exact meeting time and location
+    - What to bring (comfortable shoes, hat, sunscreen, etc.)
+    - Any special considerations
+    - Weather contingencies
+  </Step>
+</Steps>
+
+### Step 6: Deliver Amazing Tours
+
+On tour day:
+
+1. **Arrive early** at the meeting point
+2. **Greet your tourists** warmly and confirm the group
+3. **Set expectations** for the tour (duration, stops, pace)
+4. **Engage actively** with storytelling and local insights
+5. **Be flexible** to group needs and interests
+6. **Encourage questions** and interaction
+7. **End professionally** with recommendations for their continued journey
+
+### Step 7: Manage Post-Tour
+
+After each tour:
+
+<Steps>
+  <Step title="Update Trip Status">
+    Mark the trip as **completed** in your dashboard. This triggers:
+    
+    - Payment processing (if integrated)
+    - Tourist review request
+    - Trip appears in your history
+  </Step>
+  
+  <Step title="Request and Respond to Reviews">
+    - Encourage tourists to leave reviews
+    - Respond to reviews (especially constructive feedback)
+    - Use feedback to improve future tours
+    
+    <Note>
+      Your average rating and review count directly impact your visibility in search results.
+    </Note>
+  </Step>
+  
+  <Step title="Track Your Performance">
+    Monitor your guide dashboard:
+    
+    - **Rating average**: Keep above 4.5 stars
+    - **Reviews count**: More reviews = more trust
+    - **Bookings count**: Track your growth
+    - **Response time**: Aim for under 2 hours
+  </Step>
+</Steps>
+
+### Step 8: Grow Your Business
+
+<CardGroup cols={2}>
+  <Card title="Update Your Tours" icon="pen-to-square">
+    Refresh tour descriptions seasonally, add new tours, and retire underperforming ones
+  </Card>
+  
+  <Card title="Expand Your Expertise" icon="graduation-cap">
+    Add new certifications, learn new languages, and explore new destinations
+  </Card>
+  
+  <Card title="Engage with Tourists" icon="comments">
+    Build relationships, encourage repeat bookings, and ask for referrals
+  </Card>
+  
+  <Card title="Monitor Finances" icon="chart-line">
+    Track your income, withdrawal requests, and booking trends
+  </Card>
+</CardGroup>
+
+---
+
+## What's Next?
+
+Now that you're set up, explore these resources:
+
+<CardGroup cols={3}>
+  <Card title="Platform Features" icon="sparkles" href="/features/matching-algorithm">
+    Learn about our intelligent matching system
+  </Card>
+  
+  <Card title="Best Practices" icon="lightbulb" href="/guides/best-practices">
+    Tips for successful tours and high ratings
+  </Card>
+  
+  <Card title="API Integration" icon="code" href="/api/overview">
+    Build custom integrations with our API
+  </Card>
+  
+  <Card title="Safety Guidelines" icon="shield-check" href="/resources/safety">
+    Keep yourself and tourists safe
+  </Card>
+  
+  <Card title="Payment System" icon="credit-card" href="/guides/payments">
+    Understand how payments and withdrawals work
+  </Card>
+  
+  <Card title="Support" icon="life-ring" href="/resources/help-center">
+    Get help when you need it
+  </Card>
 </CardGroup>
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  **Need assistance?** Contact our support team through the Help Center or submit a support ticket directly from your dashboard.
 </Note>

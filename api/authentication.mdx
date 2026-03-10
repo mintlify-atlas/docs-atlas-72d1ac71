@@ -1,0 +1,594 @@
+---
+title: Authentication
+description: User authentication and security configuration in Kin Conecta
+---
+
+## Overview
+
+Kin Conecta uses a combination of Spring Security and BCrypt password encoding for user authentication. The current implementation provides basic authentication with endpoints for user login and registration.
+
+<Note>
+  The authentication system is currently configured to permit all requests for development. Implement proper JWT or session-based authentication before production deployment.
+</Note>
+
+## Security Configuration
+
+The API is configured with Spring Security using the following settings:
+
+### Password Encoding
+
+Passwords are hashed using BCrypt algorithm with automatic salt generation:
+
+```java
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
+```
+
+### CSRF Protection
+
+CSRF protection is currently disabled for API endpoints:
+
+```java
+httpSecurity.csrf(csrf -> csrf.disable())
+```
+
+<Warning>
+  CSRF protection is disabled. If implementing session-based authentication, enable CSRF protection for security.
+</Warning>
+
+### Request Authorization
+
+All endpoints currently permit unrestricted access:
+
+```java
+httpSecurity.authorizeHttpRequests(
+    auth -> auth
+        .requestMatchers("/api/**").permitAll()
+        .anyRequest().permitAll()
+)
+```
+
+## User Model
+
+The User entity contains the following authentication-related fields:
+
+<ResponseField name="id" type="Long" required>
+  Unique user identifier (auto-generated)
+</ResponseField>
+
+<ResponseField name="email" type="String" required>
+  User's email address (unique)
+</ResponseField>
+
+<ResponseField name="password" type="String" required>
+  BCrypt hashed password
+</ResponseField>
+
+<ResponseField name="role" type="UserRole" required>
+  User role: `TOURIST`, `GUIDE`, or `ADMIN`
+</ResponseField>
+
+<ResponseField name="accountStatus" type="AccountStatus" required>
+  Account status: `ACTIVE`, `SUSPENDED`, `PENDING_VERIFICATION`, or `DEACTIVATED`
+</ResponseField>
+
+<ResponseField name="fullName" type="String" required>
+  User's full name
+</ResponseField>
+
+<ResponseField name="phoneE164" type="String" required>
+  Phone number in E.164 format
+</ResponseField>
+
+<ResponseField name="emailVerifiedAt" type="Date">
+  Timestamp of email verification
+</ResponseField>
+
+<ResponseField name="lastLogin" type="Date">
+  Timestamp of last successful login
+</ResponseField>
+
+<ResponseField name="createdAt" type="Date" required>
+  Account creation timestamp
+</ResponseField>
+
+<ResponseField name="updatedAt" type="Date" required>
+  Last account update timestamp
+</ResponseField>
+
+## Authentication Endpoints
+
+### User Login
+
+Authenticate a user with email and password.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "tourist@example.com",
+    "password": "securePassword123"
+  }'
+```
+
+```javascript JavaScript
+const login = async (email, password) => {
+  const response = await fetch('http://localhost:8080/kinconecta/api/user/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  });
+  
+  const isAuthenticated = await response.json();
+  return isAuthenticated;
+};
+
+// Usage
+const result = await login('tourist@example.com', 'securePassword123');
+console.log('Login successful:', result);
+```
+
+```java Java
+RestTemplate restTemplate = new RestTemplate();
+HttpHeaders headers = new HttpHeaders();
+headers.setContentType(MediaType.APPLICATION_JSON);
+
+User credentials = new User();
+credentials.setEmail("tourist@example.com");
+credentials.setPassword("securePassword123");
+
+HttpEntity<User> request = new HttpEntity<>(credentials, headers);
+Boolean isAuthenticated = restTemplate.postForObject(
+  "http://localhost:8080/kinconecta/api/user/login",
+  request,
+  Boolean.class
+);
+```
+
+</CodeGroup>
+
+**Endpoint:** `POST /kinconecta/api/user/login`
+
+**Request Body:**
+
+<ParamField body="email" type="string" required>
+  User's email address
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password (will be validated against BCrypt hash)
+</ParamField>
+
+**Response:**
+
+Returns a boolean indicating authentication success:
+
+```json
+true
+```
+
+<Note>
+  The current implementation returns a boolean. Consider implementing JWT tokens for stateless authentication.
+</Note>
+
+### User Registration
+
+Create a new user account.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/user \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName": "Maria Garcia",
+    "email": "maria.garcia@example.com",
+    "password": "SecurePass123!",
+    "role": "TOURIST",
+    "dateOfBirth": "1990-05-15",
+    "countryCode": "MX",
+    "phoneNumber": "5512345678",
+    "phoneE164": "+525512345678",
+    "preferedLanguageCode": "ES",
+    "accountStatus": "ACTIVE"
+  }'
+```
+
+```javascript JavaScript
+const registerUser = async (userData) => {
+  const response = await fetch('http://localhost:8080/kinconecta/api/user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      fullName: userData.fullName,
+      email: userData.email,
+      password: userData.password,
+      role: 'TOURIST',
+      dateOfBirth: userData.dateOfBirth,
+      countryCode: userData.countryCode,
+      phoneNumber: userData.phoneNumber,
+      phoneE164: userData.phoneE164,
+      preferedLanguageCode: userData.language,
+      accountStatus: 'ACTIVE',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```java Java
+User newUser = new User();
+newUser.setFullName("Maria Garcia");
+newUser.setEmail("maria.garcia@example.com");
+newUser.setPassword("SecurePass123!");
+newUser.setRole(UserRole.TOURIST);
+newUser.setDateOfBirth(Date.valueOf("1990-05-15"));
+newUser.setCountryCode("MX");
+newUser.setPhoneNumber("5512345678");
+newUser.setPhoneE164("+525512345678");
+newUser.setPreferedLanguageCode(Language.ES);
+newUser.setAccountStatus(AccountStatus.ACTIVE);
+newUser.setCreatedAt(new Date());
+newUser.setUpdatedAt(new Date());
+
+RestTemplate restTemplate = new RestTemplate();
+User createdUser = restTemplate.postForObject(
+  "http://localhost:8080/kinconecta/api/user",
+  newUser,
+  User.class
+);
+```
+
+</CodeGroup>
+
+**Endpoint:** `POST /kinconecta/api/user`
+
+**Request Body:**
+
+<ParamField body="fullName" type="string" required>
+  User's complete name
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  User's email address (must be unique)
+</ParamField>
+
+<ParamField body="password" type="string" required>
+  User's password (will be hashed with BCrypt)
+</ParamField>
+
+<ParamField body="role" type="string" required>
+  User role: `TOURIST`, `GUIDE`, or `ADMIN`
+</ParamField>
+
+<ParamField body="dateOfBirth" type="string" required>
+  Date of birth in format: `YYYY-MM-DD`
+</ParamField>
+
+<ParamField body="countryCode" type="string" required>
+  ISO 3166-1 alpha-2 country code (e.g., `US`, `MX`, `ES`)
+</ParamField>
+
+<ParamField body="phoneNumber" type="string" required>
+  Phone number without country code
+</ParamField>
+
+<ParamField body="phoneE164" type="string" required>
+  Phone number in E.164 format (e.g., `+525512345678`)
+</ParamField>
+
+<ParamField body="preferedLanguageCode" type="string" required>
+  Preferred language code: `EN`, `ES`, `FR`, `DE`, `IT`, `PT`
+</ParamField>
+
+<ParamField body="accountStatus" type="string" required>
+  Account status: `ACTIVE`, `PENDING_VERIFICATION`, `SUSPENDED`, `DEACTIVATED`
+</ParamField>
+
+**Response:**
+
+Returns the created user object:
+
+```json
+{
+  "id": 1,
+  "fullName": "Maria Garcia",
+  "email": "maria.garcia@example.com",
+  "role": "TOURIST",
+  "dateOfBirth": "1990-05-15",
+  "countryCode": "MX",
+  "phoneNumber": "5512345678",
+  "phoneE164": "+525512345678",
+  "preferedLanguageCode": "ES",
+  "accountStatus": "ACTIVE",
+  "emailVerifiedAt": null,
+  "lastLogin": null,
+  "createdAt": "2026-03-10T12:00:00Z",
+  "updatedAt": "2026-03-10T12:00:00Z"
+}
+```
+
+<Warning>
+  Password is returned in the response. In production, never return password fields in API responses.
+</Warning>
+
+## User Management Endpoints
+
+### Get All Users
+
+Retrieve a list of all registered users.
+
+```bash
+curl http://localhost:8080/kinconecta/api/user
+```
+
+**Endpoint:** `GET /kinconecta/api/user`
+
+**Response:**
+
+```json
+[
+  {
+    "id": 1,
+    "fullName": "Maria Garcia",
+    "email": "maria.garcia@example.com",
+    "role": "TOURIST",
+    "accountStatus": "ACTIVE"
+  },
+  {
+    "id": 2,
+    "fullName": "Carlos Rodriguez",
+    "email": "carlos@example.com",
+    "role": "GUIDE",
+    "accountStatus": "ACTIVE"
+  }
+]
+```
+
+### Get User by ID
+
+Retrieve a specific user by their ID.
+
+```bash
+curl http://localhost:8080/kinconecta/api/user/Maria_Garcia_1
+```
+
+**Endpoint:** `GET /kinconecta/api/user/{fullName}_{userId}`
+
+**Path Parameters:**
+
+<ParamField path="fullName" type="string" required>
+  User's full name (URL encoded if contains spaces)
+</ParamField>
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+**Response:**
+
+```json
+{
+  "id": 1,
+  "fullName": "Maria Garcia",
+  "email": "maria.garcia@example.com",
+  "role": "TOURIST",
+  "dateOfBirth": "1990-05-15",
+  "countryCode": "MX",
+  "phoneE164": "+525512345678",
+  "preferedLanguageCode": "ES",
+  "accountStatus": "ACTIVE",
+  "createdAt": "2026-03-10T12:00:00Z",
+  "updatedAt": "2026-03-10T12:00:00Z"
+}
+```
+
+### Update User
+
+Update user information.
+
+```bash
+curl -X PUT http://localhost:8080/kinconecta/api/user/Maria_Garcia_1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullName": "Maria Garcia Lopez",
+    "email": "maria.garcia@example.com",
+    "preferedLanguageCode": "EN"
+  }'
+```
+
+**Endpoint:** `PUT /kinconecta/api/user/{fullName}_{userId}`
+
+### Delete User
+
+Delete a user account.
+
+```bash
+curl -X DELETE http://localhost:8080/kinconecta/api/user/Maria_Garcia_1
+```
+
+**Endpoint:** `DELETE /kinconecta/api/user/{fullName}_{userId}`
+
+**Response:**
+
+Returns the deleted user object.
+
+## Notifications
+
+### Add Notification to User
+
+Add a notification to a user's notification list.
+
+```bash
+curl -X POST http://localhost:8080/kinconecta/api/user/1/add-notification \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "New booking request",
+    "message": "You have a new tour booking request",
+    "type": "BOOKING"
+  }'
+```
+
+**Endpoint:** `POST /kinconecta/api/user/{userId}/add-notification`
+
+**Path Parameters:**
+
+<ParamField path="userId" type="long" required>
+  User's unique identifier
+</ParamField>
+
+**Request Body:**
+
+<ParamField body="title" type="string" required>
+  Notification title
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Notification message content
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Notification type (e.g., `BOOKING`, `MESSAGE`, `REVIEW`)
+</ParamField>
+
+## Security Best Practices
+
+<Warning>
+  The following security improvements are recommended before production deployment:
+</Warning>
+
+### 1. Implement JWT Authentication
+
+Replace boolean authentication response with JWT tokens:
+
+```java
+@PostMapping("/login")
+public ResponseEntity<LoginResponse> login(@RequestBody User credentials) {
+    if (userService.validateUser(credentials)) {
+        String token = jwtService.generateToken(credentials.getEmail());
+        return ResponseEntity.ok(new LoginResponse(token, user));
+    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+}
+```
+
+### 2. Add Request Validation
+
+```java
+@PostMapping
+public User addUser(@Valid @RequestBody User user) {
+    return userService.addUser(user);
+}
+```
+
+### 3. Implement Role-Based Access Control
+
+```java
+httpSecurity.authorizeHttpRequests(
+    auth -> auth
+        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+        .requestMatchers("/api/guide_profiles/**").hasAnyRole("GUIDE", "ADMIN")
+        .requestMatchers("/api/user/login", "/api/user").permitAll()
+        .anyRequest().authenticated()
+)
+```
+
+### 4. Add Rate Limiting
+
+Implement rate limiting for authentication endpoints:
+
+```java
+@RateLimit(requests = 5, perMinutes = 1)
+@PostMapping("/login")
+public boolean loginUser(@RequestBody User user) {
+    return userService.validateUser(user);
+}
+```
+
+### 5. Secure Password Requirements
+
+Enforce strong password policies:
+- Minimum 8 characters
+- At least one uppercase letter
+- At least one lowercase letter
+- At least one number
+- At least one special character
+
+### 6. Enable HTTPS
+
+Configure SSL/TLS certificates:
+
+```properties
+server.port=8443
+server.ssl.enabled=true
+server.ssl.key-store=classpath:keystore.p12
+server.ssl.key-store-password=${SSL_PASSWORD}
+server.ssl.key-store-type=PKCS12
+```
+
+### 7. Implement Email Verification
+
+Add email verification flow:
+
+```java
+@PostMapping("/verify-email")
+public ResponseEntity<Void> verifyEmail(@RequestParam String token) {
+    userService.verifyEmail(token);
+    return ResponseEntity.ok().build();
+}
+```
+
+### 8. Add Session Management
+
+Implement proper session timeout and management:
+
+```properties
+server.servlet.session.timeout=30m
+server.servlet.session.cookie.http-only=true
+server.servlet.session.cookie.secure=true
+```
+
+## Error Codes
+
+| Code | Message | Description |
+|------|---------|-------------|
+| `AUTH001` | Invalid credentials | Email or password is incorrect |
+| `AUTH002` | Account not verified | Email verification required |
+| `AUTH003` | Account suspended | Account has been suspended |
+| `AUTH004` | Account deactivated | Account has been deactivated by user |
+| `AUTH005` | Email already exists | Email is already registered |
+| `AUTH006` | Weak password | Password does not meet security requirements |
+| `AUTH007` | Token expired | Authentication token has expired |
+| `AUTH008` | Invalid token | Authentication token is invalid |
+
+## Next Steps
+
+<CardGroup cols={2}>
+
+<Card title="API Overview" icon="book" href="/api/overview">
+  Return to API overview and explore other endpoints
+</Card>
+
+<Card title="User Profiles" icon="user" href="/api/profiles">
+  Learn about tourist and guide profile management
+</Card>
+
+<Card title="Security Configuration" icon="shield" href="/guides/security">
+  Deep dive into security implementation
+</Card>
+
+<Card title="JWT Implementation" icon="key" href="/guides/jwt-auth">
+  Guide to implementing JWT authentication
+</Card>
+
+</CardGroup>

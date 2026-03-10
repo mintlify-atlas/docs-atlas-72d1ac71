@@ -1,0 +1,369 @@
+---
+title: API Overview
+description: Complete guide to the Kin Conecta REST API
+---
+
+## Introduction
+
+The Kin Conecta API is a RESTful API built with Spring Boot that powers the social network platform connecting tourists with local guides. The API provides endpoints for user management, tour operations, bookings, reviews, matching algorithms, and real-time messaging.
+
+## Base URL
+
+All API requests should be made to:
+
+```
+http://localhost:8080
+```
+
+<Note>
+  The production base URL will differ from the development URL. Update this configuration in your application properties.
+</Note>
+
+## API Versioning
+
+The API uses path-based versioning with the `/api/` prefix for most endpoints. Some legacy endpoints use the `/kinconecta/api/` prefix.
+
+**Standard endpoints:**
+```
+/api/{resource}
+```
+
+**Legacy endpoints:**
+```
+/kinconecta/api/{resource}
+```
+
+## Request Format
+
+All requests should use JSON format with the appropriate `Content-Type` header:
+
+```bash
+Content-Type: application/json
+```
+
+### Example Request
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST http://localhost:8080/api/tours \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Historic City Tour",
+    "description": "Explore the historic center",
+    "duration": 180,
+    "price": 50.00
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tours', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Historic City Tour',
+    description: 'Explore the historic center',
+    duration: 180,
+    price: 50.00
+  })
+})
+```
+
+```java Java
+RestTemplate restTemplate = new RestTemplate();
+HttpHeaders headers = new HttpHeaders();
+headers.setContentType(MediaType.APPLICATION_JSON);
+
+Tour tour = new Tour();
+tour.setName("Historic City Tour");
+tour.setDescription("Explore the historic center");
+
+HttpEntity<Tour> request = new HttpEntity<>(tour, headers);
+Tour response = restTemplate.postForObject(
+  "http://localhost:8080/api/tours",
+  request,
+  Tour.class
+);
+```
+
+</CodeGroup>
+
+## Response Format
+
+All API responses use JSON format. Successful responses return the requested data with appropriate HTTP status codes.
+
+### Success Response
+
+```json
+{
+  "id": 1,
+  "name": "Historic City Tour",
+  "description": "Explore the historic center",
+  "duration": 180,
+  "price": 50.00,
+  "createdAt": "2026-03-10T12:00:00Z"
+}
+```
+
+### Error Response
+
+```json
+{
+  "timestamp": "2026-03-10T12:00:00Z",
+  "status": 404,
+  "error": "Not Found",
+  "message": "Tour not found with id: 123",
+  "path": "/api/tours/123"
+}
+```
+
+## HTTP Status Codes
+
+The API uses standard HTTP status codes:
+
+| Status Code | Description |
+|-------------|-------------|
+| `200 OK` | Successful GET, PUT requests |
+| `201 Created` | Successful POST request creating a new resource |
+| `204 No Content` | Successful DELETE request or operation with no response body |
+| `400 Bad Request` | Invalid request format or parameters |
+| `404 Not Found` | Requested resource does not exist |
+| `500 Internal Server Error` | Server error occurred |
+
+## Core API Resources
+
+The Kin Conecta API is organized around the following core resources:
+
+### Users & Authentication
+
+<Card title="Users" icon="user" href="/api/authentication">
+  User registration, authentication, and profile management
+</Card>
+
+**Endpoints:**
+- `POST /kinconecta/api/user/login` - User authentication
+- `POST /kinconecta/api/user` - Create new user
+- `GET /kinconecta/api/user` - List all users
+- `GET /kinconecta/api/user/{fullName}_{userId}` - Get user by ID
+- `PUT /kinconecta/api/user/{fullName}_{userId}` - Update user
+- `DELETE /kinconecta/api/user/{fullName}_{userId}` - Delete user
+
+### Tours
+
+<Card title="Tours" icon="map" href="/api/tours">
+  Tour creation, management, and booking operations
+</Card>
+
+**Endpoints:**
+- `GET /api/tours` - List all tours
+- `GET /api/tours/{tourId}` - Get tour details
+- `POST /api/tours` - Create new tour
+- `PUT /api/tours/{tourId}` - Update tour
+- `DELETE /api/tours/{tourId}` - Delete tour
+- `POST /api/tours/{tourId}-add-destination` - Add destination to tour
+
+### Bookings
+
+**Endpoints:**
+- `GET /kinconecta/api/tours/trip-booking` - List all bookings
+- `GET /kinconecta/api/tours/trip-booking/{tripId}` - Get booking details
+- `POST /kinconecta/api/tours/trip-booking` - Create new booking
+- `PUT /kinconecta/api/tours/trip-booking/{tripId}` - Update booking
+- `DELETE /kinconecta/api/tours/trip-booking/{tripId}` - Cancel booking
+
+### Guide Profiles
+
+<Card title="Guide Profiles" icon="id-card" href="/api/guides">
+  Guide profile management, certifications, and availability
+</Card>
+
+**Endpoints:**
+- `GET /api/guide_profiles` - List all guide profiles
+- `GET /api/guide_profiles/{id}` - Get guide profile
+- `POST /api/guide_profiles` - Create guide profile
+- `PUT /api/guide_profiles/{id}` - Update guide profile
+- `DELETE /api/guide_profiles/{id}` - Delete guide profile
+
+### Tourist Profiles
+
+**Endpoints:**
+- `GET /api/tourists/{userId}` - Get tourist profile
+- `PATCH /api/tourists/{userId}` - Update tourist profile
+- `GET /api/tourists/{touristId}/favorites` - Get favorite guides
+- `POST /api/tourists/{touristId}/favorites/{guideId}` - Add favorite guide
+- `DELETE /api/tourists/{touristId}/favorites/{guideId}` - Remove favorite guide
+
+### Reviews
+
+**Endpoints:**
+- `GET /api/reviews` - List all reviews
+- `GET /api/reviews/{id}` - Get review details
+- `POST /api/reviews` - Create review
+- `PUT /api/reviews/{id}` - Update review
+- `DELETE /api/reviews/{id}` - Delete review
+
+### Matching
+
+<Card title="Matching Algorithm" icon="brain" href="/api/matching">
+  AI-powered matching between tourists and guides
+</Card>
+
+**Endpoints:**
+- `GET /api/matching/tourist/{touristUserId}/guides` - Get recommended guides for tourist
+- `GET /api/matching/guide/{guideUserId}/tourists` - Get recommended tourists for guide
+
+## Pagination
+
+Some endpoints support pagination using query parameters:
+
+<ParamField query="limit" type="integer" default="20">
+  Maximum number of results to return
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of results to skip
+</ParamField>
+
+### Example
+
+```bash
+curl "http://localhost:8080/api/matching/tourist/1/guides?limit=10&offset=0"
+```
+
+## CORS Configuration
+
+The API is configured to accept requests from any origin with the following methods:
+
+- `GET`
+- `POST`
+- `PUT`
+- `DELETE`
+- `OPTIONS`
+
+<Warning>
+  In production, configure CORS to only allow requests from trusted domains for security.
+</Warning>
+
+## Data Types
+
+### Common Field Types
+
+<ResponseField name="id" type="Long">
+  Unique identifier (auto-generated)
+</ResponseField>
+
+<ResponseField name="createdAt" type="Date">
+  ISO 8601 timestamp of creation
+</ResponseField>
+
+<ResponseField name="updatedAt" type="Date">
+  ISO 8601 timestamp of last update
+</ResponseField>
+
+### User Roles
+
+```java
+enum UserRole {
+  TOURIST,
+  GUIDE,
+  ADMIN
+}
+```
+
+### Account Status
+
+```java
+enum AccountStatus {
+  ACTIVE,
+  SUSPENDED,
+  PENDING_VERIFICATION,
+  DEACTIVATED
+}
+```
+
+### Language Codes
+
+```java
+enum Language {
+  EN, // English
+  ES, // Spanish
+  FR, // French
+  DE, // German
+  IT, // Italian
+  PT, // Portuguese
+  // Additional languages...
+}
+```
+
+## Rate Limiting
+
+<Note>
+  Rate limiting is not currently implemented but should be added before production deployment.
+</Note>
+
+Recommended rate limits:
+- **Authentication endpoints**: 5 requests per minute per IP
+- **Read operations**: 100 requests per minute per user
+- **Write operations**: 30 requests per minute per user
+
+## Error Handling
+
+The API follows Spring Boot's standard error response format:
+
+<ResponseField name="timestamp" type="string">
+  ISO 8601 timestamp when the error occurred
+</ResponseField>
+
+<ResponseField name="status" type="integer">
+  HTTP status code
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Error type description
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Detailed error message
+</ResponseField>
+
+<ResponseField name="path" type="string">
+  API endpoint path where the error occurred
+</ResponseField>
+
+## Database Configuration
+
+The API connects to MySQL database:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/kinConecta
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=none
+```
+
+<Warning>
+  Ensure database credentials are stored securely using environment variables, not in application.properties.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+
+<Card title="Authentication" icon="lock" href="/api/authentication">
+  Learn how to authenticate users and manage sessions
+</Card>
+
+<Card title="Tours API" icon="map" href="/api/tours">
+  Explore tour creation and management endpoints
+</Card>
+
+<Card title="Matching Algorithm" icon="brain" href="/api/matching">
+  Understand the guide-tourist matching system
+</Card>
+
+<Card title="WebSocket Support" icon="messages" href="/api/messaging">
+  Real-time messaging implementation
+</Card>
+
+</CardGroup>

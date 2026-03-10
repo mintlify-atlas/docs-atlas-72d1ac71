@@ -1,0 +1,254 @@
+---
+title: 'Matching Algorithm'
+description: 'Intelligent compatibility system connecting tourists with ideal local guides'
+icon: 'users-between-lines'
+---
+
+# Matching Algorithm
+
+Kin Conecta's matching algorithm is the core system that connects tourists with compatible local guides based on a comprehensive compatibility analysis. The system calculates match scores from 0 to 100, analyzing multiple dimensions of travel preferences and guide expertise.
+
+<Note>
+  The matching algorithm is based on a proprietary study conducted by the Bugbusters team analyzing compatibility factors including experience expectations, pace, interests, and logistics.
+</Note>
+
+## How It Works
+
+The matching system evaluates candidate profiles and generates recommendations sorted by compatibility score.
+
+<Steps>
+  <Step title="Profile Analysis">
+    The system analyzes the tourist's or guide's profile, extracting key preferences including languages, interests, travel style, group preferences, transport options, and accessibility needs.
+  </Step>
+  
+  <Step title="Candidate Evaluation">
+    For each potential match, the algorithm calculates a compatibility score by comparing profile attributes across multiple weighted categories.
+  </Step>
+  
+  <Step title="Score Calculation">
+    Points are awarded based on matches in different categories, with each category contributing to a maximum score of 100 points.
+  </Step>
+  
+  <Step title="Results Ranking">
+    Candidates are sorted by score (descending), then by number of matched fields, ensuring the best matches appear first.
+  </Step>
+</Steps>
+
+## Scoring Categories
+
+The algorithm evaluates compatibility across these weighted categories:
+
+<CardGroup cols={2}>
+  <Card title="Languages" icon="language">
+    **25 points maximum**
+    
+    Matching spoken languages between tourist and guide. Essential for effective communication during tours.
+  </Card>
+  
+  <Card title="Interests & Expertise" icon="compass">
+    **20 points maximum**
+    
+    Alignment between tourist interests and guide expertise areas (culture, gastronomy, nature, adventure, etc.).
+  </Card>
+  
+  <Card title="Pace & Intensity" icon="gauge-high">
+    **15 points maximum**
+    
+    Matching tour intensity and activity levels (relaxed, moderate, high-energy).
+  </Card>
+  
+  <Card title="Group Preference" icon="user-group">
+    **10 points maximum**
+    
+    Compatibility in preferred group sizes (solo, couple, small groups, large groups).
+  </Card>
+  
+  <Card title="Transport" icon="car">
+    **8 points maximum**
+    
+    Matching transport preferences and offerings (walking, metro, car, etc.).
+  </Card>
+  
+  <Card title="Travel Style" icon="palette">
+    **8 points maximum**
+    
+    Alignment of guide style with tourist travel preferences (cultural, gastronomic, adventure, etc.).
+  </Card>
+  
+  <Card title="Photo Preferences" icon="camera">
+    **6 points maximum**
+    
+    Matching photography styles and preferences during tours.
+  </Card>
+  
+  <Card title="Accessibility" icon="universal-access">
+    **6 points maximum**
+    
+    Compatibility of accessibility needs with guide adaptations and accommodations.
+  </Card>
+  
+  <Card title="Planning Level" icon="list-check">
+    **2 points maximum**
+    
+    Matching planning and logistics preferences.
+  </Card>
+  
+  <Card title="Additional Notes Bonus" icon="star">
+    **0-2 points**
+    
+    Bonus points for keyword matches in additional notes (safe keywords only).
+  </Card>
+</CardGroup>
+
+## API Endpoints
+
+The matching service exposes two primary endpoints:
+
+### Get Recommended Guides for Tourist
+
+```bash
+GET /api/matching/tourist/{touristUserId}/guides?limit=10&offset=0
+```
+
+Returns a paginated list of compatible guides for a specific tourist.
+
+### Get Recommended Tourists for Guide
+
+```bash
+GET /api/matching/guide/{guideUserId}/tourists?limit=10&offset=0
+```
+
+Returns a paginated list of compatible tourists for a specific guide.
+
+## Response Structure
+
+The matching API returns detailed compatibility information:
+
+```json
+{
+  "results": [
+    {
+      "candidateUserId": 21,
+      "score": 67.5,
+      "matchedFields": [
+        {
+          "field": "Idiomas",
+          "evidence": "español, english",
+          "points": 16.67
+        },
+        {
+          "field": "Intereses/Experiencia",
+          "evidence": "cultura, gastronomía",
+          "points": 10.0
+        }
+      ],
+      "profilePreview": {
+        "fullName": "Ana Torres",
+        "avatarUrl": "https://...",
+        "coverUrl": "https://...",
+        "locationLabel": "CDMX Centro",
+        "rating": 4.8,
+        "reviewsCount": 24
+      }
+    }
+  ],
+  "totalCandidates": 54,
+  "limit": 10,
+  "offset": 0
+}
+```
+
+### Response Fields
+
+<Accordion title="candidateUserId">
+  The unique user ID of the recommended guide or tourist.
+</Accordion>
+
+<Accordion title="score">
+  Compatibility score from 0-100, calculated based on profile matching across all categories.
+</Accordion>
+
+<Accordion title="matchedFields">
+  Array of compatibility factors that contributed points, including:
+  - `field`: Category name (e.g., "Idiomas", "Intereses")
+  - `evidence`: Specific matched values
+  - `points`: Points contributed by this category
+</Accordion>
+
+<Accordion title="profilePreview">
+  Quick profile information for display in UI:
+  - `fullName`: User's full name
+  - `avatarUrl`: Profile picture URL
+  - `coverUrl`: Cover image URL
+  - `locationLabel`: Location description
+  - `rating`: Average rating (guides only)
+  - `reviewsCount`: Number of reviews (guides only)
+</Accordion>
+
+<Accordion title="totalCandidates">
+  Total number of matching candidates available (for pagination).
+</Accordion>
+
+## Implementation Details
+
+The matching system is implemented in the `MatchingService` class located at:
+
+```
+socialNetwork/src/main/java/org/generation/socialNetwork/matching/service/MatchingService.java
+```
+
+### Key Features
+
+<CardGroup cols={2}>
+  <Card title="Pagination Support" icon="table">
+    Results are paginated with configurable limit (default: 20, max: 100) and offset parameters.
+  </Card>
+  
+  <Card title="Bi-directional Matching" icon="arrows-left-right">
+    System supports both tourist-to-guide and guide-to-tourist recommendations.
+  </Card>
+  
+  <Card title="Self-Exclusion" icon="user-slash">
+    Automatically filters out the requesting user from their own recommendations.
+  </Card>
+  
+  <Card title="Active Profiles Only" icon="circle-check">
+    Only matches active, complete profiles for quality recommendations.
+  </Card>
+</CardGroup>
+
+<Tip>
+  The scoring engine uses a `MatchingScoringEngine` component that can be customized or extended to adjust compatibility weights based on real-world usage data.
+</Tip>
+
+## User Experience
+
+From a user perspective, the matching algorithm enables:
+
+1. **Personalized Recommendations**: Users see potential matches ranked by compatibility
+2. **Transparency**: Each recommendation shows which factors contributed to the match
+3. **Discovery**: Users can explore diverse profiles while prioritizing best matches
+4. **Efficiency**: Reduces time spent searching by surfacing most compatible profiles first
+
+<Warning>
+  The matching algorithm requires complete profiles to work effectively. Users with incomplete profiles may receive fewer or lower-quality recommendations.
+</Warning>
+
+## Future Enhancements
+
+Planned improvements to the matching system include:
+
+- Machine learning integration to improve score accuracy based on successful matches
+- Location-based distance scoring
+- Availability and scheduling compatibility
+- Price range matching
+- Historical interaction patterns
+- User feedback integration to refine recommendations
+
+---
+
+<Card title="Related Documentation" icon="book">
+  - [Search & Filters](/features/search-filters)
+  - [Profile Management](/api/profiles/overview)
+  - [Matching API Reference](/api-reference/matching/get-guides)
+</Card>

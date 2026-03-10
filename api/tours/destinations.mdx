@@ -1,0 +1,311 @@
+---
+title: 'Destinations'
+description: 'API endpoints for managing travel destinations in Kin Conecta'
+---
+
+## Base URL
+
+```
+http://localhost:8080/kinconecta/api/tours/destinations
+```
+
+## Get All Destinations
+
+<ParamField path="GET /kinconecta/api/tours/destinations" type="endpoint">
+  Retrieve a list of all destinations in the platform.
+</ParamField>
+
+### Response
+
+<ResponseField name="destinations" type="array">
+  Array of destination objects
+  
+  <Expandable title="Destination Object">
+    <ResponseField name="destinationId" type="long">
+      Unique identifier for the destination
+    </ResponseField>
+    
+    <ResponseField name="city" type="string" required>
+      City name
+    </ResponseField>
+    
+    <ResponseField name="country" type="string" required>
+      Country name
+    </ResponseField>
+    
+    <ResponseField name="description" type="string" required>
+      Description of the destination
+    </ResponseField>
+    
+    <ResponseField name="favorite" type="boolean" required>
+      Whether this destination is marked as favorite
+    </ResponseField>
+    
+    <ResponseField name="tourDestinations" type="array">
+      List of associated tour-destination relationships
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/tours/destinations
+```
+
+```json Response
+[
+  {
+    "destinationId": 1,
+    "city": "Paris",
+    "country": "France",
+    "description": "The City of Light, known for its art, fashion, and culture",
+    "favorite": true,
+    "tourDestinations": []
+  },
+  {
+    "destinationId": 2,
+    "city": "Barcelona",
+    "country": "Spain",
+    "description": "Vibrant coastal city famous for Gaudí architecture and beaches",
+    "favorite": false,
+    "tourDestinations": []
+  }
+]
+```
+</CodeGroup>
+
+---
+
+## Get Destination by ID
+
+<ParamField path="GET /kinconecta/api/tours/destinations/{destinationId}" type="endpoint">
+  Retrieve details of a specific destination by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="destinationId" type="long" required>
+  The unique identifier of the destination
+</ParamField>
+
+### Response
+
+Returns a single destination object with the same structure as described in Get All Destinations.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/tours/destinations/1
+```
+
+```json Response
+{
+  "destinationId": 1,
+  "city": "Paris",
+  "country": "France",
+  "description": "The City of Light, known for its art, fashion, and culture",
+  "favorite": true,
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Create Destination
+
+<ParamField path="POST /kinconecta/api/tours/destinations" type="endpoint">
+  Create a new destination in the system.
+</ParamField>
+
+### Request Body
+
+<ParamField body="city" type="string" required>
+  City name
+</ParamField>
+
+<ParamField body="country" type="string" required>
+  Country name
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Description of the destination
+</ParamField>
+
+<ParamField body="favorite" type="boolean" required>
+  Whether this destination should be marked as favorite
+</ParamField>
+
+### Response
+
+Returns the created destination object including the generated `destinationId`.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/tours/destinations \
+  -H "Content-Type: application/json" \
+  -d '{
+    "city": "Tokyo",
+    "country": "Japan",
+    "description": "A bustling metropolis blending traditional and modern culture",
+    "favorite": true
+  }'
+```
+
+```json Response
+{
+  "destinationId": 3,
+  "city": "Tokyo",
+  "country": "Japan",
+  "description": "A bustling metropolis blending traditional and modern culture",
+  "favorite": true,
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Update Destination
+
+<ParamField path="PUT /kinconecta/api/tours/destinations/{destinationId}" type="endpoint">
+  Update an existing destination by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="destinationId" type="long" required>
+  The unique identifier of the destination to update
+</ParamField>
+
+### Request Body
+
+Accepts the same fields as Create Destination. All fields are optional - only include fields you want to update.
+
+<ParamField body="city" type="string">
+  City name
+</ParamField>
+
+<ParamField body="country" type="string">
+  Country name
+</ParamField>
+
+<ParamField body="description" type="string">
+  Description of the destination
+</ParamField>
+
+<ParamField body="favorite" type="boolean">
+  Whether this destination should be marked as favorite
+</ParamField>
+
+### Response
+
+Returns the updated destination object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/kinconecta/api/tours/destinations/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "The City of Light, renowned for the Eiffel Tower, Louvre Museum, and exquisite cuisine",
+    "favorite": true
+  }'
+```
+
+```json Response
+{
+  "destinationId": 1,
+  "city": "Paris",
+  "country": "France",
+  "description": "The City of Light, renowned for the Eiffel Tower, Louvre Museum, and exquisite cuisine",
+  "favorite": true,
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Delete Destination
+
+<ParamField path="DELETE /kinconecta/api/tours/destinations/{destinationId}" type="endpoint">
+  Delete a destination by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="destinationId" type="long" required>
+  The unique identifier of the destination to delete
+</ParamField>
+
+### Response
+
+Returns the deleted destination object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/kinconecta/api/tours/destinations/1
+```
+
+```json Response
+{
+  "destinationId": 1,
+  "city": "Paris",
+  "country": "France",
+  "description": "The City of Light, known for its art, fashion, and culture",
+  "favorite": true,
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Add Tour to Destination
+
+<ParamField path="POST /kinconecta/api/tours/destinations/{destinationId}-add-tour" type="endpoint">
+  Associate a tour with a destination.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="destinationId" type="long" required>
+  The unique identifier of the destination
+</ParamField>
+
+### Response
+
+Returns the updated destination object with the new tour association.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/tours/destinations/1-add-tour
+```
+
+```json Response
+{
+  "destinationId": 1,
+  "city": "Paris",
+  "country": "France",
+  "description": "The City of Light, known for its art, fashion, and culture",
+  "favorite": true,
+  "tourDestinations": [
+    {
+      "tourId": 10,
+      "destinationId": 1
+    }
+  ]
+}
+```
+</CodeGroup>

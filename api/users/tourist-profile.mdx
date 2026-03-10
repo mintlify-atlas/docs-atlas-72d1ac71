@@ -1,0 +1,358 @@
+---
+title: Tourist Profile API
+description: Manage tourist profiles and favorite guides
+---
+
+## Overview
+
+The Tourist Profile API provides endpoints for managing tourist user profiles, including personal information, travel preferences, and favorite guides. All endpoints are prefixed with `/api/tourists`.
+
+## Profile Management
+
+### Get Tourist Profile
+
+Retrieve a tourist's complete profile information.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tourists/123
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tourists/123')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/tourists/{userId}`
+
+<ParamField path="userId" type="long" required>
+  Tourist user's unique identifier
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Tourist profile object
+  
+  <Expandable title="Tourist Profile Fields">
+    <ResponseField name="userId" type="long">
+      User's unique identifier
+    </ResponseField>
+    
+    <ResponseField name="location" type="string">
+      Tourist's current location or home city
+    </ResponseField>
+    
+    <ResponseField name="bio" type="string">
+      Personal biography or description
+    </ResponseField>
+    
+    <ResponseField name="memberSince" type="date">
+      Date when the user joined the platform
+    </ResponseField>
+    
+    <ResponseField name="badge" type="string">
+      Achievement badge or status level
+    </ResponseField>
+    
+    <ResponseField name="travelStyle" type="string">
+      Preferred travel style (e.g., "Adventure", "Relaxation", "Cultural")
+    </ResponseField>
+    
+    <ResponseField name="tripStyle" type="string">
+      Type of trips preferred (e.g., "Weekend Getaways", "Long Vacations")
+    </ResponseField>
+    
+    <ResponseField name="paceAndCompany" type="string">
+      Preferred pace and company for travel
+    </ResponseField>
+    
+    <ResponseField name="activityLevel" type="string">
+      Physical activity level preference (e.g., "Low", "Moderate", "High")
+    </ResponseField>
+    
+    <ResponseField name="groupPreference" type="string">
+      Group size preference (e.g., "Solo", "Small Group", "Large Group")
+    </ResponseField>
+    
+    <ResponseField name="dietaryPreferences" type="string">
+      Dietary restrictions or preferences
+    </ResponseField>
+    
+    <ResponseField name="planningLevel" type="string">
+      Level of trip planning preferred (e.g., "Structured", "Flexible")
+    </ResponseField>
+    
+    <ResponseField name="amenities" type="string">
+      Preferred amenities and facilities
+    </ResponseField>
+    
+    <ResponseField name="transport" type="string">
+      Transportation preferences
+    </ResponseField>
+    
+    <ResponseField name="photoPreference" type="string">
+      Photography preferences and interests
+    </ResponseField>
+    
+    <ResponseField name="accessibility" type="string">
+      Accessibility needs or requirements
+    </ResponseField>
+    
+    <ResponseField name="additionalNotes" type="string">
+      Any additional notes or special requests
+    </ResponseField>
+    
+    <ResponseField name="avatarUrl" type="string">
+      URL to the user's avatar image
+    </ResponseField>
+    
+    <ResponseField name="coverUrl" type="string">
+      URL to the profile cover image
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="datetime">
+      Last profile update timestamp
+    </ResponseField>
+    
+    <ResponseField name="languages" type="array">
+      Set of spoken languages
+    </ResponseField>
+    
+    <ResponseField name="interests" type="array">
+      Set of travel interests and hobbies
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+### Update Tourist Profile
+
+Update a tourist's profile information. This endpoint uses PATCH, so only the fields you include will be updated.
+
+<CodeGroup>
+```bash cURL
+curl -X PATCH http://localhost:8080/api/tourists/123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "location": "San Francisco, CA",
+    "bio": "Adventure seeker and food enthusiast",
+    "travelStyle": "Adventure",
+    "activityLevel": "High",
+    "groupPreference": "Small Group",
+    "languages": ["English", "Spanish"],
+    "interests": ["Hiking", "Photography", "Local Cuisine"]
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tourists/123', {
+  method: 'PATCH',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    location: 'San Francisco, CA',
+    bio: 'Adventure seeker and food enthusiast',
+    travelStyle: 'Adventure',
+    activityLevel: 'High',
+    groupPreference: 'Small Group',
+    languages: ['English', 'Spanish'],
+    interests: ['Hiking', 'Photography', 'Local Cuisine']
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `PATCH /api/tourists/{userId}`
+
+<ParamField path="userId" type="long" required>
+  Tourist user's unique identifier
+</ParamField>
+
+<ParamField body="location" type="string">
+  Tourist's current location or home city
+</ParamField>
+
+<ParamField body="bio" type="string">
+  Personal biography or description
+</ParamField>
+
+<ParamField body="badge" type="string">
+  Achievement badge or status level
+</ParamField>
+
+<ParamField body="travelStyle" type="string">
+  Preferred travel style
+</ParamField>
+
+<ParamField body="tripStyle" type="string">
+  Type of trips preferred
+</ParamField>
+
+<ParamField body="paceAndCompany" type="string">
+  Preferred pace and company
+</ParamField>
+
+<ParamField body="activityLevel" type="string">
+  Physical activity level preference
+</ParamField>
+
+<ParamField body="groupPreference" type="string">
+  Group size preference
+</ParamField>
+
+<ParamField body="dietaryPreferences" type="string">
+  Dietary restrictions or preferences
+</ParamField>
+
+<ParamField body="planningLevel" type="string">
+  Level of trip planning preferred
+</ParamField>
+
+<ParamField body="amenities" type="string">
+  Preferred amenities and facilities
+</ParamField>
+
+<ParamField body="transport" type="string">
+  Transportation preferences
+</ParamField>
+
+<ParamField body="photoPreference" type="string">
+  Photography preferences
+</ParamField>
+
+<ParamField body="accessibility" type="string">
+  Accessibility needs or requirements
+</ParamField>
+
+<ParamField body="additionalNotes" type="string">
+  Additional notes or special requests
+</ParamField>
+
+<ParamField body="avatarUrl" type="string">
+  URL to the user's avatar image
+</ParamField>
+
+<ParamField body="coverUrl" type="string">
+  URL to the profile cover image
+</ParamField>
+
+<ParamField body="languages" type="array">
+  Set of spoken languages
+</ParamField>
+
+<ParamField body="interests" type="array">
+  Set of travel interests and hobbies
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Updated tourist profile object
+</ResponseField>
+
+---
+
+## Favorite Guides
+
+### Get Favorite Guides
+
+Retrieve the list of guide IDs that a tourist has marked as favorites.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tourists/123/favorites
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tourists/123/favorites')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/tourists/{touristId}/favorites`
+
+<ParamField path="touristId" type="long" required>
+  Tourist user's unique identifier
+</ParamField>
+
+<ResponseField name="response" type="array">
+  Array of guide user IDs that are marked as favorites
+</ResponseField>
+
+---
+
+### Add Favorite Guide
+
+Add a guide to the tourist's list of favorites.
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/api/tourists/123/favorites/456
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tourists/123/favorites/456', {
+  method: 'POST'
+})
+.then(response => {
+  if (response.status === 204) {
+    console.log('Guide added to favorites successfully');
+  }
+});
+```
+</CodeGroup>
+
+**Endpoint:** `POST /api/tourists/{touristId}/favorites/{guideId}`
+
+<ParamField path="touristId" type="long" required>
+  Tourist user's unique identifier
+</ParamField>
+
+<ParamField path="guideId" type="long" required>
+  Guide user's unique identifier to add as favorite
+</ParamField>
+
+<ResponseField name="response" type="void">
+  Returns HTTP 204 No Content on success
+</ResponseField>
+
+---
+
+### Remove Favorite Guide
+
+Remove a guide from the tourist's list of favorites.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/api/tourists/123/favorites/456
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/tourists/123/favorites/456', {
+  method: 'DELETE'
+})
+.then(response => {
+  if (response.status === 204) {
+    console.log('Guide removed from favorites successfully');
+  }
+});
+```
+</CodeGroup>
+
+**Endpoint:** `DELETE /api/tourists/{touristId}/favorites/{guideId}`
+
+<ParamField path="touristId" type="long" required>
+  Tourist user's unique identifier
+</ParamField>
+
+<ParamField path="guideId" type="long" required>
+  Guide user's unique identifier to remove from favorites
+</ParamField>
+
+<ResponseField name="response" type="void">
+  Returns HTTP 204 No Content on success
+</ResponseField>

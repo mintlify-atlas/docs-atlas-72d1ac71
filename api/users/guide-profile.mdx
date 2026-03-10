@@ -1,0 +1,508 @@
+---
+title: Guide Profile API
+description: Manage guide profiles, rates, and professional information
+---
+
+## Overview
+
+The Guide Profile API provides endpoints for managing guide user profiles, including professional information, rates, specializations, and showcase posts. All endpoints are prefixed with `/api/guide_profiles`.
+
+## Profile Management
+
+### Create Guide Profile
+
+Create a new guide profile for a user.
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/api/guide_profiles \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": 123,
+    "summary": "Experienced local guide specializing in cultural tours",
+    "story": "I have been guiding tours in this beautiful city for over 10 years...",
+    "statusText": "Available for bookings",
+    "hourlyRate": 75.00,
+    "currency": "USD",
+    "ratingAvg": 4.8,
+    "reviewsCount": 127,
+    "locationLabel": "Mexico City, Mexico",
+    "experienceLevel": "Expert",
+    "style": "Cultural and Historical",
+    "groupSize": "Small groups (2-8 people)",
+    "tourIntensity": "Moderate",
+    "transportOffered": "Walking, Private Vehicle",
+    "photoStyle": "Professional photography included",
+    "additionalNotes": "Flexible scheduling available",
+    "avatarUrl": "https://example.com/avatar.jpg",
+    "coverUrl": "https://example.com/cover.jpg",
+    "postText": "Latest tour highlights!",
+    "postImageUrl": "https://example.com/post.jpg",
+    "postCaption": "Amazing day at the pyramids",
+    "postPublishedAt": "2024-03-10T14:00:00"
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/guide_profiles', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    userId: 123,
+    summary: 'Experienced local guide specializing in cultural tours',
+    story: 'I have been guiding tours in this beautiful city for over 10 years...',
+    statusText: 'Available for bookings',
+    hourlyRate: 75.00,
+    currency: 'USD',
+    ratingAvg: 4.8,
+    reviewsCount: 127,
+    locationLabel: 'Mexico City, Mexico',
+    experienceLevel: 'Expert',
+    style: 'Cultural and Historical',
+    groupSize: 'Small groups (2-8 people)',
+    tourIntensity: 'Moderate',
+    transportOffered: 'Walking, Private Vehicle',
+    photoStyle: 'Professional photography included',
+    additionalNotes: 'Flexible scheduling available',
+    avatarUrl: 'https://example.com/avatar.jpg',
+    coverUrl: 'https://example.com/cover.jpg',
+    postText: 'Latest tour highlights!',
+    postImageUrl: 'https://example.com/post.jpg',
+    postCaption: 'Amazing day at the pyramids',
+    postPublishedAt: '2024-03-10T14:00:00'
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `POST /api/guide_profiles`
+
+<ParamField body="userId" type="long" required>
+  User ID for the guide
+</ParamField>
+
+<ParamField body="summary" type="string">
+  Brief professional summary
+</ParamField>
+
+<ParamField body="story" type="string">
+  Detailed background story and experience
+</ParamField>
+
+<ParamField body="statusText" type="string">
+  Current availability status
+</ParamField>
+
+<ParamField body="hourlyRate" type="decimal">
+  Hourly rate for guide services
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Currency code (e.g., USD, MXN, EUR)
+</ParamField>
+
+<ParamField body="ratingAvg" type="decimal">
+  Average rating (0.0 to 5.0)
+</ParamField>
+
+<ParamField body="reviewsCount" type="integer">
+  Total number of reviews received
+</ParamField>
+
+<ParamField body="locationLabel" type="string">
+  Primary operating location
+</ParamField>
+
+<ParamField body="experienceLevel" type="string">
+  Experience level (e.g., "Beginner", "Intermediate", "Expert")
+</ParamField>
+
+<ParamField body="style" type="string">
+  Guiding style or specialization
+</ParamField>
+
+<ParamField body="groupSize" type="string">
+  Preferred group size range
+</ParamField>
+
+<ParamField body="tourIntensity" type="string">
+  Typical tour intensity level
+</ParamField>
+
+<ParamField body="transportOffered" type="string">
+  Available transportation options
+</ParamField>
+
+<ParamField body="photoStyle" type="string">
+  Photography services offered
+</ParamField>
+
+<ParamField body="additionalNotes" type="string">
+  Any additional information or special offerings
+</ParamField>
+
+<ParamField body="avatarUrl" type="string">
+  URL to profile avatar image
+</ParamField>
+
+<ParamField body="coverUrl" type="string">
+  URL to profile cover image
+</ParamField>
+
+<ParamField body="postText" type="string">
+  Featured post text
+</ParamField>
+
+<ParamField body="postImageUrl" type="string">
+  URL to featured post image
+</ParamField>
+
+<ParamField body="postCaption" type="string">
+  Caption for featured post
+</ParamField>
+
+<ParamField body="postPublishedAt" type="datetime">
+  Publication date of featured post
+</ParamField>
+
+<ParamField body="updatedAt" type="datetime">
+  Profile last update timestamp
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Created guide profile object with HTTP 201 status
+  
+  <Expandable title="Guide Profile Response Fields">
+    <ResponseField name="userId" type="long">
+      User ID associated with the profile
+    </ResponseField>
+    
+    <ResponseField name="summary" type="string">
+      Brief professional summary
+    </ResponseField>
+    
+    <ResponseField name="story" type="string">
+      Detailed background story
+    </ResponseField>
+    
+    <ResponseField name="statusText" type="string">
+      Current availability status
+    </ResponseField>
+    
+    <ResponseField name="hourlyRate" type="decimal">
+      Hourly rate for services
+    </ResponseField>
+    
+    <ResponseField name="currency" type="string">
+      Currency code
+    </ResponseField>
+    
+    <ResponseField name="ratingAvg" type="decimal">
+      Average rating score
+    </ResponseField>
+    
+    <ResponseField name="reviewsCount" type="integer">
+      Total review count
+    </ResponseField>
+    
+    <ResponseField name="locationLabel" type="string">
+      Primary location
+    </ResponseField>
+    
+    <ResponseField name="experienceLevel" type="string">
+      Experience level
+    </ResponseField>
+    
+    <ResponseField name="style" type="string">
+      Guiding style
+    </ResponseField>
+    
+    <ResponseField name="groupSize" type="string">
+      Preferred group size
+    </ResponseField>
+    
+    <ResponseField name="tourIntensity" type="string">
+      Tour intensity level
+    </ResponseField>
+    
+    <ResponseField name="transportOffered" type="string">
+      Transportation options
+    </ResponseField>
+    
+    <ResponseField name="photoStyle" type="string">
+      Photography services
+    </ResponseField>
+    
+    <ResponseField name="additionalNotes" type="string">
+      Additional information
+    </ResponseField>
+    
+    <ResponseField name="avatarUrl" type="string">
+      Avatar image URL
+    </ResponseField>
+    
+    <ResponseField name="coverUrl" type="string">
+      Cover image URL
+    </ResponseField>
+    
+    <ResponseField name="postText" type="string">
+      Featured post text
+    </ResponseField>
+    
+    <ResponseField name="postImageUrl" type="string">
+      Post image URL
+    </ResponseField>
+    
+    <ResponseField name="postCaption" type="string">
+      Post caption
+    </ResponseField>
+    
+    <ResponseField name="postPublishedAt" type="datetime">
+      Post publication date
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="datetime">
+      Last update timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+### Get All Guide Profiles
+
+Retrieve a list of all registered guide profiles.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/guide_profiles
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/guide_profiles')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/guide_profiles`
+
+<ResponseField name="response" type="array">
+  Array of guide profile objects (see structure in Create Guide Profile response)
+</ResponseField>
+
+---
+
+### Get Guide Profile by ID
+
+Retrieve a specific guide profile by ID.
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/guide_profiles/123
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/guide_profiles/123')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/guide_profiles/{id}`
+
+<ParamField path="id" type="long" required>
+  Guide profile unique identifier
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Guide profile object (see structure in Create Guide Profile response)
+</ResponseField>
+
+---
+
+### Update Guide Profile
+
+Update an existing guide profile. Only provided fields will be updated.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/api/guide_profiles/123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "summary": "Updated professional summary",
+    "hourlyRate": 85.00,
+    "statusText": "Booking available for summer season",
+    "ratingAvg": 4.9,
+    "reviewsCount": 150
+  }'
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/guide_profiles/123', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    summary: 'Updated professional summary',
+    hourlyRate: 85.00,
+    statusText: 'Booking available for summer season',
+    ratingAvg: 4.9,
+    reviewsCount: 150
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+</CodeGroup>
+
+**Endpoint:** `PUT /api/guide_profiles/{id}`
+
+<ParamField path="id" type="long" required>
+  Guide profile unique identifier
+</ParamField>
+
+<ParamField body="summary" type="string">
+  Brief professional summary
+</ParamField>
+
+<ParamField body="story" type="string">
+  Detailed background story
+</ParamField>
+
+<ParamField body="statusText" type="string">
+  Current availability status
+</ParamField>
+
+<ParamField body="hourlyRate" type="decimal">
+  Hourly rate for services
+</ParamField>
+
+<ParamField body="currency" type="string">
+  Currency code
+</ParamField>
+
+<ParamField body="ratingAvg" type="decimal">
+  Average rating
+</ParamField>
+
+<ParamField body="reviewsCount" type="integer">
+  Total review count
+</ParamField>
+
+<ParamField body="locationLabel" type="string">
+  Primary location
+</ParamField>
+
+<ParamField body="experienceLevel" type="string">
+  Experience level
+</ParamField>
+
+<ParamField body="style" type="string">
+  Guiding style
+</ParamField>
+
+<ParamField body="groupSize" type="string">
+  Preferred group size
+</ParamField>
+
+<ParamField body="tourIntensity" type="string">
+  Tour intensity level
+</ParamField>
+
+<ParamField body="transportOffered" type="string">
+  Transportation options
+</ParamField>
+
+<ParamField body="photoStyle" type="string">
+  Photography services
+</ParamField>
+
+<ParamField body="additionalNotes" type="string">
+  Additional information
+</ParamField>
+
+<ParamField body="avatarUrl" type="string">
+  Avatar image URL
+</ParamField>
+
+<ParamField body="coverUrl" type="string">
+  Cover image URL
+</ParamField>
+
+<ParamField body="postText" type="string">
+  Featured post text
+</ParamField>
+
+<ParamField body="postImageUrl" type="string">
+  Post image URL
+</ParamField>
+
+<ParamField body="postCaption" type="string">
+  Post caption
+</ParamField>
+
+<ParamField body="postPublishedAt" type="datetime">
+  Post publication date
+</ParamField>
+
+<ParamField body="updatedAt" type="datetime">
+  Last update timestamp
+</ParamField>
+
+<ResponseField name="response" type="object">
+  Updated guide profile object
+</ResponseField>
+
+---
+
+### Delete Guide Profile
+
+Delete a guide profile from the system.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/api/guide_profiles/123
+```
+
+```javascript JavaScript
+fetch('http://localhost:8080/api/guide_profiles/123', {
+  method: 'DELETE'
+})
+.then(response => {
+  if (response.status === 204) {
+    console.log('Guide profile deleted successfully');
+  }
+});
+```
+</CodeGroup>
+
+**Endpoint:** `DELETE /api/guide_profiles/{id}`
+
+<ParamField path="id" type="long" required>
+  Guide profile unique identifier
+</ParamField>
+
+<ResponseField name="response" type="void">
+  Returns HTTP 204 No Content on success
+</ResponseField>
+
+---
+
+## Related Resources
+
+Guide profiles also have additional specialized endpoints for managing:
+
+- **Certifications**: Professional certifications and licenses (GuideProfileCertificationController)
+- **Expertise Areas**: Specialized knowledge areas (GuideProfileExpertiseController)
+- **Languages**: Spoken languages and proficiency levels (GuideProfileLanguageController)
+- **Locations**: Service areas and coverage zones (GuideLocationController)
+- **Adaptations**: Accessibility and special accommodations (GuideAdaptationController)
+- **Calendar Events**: Availability and booking calendar (GuideCalendarEventController)
+
+These endpoints follow similar RESTful patterns and will be documented in their respective sections.

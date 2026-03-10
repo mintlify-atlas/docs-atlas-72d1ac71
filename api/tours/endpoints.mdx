@@ -1,0 +1,448 @@
+---
+title: 'Tour Management'
+description: 'API endpoints for managing tours in the Kin Conecta platform'
+---
+
+## Base URL
+
+```
+http://localhost:8080/api/tours
+```
+
+## Get All Tours
+
+<ParamField path="GET /api/tours" type="endpoint">
+  Retrieve a list of all tours in the platform.
+</ParamField>
+
+### Response
+
+<ResponseField name="tours" type="array">
+  Array of tour objects
+  
+  <Expandable title="Tour Object">
+    <ResponseField name="tourId" type="long">
+      Unique identifier for the tour
+    </ResponseField>
+    
+    <ResponseField name="guideId" type="long">
+      ID of the guide leading the tour
+    </ResponseField>
+    
+    <ResponseField name="categoryId" type="integer">
+      ID of the tour category
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+      Tour title (max 180 characters)
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+      Detailed tour description
+    </ResponseField>
+    
+    <ResponseField name="price" type="decimal">
+      Tour price (precision 10, scale 2)
+    </ResponseField>
+    
+    <ResponseField name="currency" type="string">
+      Currency code (3 characters, e.g., USD, EUR)
+    </ResponseField>
+    
+    <ResponseField name="durationHours" type="decimal">
+      Tour duration in hours (precision 4, scale 1)
+    </ResponseField>
+    
+    <ResponseField name="maxGroupSize" type="short">
+      Maximum number of participants allowed
+    </ResponseField>
+    
+    <ResponseField name="meetingPoint" type="string">
+      Location where the tour starts (max 255 characters)
+    </ResponseField>
+    
+    <ResponseField name="status" type="enum">
+      Tour status: `draft`, `pending`, `active`, or `inactive`
+    </ResponseField>
+    
+    <ResponseField name="coverImage" type="string">
+      URL to the tour cover image (max 500 characters)
+    </ResponseField>
+    
+    <ResponseField name="imageClass" type="string">
+      CSS class for image styling (max 80 characters)
+    </ResponseField>
+    
+    <ResponseField name="ratingAvg" type="decimal">
+      Average rating (precision 3, scale 2)
+    </ResponseField>
+    
+    <ResponseField name="bookingsCount" type="integer">
+      Total number of bookings for this tour
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="datetime">
+      Timestamp when the tour was created
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="datetime">
+      Timestamp when the tour was last updated
+    </ResponseField>
+    
+    <ResponseField name="tourDestinations" type="array">
+      List of associated tour destinations
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tours
+```
+
+```json Response
+[
+  {
+    "tourId": 1,
+    "guideId": 10,
+    "categoryId": 2,
+    "title": "Historic City Walking Tour",
+    "description": "Explore the historic downtown area with an expert guide",
+    "price": 45.00,
+    "currency": "USD",
+    "durationHours": 3.0,
+    "maxGroupSize": 15,
+    "meetingPoint": "City Hall Plaza",
+    "status": "active",
+    "coverImage": "https://example.com/tours/city-tour.jpg",
+    "imageClass": "tour-cover-lg",
+    "ratingAvg": 4.75,
+    "bookingsCount": 128,
+    "createdAt": "2024-01-15T10:00:00",
+    "updatedAt": "2024-03-01T14:30:00",
+    "tourDestinations": []
+  }
+]
+```
+</CodeGroup>
+
+---
+
+## Get Tour by ID
+
+<ParamField path="GET /api/tours/{tourId}" type="endpoint">
+  Retrieve details of a specific tour by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tourId" type="long" required>
+  The unique identifier of the tour
+</ParamField>
+
+### Response
+
+Returns a single tour object with the same structure as described in Get All Tours.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tours/1
+```
+
+```json Response
+{
+  "tourId": 1,
+  "guideId": 10,
+  "categoryId": 2,
+  "title": "Historic City Walking Tour",
+  "description": "Explore the historic downtown area with an expert guide",
+  "price": 45.00,
+  "currency": "USD",
+  "durationHours": 3.0,
+  "maxGroupSize": 15,
+  "meetingPoint": "City Hall Plaza",
+  "status": "active",
+  "coverImage": "https://example.com/tours/city-tour.jpg",
+  "imageClass": "tour-cover-lg",
+  "ratingAvg": 4.75,
+  "bookingsCount": 128,
+  "createdAt": "2024-01-15T10:00:00",
+  "updatedAt": "2024-03-01T14:30:00",
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Create Tour
+
+<ParamField path="POST /api/tours" type="endpoint">
+  Create a new tour in the system.
+</ParamField>
+
+### Request Body
+
+<ParamField body="guideId" type="long" required>
+  ID of the guide leading the tour
+</ParamField>
+
+<ParamField body="categoryId" type="integer" required>
+  ID of the tour category
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Tour title (max 180 characters)
+</ParamField>
+
+<ParamField body="description" type="string" required>
+  Detailed tour description
+</ParamField>
+
+<ParamField body="price" type="decimal" required>
+  Tour price
+</ParamField>
+
+<ParamField body="currency" type="string" required>
+  Currency code (3 characters)
+</ParamField>
+
+<ParamField body="durationHours" type="decimal" required>
+  Tour duration in hours
+</ParamField>
+
+<ParamField body="maxGroupSize" type="short" required>
+  Maximum number of participants
+</ParamField>
+
+<ParamField body="meetingPoint" type="string" required>
+  Location where the tour starts
+</ParamField>
+
+<ParamField body="status" type="enum" required>
+  Tour status: `draft`, `pending`, `active`, or `inactive`
+</ParamField>
+
+<ParamField body="coverImage" type="string">
+  URL to the tour cover image
+</ParamField>
+
+<ParamField body="imageClass" type="string">
+  CSS class for image styling
+</ParamField>
+
+### Response
+
+Returns the created tour object including the generated `tourId` and timestamps.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/api/tours \
+  -H "Content-Type: application/json" \
+  -d '{
+    "guideId": 10,
+    "categoryId": 2,
+    "title": "Historic City Walking Tour",
+    "description": "Explore the historic downtown area with an expert guide",
+    "price": 45.00,
+    "currency": "USD",
+    "durationHours": 3.0,
+    "maxGroupSize": 15,
+    "meetingPoint": "City Hall Plaza",
+    "status": "active",
+    "coverImage": "https://example.com/tours/city-tour.jpg",
+    "imageClass": "tour-cover-lg"
+  }'
+```
+
+```json Response
+{
+  "tourId": 1,
+  "guideId": 10,
+  "categoryId": 2,
+  "title": "Historic City Walking Tour",
+  "description": "Explore the historic downtown area with an expert guide",
+  "price": 45.00,
+  "currency": "USD",
+  "durationHours": 3.0,
+  "maxGroupSize": 15,
+  "meetingPoint": "City Hall Plaza",
+  "status": "active",
+  "coverImage": "https://example.com/tours/city-tour.jpg",
+  "imageClass": "tour-cover-lg",
+  "ratingAvg": 0.00,
+  "bookingsCount": 0,
+  "createdAt": "2024-03-10T10:00:00",
+  "updatedAt": "2024-03-10T10:00:00",
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Update Tour
+
+<ParamField path="PUT /api/tours/{tourId}" type="endpoint">
+  Update an existing tour by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tourId" type="long" required>
+  The unique identifier of the tour to update
+</ParamField>
+
+### Request Body
+
+Accepts the same fields as Create Tour. All fields are optional - only include fields you want to update.
+
+### Response
+
+Returns the updated tour object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/api/tours/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Updated Historic City Walking Tour",
+    "price": 50.00,
+    "status": "active"
+  }'
+```
+
+```json Response
+{
+  "tourId": 1,
+  "guideId": 10,
+  "categoryId": 2,
+  "title": "Updated Historic City Walking Tour",
+  "description": "Explore the historic downtown area with an expert guide",
+  "price": 50.00,
+  "currency": "USD",
+  "durationHours": 3.0,
+  "maxGroupSize": 15,
+  "meetingPoint": "City Hall Plaza",
+  "status": "active",
+  "coverImage": "https://example.com/tours/city-tour.jpg",
+  "imageClass": "tour-cover-lg",
+  "ratingAvg": 4.75,
+  "bookingsCount": 128,
+  "createdAt": "2024-01-15T10:00:00",
+  "updatedAt": "2024-03-10T15:30:00",
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Delete Tour
+
+<ParamField path="DELETE /api/tours/{tourId}" type="endpoint">
+  Delete a tour by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tourId" type="long" required>
+  The unique identifier of the tour to delete
+</ParamField>
+
+### Response
+
+Returns the deleted tour object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/api/tours/1
+```
+
+```json Response
+{
+  "tourId": 1,
+  "guideId": 10,
+  "categoryId": 2,
+  "title": "Historic City Walking Tour",
+  "description": "Explore the historic downtown area with an expert guide",
+  "price": 45.00,
+  "currency": "USD",
+  "durationHours": 3.0,
+  "maxGroupSize": 15,
+  "meetingPoint": "City Hall Plaza",
+  "status": "active",
+  "coverImage": "https://example.com/tours/city-tour.jpg",
+  "imageClass": "tour-cover-lg",
+  "ratingAvg": 4.75,
+  "bookingsCount": 128,
+  "createdAt": "2024-01-15T10:00:00",
+  "updatedAt": "2024-03-01T14:30:00",
+  "tourDestinations": []
+}
+```
+</CodeGroup>
+
+---
+
+## Add Tour Destination
+
+<ParamField path="POST /api/tours/{tourId}-add-destination" type="endpoint">
+  Associate a destination with a tour.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tourId" type="long" required>
+  The unique identifier of the tour
+</ParamField>
+
+### Response
+
+Returns the updated tour object with the new destination association.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/api/tours/1-add-destination
+```
+
+```json Response
+{
+  "tourId": 1,
+  "guideId": 10,
+  "categoryId": 2,
+  "title": "Historic City Walking Tour",
+  "description": "Explore the historic downtown area with an expert guide",
+  "price": 45.00,
+  "currency": "USD",
+  "durationHours": 3.0,
+  "maxGroupSize": 15,
+  "meetingPoint": "City Hall Plaza",
+  "status": "active",
+  "coverImage": "https://example.com/tours/city-tour.jpg",
+  "imageClass": "tour-cover-lg",
+  "ratingAvg": 4.75,
+  "bookingsCount": 128,
+  "createdAt": "2024-01-15T10:00:00",
+  "updatedAt": "2024-03-10T16:00:00",
+  "tourDestinations": [
+    {
+      "tourId": 1,
+      "destinationId": 5
+    }
+  ]
+}
+```
+</CodeGroup>

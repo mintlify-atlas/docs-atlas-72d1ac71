@@ -1,0 +1,207 @@
+---
+title: 'Tour Categories'
+description: 'API endpoints for managing tour categories in Kin Conecta'
+---
+
+## Base URL
+
+```
+http://localhost:8080/api/tour-categories
+```
+
+## Get All Categories
+
+<ParamField path="GET /api/tour-categories" type="endpoint">
+  Retrieve a list of all tour categories in the platform.
+</ParamField>
+
+### Response
+
+<ResponseField name="categories" type="array">
+  Array of tour category objects
+  
+  <Expandable title="Tour Category Object">
+    <ResponseField name="categoryId" type="long">
+      Unique identifier for the category
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Category name
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tour-categories
+```
+
+```json Response
+[
+  {
+    "categoryId": 1,
+    "name": "Cultural & Historical"
+  },
+  {
+    "categoryId": 2,
+    "name": "Adventure & Outdoor"
+  },
+  {
+    "categoryId": 3,
+    "name": "Food & Wine"
+  },
+  {
+    "categoryId": 4,
+    "name": "Beach & Relaxation"
+  }
+]
+```
+</CodeGroup>
+
+---
+
+## Get Category by ID
+
+<ParamField path="GET /api/tour-categories/{categoryId}" type="endpoint">
+  Retrieve details of a specific tour category by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="categoryId" type="long" required>
+  The unique identifier of the category
+</ParamField>
+
+### Response
+
+Returns a single category object with the same structure as described in Get All Categories.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/api/tour-categories/1
+```
+
+```json Response
+{
+  "categoryId": 1,
+  "name": "Cultural & Historical"
+}
+```
+</CodeGroup>
+
+---
+
+## Create Category
+
+<ParamField path="POST /api/tour-categories" type="endpoint">
+  Create a new tour category in the system.
+</ParamField>
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Category name
+</ParamField>
+
+### Response
+
+Returns the created category object including the generated `categoryId`.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/api/tour-categories \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Eco Tourism"
+  }'
+```
+
+```json Response
+{
+  "categoryId": 5,
+  "name": "Eco Tourism"
+}
+```
+</CodeGroup>
+
+---
+
+## Update Category
+
+<ParamField path="PUT /api/tour-categories/{categoryId}" type="endpoint">
+  Update an existing tour category by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="categoryId" type="long" required>
+  The unique identifier of the category to update
+</ParamField>
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Updated category name
+</ParamField>
+
+### Response
+
+Returns the updated category object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/api/tour-categories/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Cultural & Heritage Tours"
+  }'
+```
+
+```json Response
+{
+  "categoryId": 1,
+  "name": "Cultural & Heritage Tours"
+}
+```
+</CodeGroup>
+
+---
+
+## Delete Category
+
+<ParamField path="DELETE /api/tour-categories/{categoryId}" type="endpoint">
+  Delete a tour category by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="categoryId" type="long" required>
+  The unique identifier of the category to delete
+</ParamField>
+
+### Response
+
+Returns the deleted category object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/api/tour-categories/5
+```
+
+```json Response
+{
+  "categoryId": 5,
+  "name": "Eco Tourism"
+}
+```
+</CodeGroup>

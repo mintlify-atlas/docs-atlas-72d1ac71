@@ -1,0 +1,294 @@
+---
+title: 'Messaging API'
+description: 'Real-time chat messaging endpoints for communication between tourists and guides'
+---
+
+## Overview
+
+The Messaging API enables direct communication between tourists and guides through threaded conversations. Messages are organized into chat threads for easy conversation management.
+
+## Send Message
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.kinconecta.com/messages" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "threadId": 123,
+    "senderUserId": 456,
+    "body": "Hello! I am interested in booking a tour to Sagrada Familia.",
+    "messageType": "TEXT"
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/messages', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    threadId: 123,
+    senderUserId: 456,
+    body: 'Hello! I am interested in booking a tour to Sagrada Familia.',
+    messageType: 'TEXT'
+  })
+});
+const message = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.kinconecta.com/messages',
+    headers={
+        'Authorization': 'Bearer YOUR_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'threadId': 123,
+        'senderUserId': 456,
+        'body': 'Hello! I am interested in booking a tour to Sagrada Familia.',
+        'messageType': 'TEXT'
+    }
+)
+message = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+POST /messages
+```
+
+### Request Body
+
+<ParamField body="threadId" type="Long" required>
+  The ID of the chat thread where this message belongs
+</ParamField>
+
+<ParamField body="senderUserId" type="Long" required>
+  The user ID of the message sender
+</ParamField>
+
+<ParamField body="body" type="String" required>
+  The content of the message (supports TEXT content)
+</ParamField>
+
+<ParamField body="messageType" type="MessageType" required>
+  Type of message being sent
+  
+  **Enum values:**
+  - `TEXT` - Regular text message
+  - `SYSTEM` - System-generated message (e.g., "Tour booked")
+  - `IMAGE` - Image attachment
+  - `FILE` - File attachment
+</ParamField>
+
+### Response
+
+<ResponseField name="messageId" type="Long">
+  Unique identifier for the created message
+</ResponseField>
+
+<ResponseField name="threadId" type="Long">
+  The chat thread ID this message belongs to
+</ResponseField>
+
+<ResponseField name="senderUserId" type="Long">
+  User ID of the sender
+</ResponseField>
+
+<ResponseField name="body" type="String">
+  The message content
+</ResponseField>
+
+<ResponseField name="messageType" type="MessageType">
+  Type of the message (TEXT, SYSTEM, IMAGE, FILE)
+</ResponseField>
+
+<ResponseField name="sentAt" type="LocalDateTime">
+  Timestamp when the message was sent (ISO 8601 format)
+</ResponseField>
+
+<ResponseField name="readAt" type="LocalDateTime">
+  Timestamp when the message was read (null if unread)
+</ResponseField>
+
+### Example Response
+
+```json
+{
+  "messageId": 7891,
+  "threadId": 123,
+  "senderUserId": 456,
+  "body": "Hello! I am interested in booking a tour to Sagrada Familia.",
+  "messageType": "TEXT",
+  "sentAt": "2026-03-10T14:23:45",
+  "readAt": null
+}
+```
+
+---
+
+## Get Messages by Thread
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/messages/thread/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const response = await fetch(
+  'https://api.kinconecta.com/messages/thread/123',
+  {
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer YOUR_TOKEN'
+    }
+  }
+);
+const messages = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.kinconecta.com/messages/thread/123',
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+messages = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+GET /messages/thread/{threadId}
+```
+
+### Path Parameters
+
+<ParamField path="threadId" type="Long" required>
+  The unique identifier of the chat thread to retrieve messages from
+</ParamField>
+
+### Response
+
+Returns an array of ChatMessage objects ordered chronologically.
+
+<ResponseField name="messages" type="Array<ChatMessage>">
+  List of all messages in the thread
+  
+  <Expandable title="ChatMessage properties">
+    <ResponseField name="messageId" type="Long">
+      Unique identifier for the message
+    </ResponseField>
+    
+    <ResponseField name="threadId" type="Long">
+      The chat thread ID
+    </ResponseField>
+    
+    <ResponseField name="senderUserId" type="Long">
+      User ID of the sender
+    </ResponseField>
+    
+    <ResponseField name="body" type="String">
+      The message content
+    </ResponseField>
+    
+    <ResponseField name="messageType" type="MessageType">
+      Type of the message (TEXT, SYSTEM, IMAGE, FILE)
+    </ResponseField>
+    
+    <ResponseField name="sentAt" type="LocalDateTime">
+      Timestamp when the message was sent
+    </ResponseField>
+    
+    <ResponseField name="readAt" type="LocalDateTime">
+      Timestamp when the message was read (null if unread)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Response
+
+```json
+[
+  {
+    "messageId": 7891,
+    "threadId": 123,
+    "senderUserId": 456,
+    "body": "Hello! I am interested in booking a tour to Sagrada Familia.",
+    "messageType": "TEXT",
+    "sentAt": "2026-03-10T14:23:45",
+    "readAt": "2026-03-10T14:25:12"
+  },
+  {
+    "messageId": 7892,
+    "threadId": 123,
+    "senderUserId": 789,
+    "body": "Great! I have availability tomorrow at 10 AM. Would that work for you?",
+    "messageType": "TEXT",
+    "sentAt": "2026-03-10T14:25:30",
+    "readAt": "2026-03-10T14:26:05"
+  },
+  {
+    "messageId": 7893,
+    "threadId": 123,
+    "senderUserId": 456,
+    "body": "Perfect! See you tomorrow.",
+    "messageType": "TEXT",
+    "sentAt": "2026-03-10T14:26:15",
+    "readAt": null
+  }
+]
+```
+
+---
+
+## Message Types
+
+The messaging system supports different message types:
+
+### TEXT
+Standard text messages sent between users. This is the most common message type for regular conversation.
+
+### SYSTEM
+Automated system messages that provide updates about bookings, payments, or other platform events.
+
+**Example system messages:**
+- "Tour booking confirmed for March 15, 2026"
+- "Payment of €150 received"
+- "Carlos has updated the tour details"
+
+### IMAGE
+Messages containing image attachments. The `body` field contains the image URL or reference.
+
+### FILE
+Messages with file attachments (PDFs, documents, etc.). The `body` field contains the file URL or reference.
+
+---
+
+## Best Practices
+
+### Real-time Updates
+Consider implementing WebSocket connections or polling for real-time message delivery and read receipts.
+
+### Message Pagination
+For threads with many messages, implement pagination on the client side to load messages in batches.
+
+### Read Receipts
+Update the `readAt` timestamp when a user views messages to provide accurate read receipt functionality.
+
+### Error Handling
+Handle cases where:
+- Thread doesn't exist
+- User doesn't have permission to access the thread
+- Message body exceeds maximum length

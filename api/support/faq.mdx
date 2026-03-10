@@ -1,0 +1,482 @@
+---
+title: 'FAQ Management'
+description: 'Manage FAQ categories and items for guides and tourists'
+---
+
+# FAQ Management API
+
+The FAQ API allows you to manage frequently asked questions organized by categories. FAQs can be scoped to specific user roles (guide, tourist, or both).
+
+## FAQ Categories
+
+### Get All FAQ Categories
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/faq-categories \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-categories', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Response
+
+<ResponseField name="id" type="integer" required>
+  Unique identifier for the FAQ category
+</ResponseField>
+
+<ResponseField name="name" type="string" required>
+  Category name (max 120 characters)
+</ResponseField>
+
+<ResponseField name="roleScope" type="enum" required>
+  Target audience for this category
+  <Expandable title="values">
+    - `guide` - Only for tour guides
+    - `tourist` - Only for tourists
+    - `both` - For all users (default)
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="sortOrder" type="integer" required>
+  Display order (default: 0)
+</ResponseField>
+
+<Expandable title="Example Response">
+```json
+[
+  {
+    "id": 1,
+    "name": "Getting Started",
+    "roleScope": "both",
+    "sortOrder": 0
+  },
+  {
+    "id": 2,
+    "name": "Tour Guide Information",
+    "roleScope": "guide",
+    "sortOrder": 1
+  }
+]
+```
+</Expandable>
+
+---
+
+### Get FAQ Category by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/faq-categories/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-categories/1', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The FAQ category ID
+</ParamField>
+
+#### Response
+
+Returns a single FAQ category object or 404 if not found.
+
+<Expandable title="Example Response">
+```json
+{
+  "id": 1,
+  "name": "Getting Started",
+  "roleScope": "both",
+  "sortOrder": 0
+}
+```
+</Expandable>
+
+---
+
+### Create FAQ Category
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.kinconecta.com/api/faq-categories \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Booking Questions",
+    "roleScope": "tourist",
+    "sortOrder": 2
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-categories', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Booking Questions',
+    roleScope: 'tourist',
+    sortOrder: 2
+  })
+})
+```
+</CodeGroup>
+
+#### Request Body
+
+<ParamField body="name" type="string" required>
+  Category name (max 120 characters)
+</ParamField>
+
+<ParamField body="roleScope" type="enum" required>
+  Target audience: `guide`, `tourist`, or `both`
+</ParamField>
+
+<ParamField body="sortOrder" type="integer" default="0">
+  Display order
+</ParamField>
+
+#### Response
+
+Returns the created FAQ category object.
+
+---
+
+### Update FAQ Category
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.kinconecta.com/api/faq-categories/{id} \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Category Name",
+    "roleScope": "both",
+    "sortOrder": 1
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-categories/1', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: 'Updated Category Name',
+    roleScope: 'both',
+    sortOrder: 1
+  })
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The FAQ category ID to update
+</ParamField>
+
+#### Request Body
+
+<ParamField body="name" type="string" required>
+  Updated category name
+</ParamField>
+
+<ParamField body="roleScope" type="enum" required>
+  Updated role scope
+</ParamField>
+
+<ParamField body="sortOrder" type="integer">
+  Updated display order
+</ParamField>
+
+#### Response
+
+Returns the updated FAQ category object or 404 if not found.
+
+---
+
+### Delete FAQ Category
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE https://api.kinconecta.com/api/faq-categories/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-categories/1', {
+  method: 'DELETE',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The FAQ category ID to delete
+</ParamField>
+
+#### Response
+
+Returns 204 No Content on success.
+
+---
+
+## FAQ Items
+
+### Get All FAQ Items
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/faq-items \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-items', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Response
+
+<ResponseField name="id" type="long" required>
+  Unique identifier for the FAQ item
+</ResponseField>
+
+<ResponseField name="faqCategoryId" type="integer" required>
+  Associated category ID
+</ResponseField>
+
+<ResponseField name="question" type="string" required>
+  The FAQ question (max 300 characters)
+</ResponseField>
+
+<ResponseField name="answer" type="string" required>
+  The FAQ answer (text field)
+</ResponseField>
+
+<ResponseField name="isActive" type="boolean" required>
+  Whether the FAQ item is active (default: true)
+</ResponseField>
+
+<ResponseField name="sortOrder" type="integer" required>
+  Display order within category (default: 0)
+</ResponseField>
+
+<Expandable title="Example Response">
+```json
+[
+  {
+    "id": 1,
+    "faqCategoryId": 1,
+    "question": "How do I create an account?",
+    "answer": "To create an account, click on the Sign Up button and fill in your details...",
+    "isActive": true,
+    "sortOrder": 0
+  },
+  {
+    "id": 2,
+    "faqCategoryId": 1,
+    "question": "How do I reset my password?",
+    "answer": "Click on the Forgot Password link on the login page...",
+    "isActive": true,
+    "sortOrder": 1
+  }
+]
+```
+</Expandable>
+
+---
+
+### Get FAQ Item by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/faq-items/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-items/1', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The FAQ item ID
+</ParamField>
+
+#### Response
+
+Returns a single FAQ item object or 404 if not found.
+
+---
+
+### Create FAQ Item
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.kinconecta.com/api/faq-items \
+  -H "Content-Type: application/json" \
+  -d '{
+    "faqCategoryId": 1,
+    "question": "How do I book a tour?",
+    "answer": "Browse available tours, select one, and click the Book Now button...",
+    "isActive": true,
+    "sortOrder": 3
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-items', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    faqCategoryId: 1,
+    question: 'How do I book a tour?',
+    answer: 'Browse available tours, select one, and click the Book Now button...',
+    isActive: true,
+    sortOrder: 3
+  })
+})
+```
+</CodeGroup>
+
+#### Request Body
+
+<ParamField body="faqCategoryId" type="integer" required>
+  The category this FAQ belongs to
+</ParamField>
+
+<ParamField body="question" type="string" required>
+  The FAQ question (max 300 characters)
+</ParamField>
+
+<ParamField body="answer" type="string" required>
+  The FAQ answer (text field)
+</ParamField>
+
+<ParamField body="isActive" type="boolean" default="true">
+  Whether the FAQ is active
+</ParamField>
+
+<ParamField body="sortOrder" type="integer" default="0">
+  Display order within category
+</ParamField>
+
+#### Response
+
+Returns the created FAQ item object.
+
+---
+
+### Update FAQ Item
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.kinconecta.com/api/faq-items/{id} \
+  -H "Content-Type: application/json" \
+  -d '{
+    "faqCategoryId": 1,
+    "question": "Updated question?",
+    "answer": "Updated answer...",
+    "isActive": false,
+    "sortOrder": 5
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-items/1', {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    faqCategoryId: 1,
+    question: 'Updated question?',
+    answer: 'Updated answer...',
+    isActive: false,
+    sortOrder: 5
+  })
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The FAQ item ID to update
+</ParamField>
+
+#### Request Body
+
+All fields from the create request.
+
+#### Response
+
+Returns the updated FAQ item object or 404 if not found.
+
+---
+
+### Delete FAQ Item
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE https://api.kinconecta.com/api/faq-items/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/faq-items/1', {
+  method: 'DELETE',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+#### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The FAQ item ID to delete
+</ParamField>
+
+#### Response
+
+Returns 204 No Content on success.

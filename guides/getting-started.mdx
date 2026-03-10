@@ -1,0 +1,181 @@
+---
+title: 'Getting Started as a Guide'
+description: 'Learn how to set up your guide account and start offering tours on Kin Conecta'
+icon: 'rocket'
+---
+
+## Welcome to Kin Conecta
+
+Kin Conecta connects local guides with travelers seeking authentic experiences. This guide will help you get started as a guide on the platform.
+
+<Steps>
+  <Step title="Create Your Guide Profile">
+    Begin by setting up your professional guide profile. Your profile is your digital storefront and the first thing tourists see.
+
+    ### Required Information
+
+    - **Full Name**: Your professional name as it will appear to tourists
+    - **Profile Summary**: A brief introduction (20+ characters)
+    - **Professional Story**: Share your background and passion for guiding
+    - **Profile Photo**: Upload a clear, professional photo
+    - **Cover Image**: Choose an image that represents your guiding style
+
+    <Note>
+      Your profile is stored locally and synced with the backend API. Make sure to complete all required fields before publishing.
+    </Note>
+  </Step>
+
+  <Step title="Complete Your Professional Details">
+    Add the information that helps tourists understand your expertise and style.
+
+    ### Key Sections to Complete
+
+    **Areas of Experience**
+    ```javascript
+    // Example areas from dashboard-profile-edit.js
+    [
+      "Historia y patrimonio urbano",
+      "Gastronomía local y mercados tradicionales",
+      "Arte contemporáneo y cultura popular"
+    ]
+    ```
+
+    **Locations You Cover**
+    - List all neighborhoods and areas you guide in
+    - Be specific (e.g., "Centro Histórico", "Coyoacán", "Roma-Condesa")
+    - Add up to 10 locations for better discoverability
+
+    **Languages**
+    - List all languages you speak
+    - Include proficiency level (e.g., "Inglés (C1)", "Español (nativo)")
+
+    **Experience Level**
+    - Choose your experience category
+    - Options: Beginner, Intermediate, Advanced
+    - Include years of experience
+
+    <Tip>
+      Guides with complete profiles receive 3x more booking requests than those with incomplete profiles.
+    </Tip>
+  </Step>
+
+  <Step title="Set Your Tour Style and Preferences">
+    Define how you work to attract the right tourists for your style.
+
+    ### Tour Preferences
+
+    | Field | Description | Example |
+    |-------|-------------|----------|
+    | **Guiding Style** | Your approach and personality | "Estilo narrativo, cercano y dinámico" |
+    | **Group Size** | Maximum capacity | "Hasta 10 personas (ideal: 6)" |
+    | **Tour Intensity** | Physical activity level | "Moderada: caminatas de 5 a 7 km" |
+    | **Transport Offered** | Available transportation | "Caminata guiada, transporte público" |
+
+    ### Certifications and Adaptations
+
+    **Add Your Certifications**
+    - First aid training
+    - Tourism guide licenses
+    - Language certifications
+    - Specialized training
+
+    **Accessibility Adaptations**
+    ```javascript
+    // From dashboard-profile-edit.js
+    [
+      "Rutas alternativas para movilidad reducida",
+      "Ritmo adaptable para familias con menores"
+    ]
+    ```
+
+    <Warning>
+      Be honest about physical requirements and accessibility. This helps set proper expectations and prevents disappointed tourists.
+    </Warning>
+  </Step>
+
+  <Step title="Configure Your Availability">
+    Set your hourly rate and availability status.
+
+    ### Pricing
+    - Set your hourly rate in USD or local currency
+    - Consider your experience level and local market rates
+    - Include what's covered in your rate
+
+    ### Availability Status
+    The system tracks your availability status:
+    - **Available Today** - Ready to accept bookings
+    - **Booking in Advance** - Require advance notice
+    - **Limited Availability** - Specific dates only
+
+    ```javascript
+    // Status display from dashboard-profile.js
+    statusText: "DISPONIBLE HOY"
+    hourlyRate: "$40 USD / hora"
+    ```
+  </Step>
+
+  <Step title="Review and Publish">
+    Before going live, review all your information.
+
+    ### Pre-Launch Checklist
+
+    <CardGroup cols={2}>
+      <Card title="Profile Completeness" icon="user">
+        - ✅ Name and summary
+        - ✅ Professional photos
+        - ✅ Contact information
+        - ✅ Language preferences
+      </Card>
+
+      <Card title="Professional Details" icon="certificate">
+        - ✅ Experience areas
+        - ✅ Locations covered
+        - ✅ Certifications added
+        - ✅ Tour style defined
+      </Card>
+
+      <Card title="Tour Preferences" icon="hiking">
+        - ✅ Group size limits
+        - ✅ Intensity levels
+        - ✅ Transport options
+        - ✅ Special adaptations
+      </Card>
+
+      <Card title="Availability" icon="calendar">
+        - ✅ Hourly rate set
+        - ✅ Status configured
+        - ✅ Calendar synced
+        - ✅ Ready to accept bookings
+      </Card>
+    </CardGroup>
+
+    <Note>
+      Profile changes are saved locally and synced with the backend API. Updates appear immediately on your public profile.
+    </Note>
+  </Step>
+</Steps>
+
+## What's Next?
+
+Once your profile is complete, you can:
+
+1. [Create your first tour](/guides/creating-tours) - Design and publish tour offerings
+2. [Set up your calendar](/guides/calendar-availability) - Manage your availability
+3. [Manage bookings](/guides/managing-bookings) - Accept and organize tour requests
+4. [Get verified](/guides/profile-verification) - Build trust with verification badges
+
+## Getting Help
+
+Need assistance? The platform provides support through:
+
+```javascript
+// Support features from guide-api-services.js
+help: {
+  getFaq: () => api.get("/support/faq"),
+  sendTicket: (payload) => api.post("/support/tickets", payload)
+}
+```
+
+<Card title="Support Center" icon="question" href="#">
+  Access FAQs, submit tickets, and get help from the Kin Conecta team.
+</Card>

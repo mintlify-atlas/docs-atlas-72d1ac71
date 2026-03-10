@@ -1,0 +1,286 @@
+---
+title: 'Support Tickets'
+description: 'Manage support tickets with attachments and status tracking'
+---
+
+# Support Tickets API
+
+The Support Tickets API allows users to create and manage support tickets with role context, categories, and file attachments.
+
+## Get All Support Tickets
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/support-tickets \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/support-tickets', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+### Response
+
+<ResponseField name="id" type="long" required>
+  Unique identifier for the support ticket
+</ResponseField>
+
+<ResponseField name="roleContext" type="string" required>
+  User role context when ticket was created
+</ResponseField>
+
+<ResponseField name="fullName" type="string" required>
+  Full name of the person submitting the ticket
+</ResponseField>
+
+<ResponseField name="email" type="string" required>
+  Contact email address
+</ResponseField>
+
+<ResponseField name="subject" type="string" required>
+  Ticket subject line
+</ResponseField>
+
+<ResponseField name="category" type="string" required>
+  Ticket category for classification
+</ResponseField>
+
+<ResponseField name="message" type="string" required>
+  Detailed message describing the issue
+</ResponseField>
+
+<ResponseField name="status" type="string" required>
+  Current ticket status
+</ResponseField>
+
+<ResponseField name="createdAt" type="string" required>
+  Timestamp when ticket was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="string" required>
+  Timestamp when ticket was last updated
+</ResponseField>
+
+<ResponseField name="attachments" type="array">
+  List of file attachments associated with the ticket
+</ResponseField>
+
+<Expandable title="Example Response">
+```json
+[
+  {
+    "id": 1,
+    "roleContext": "tourist",
+    "fullName": "Maria Garcia",
+    "email": "maria.garcia@example.com",
+    "subject": "Unable to complete booking",
+    "category": "Booking Issues",
+    "message": "I'm trying to book a tour for tomorrow but the payment keeps failing...",
+    "status": "open",
+    "createdAt": "2026-03-10T10:30:00Z",
+    "updatedAt": "2026-03-10T10:30:00Z",
+    "attachments": []
+  },
+  {
+    "id": 2,
+    "roleContext": "guide",
+    "fullName": "Carlos Rodriguez",
+    "email": "carlos.rodriguez@example.com",
+    "subject": "Profile photo upload issue",
+    "category": "Account Problems",
+    "message": "Cannot upload my profile photo. Getting an error message.",
+    "status": "in_progress",
+    "createdAt": "2026-03-09T14:20:00Z",
+    "updatedAt": "2026-03-10T09:15:00Z",
+    "attachments": [
+      {
+        "id": 1,
+        "fileName": "screenshot.png",
+        "fileUrl": "https://storage.kinconecta.com/tickets/1/screenshot.png"
+      }
+    ]
+  }
+]
+```
+</Expandable>
+
+---
+
+## Get Support Ticket by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.kinconecta.com/api/support-tickets/{id} \
+  -H "Content-Type: application/json"
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/support-tickets/1', {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="long" required>
+  The support ticket ID
+</ParamField>
+
+### Response
+
+Returns a single support ticket object with all details and attachments.
+
+<Expandable title="Example Response">
+```json
+{
+  "id": 1,
+  "roleContext": "tourist",
+  "fullName": "Maria Garcia",
+  "email": "maria.garcia@example.com",
+  "subject": "Unable to complete booking",
+  "category": "Booking Issues",
+  "message": "I'm trying to book a tour for tomorrow but the payment keeps failing. I've tried multiple credit cards.",
+  "status": "open",
+  "createdAt": "2026-03-10T10:30:00Z",
+  "updatedAt": "2026-03-10T10:30:00Z",
+  "attachments": []
+}
+```
+</Expandable>
+
+---
+
+## Create Support Ticket
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.kinconecta.com/api/support-tickets \
+  -H "Content-Type: application/json" \
+  -d '{
+    "roleContext": "tourist",
+    "fullName": "Ana Martinez",
+    "email": "ana.martinez@example.com",
+    "subject": "Question about tour cancellation",
+    "category": "General Inquiry",
+    "message": "What is your cancellation policy for tours booked less than 24 hours in advance?",
+    "status": "open",
+    "createdAt": "2026-03-10T11:00:00Z",
+    "updatedAt": "2026-03-10T11:00:00Z"
+  }'
+```
+
+```javascript JavaScript
+fetch('https://api.kinconecta.com/api/support-tickets', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    roleContext: 'tourist',
+    fullName: 'Ana Martinez',
+    email: 'ana.martinez@example.com',
+    subject: 'Question about tour cancellation',
+    category: 'General Inquiry',
+    message: 'What is your cancellation policy for tours booked less than 24 hours in advance?',
+    status: 'open',
+    createdAt: '2026-03-10T11:00:00Z',
+    updatedAt: '2026-03-10T11:00:00Z'
+  })
+})
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="roleContext" type="string" required>
+  User role when creating the ticket (e.g., "tourist", "guide")
+</ParamField>
+
+<ParamField body="fullName" type="string" required>
+  Full name of the person submitting the ticket
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  Contact email address for ticket updates
+</ParamField>
+
+<ParamField body="subject" type="string" required>
+  Brief subject line describing the issue
+</ParamField>
+
+<ParamField body="category" type="string" required>
+  Category for ticket classification (e.g., "Technical Issue", "Billing", "General Inquiry")
+</ParamField>
+
+<ParamField body="message" type="string" required>
+  Detailed description of the issue or question
+</ParamField>
+
+<ParamField body="status" type="string" required>
+  Initial ticket status (typically "open")
+</ParamField>
+
+<ParamField body="createdAt" type="string" required>
+  Timestamp when ticket is created (ISO 8601 format)
+</ParamField>
+
+<ParamField body="updatedAt" type="string" required>
+  Timestamp when ticket is last updated (ISO 8601 format)
+</ParamField>
+
+<ParamField body="attachments" type="array">
+  Optional array of file attachments
+</ParamField>
+
+### Response
+
+Returns the created support ticket object with assigned ID.
+
+<Expandable title="Example Response">
+```json
+{
+  "id": 3,
+  "roleContext": "tourist",
+  "fullName": "Ana Martinez",
+  "email": "ana.martinez@example.com",
+  "subject": "Question about tour cancellation",
+  "category": "General Inquiry",
+  "message": "What is your cancellation policy for tours booked less than 24 hours in advance?",
+  "status": "open",
+  "createdAt": "2026-03-10T11:00:00Z",
+  "updatedAt": "2026-03-10T11:00:00Z",
+  "attachments": []
+}
+```
+</Expandable>
+
+---
+
+## Support Ticket Workflow
+
+<Note>
+  Support tickets follow a standard workflow:
+  1. **Created** - Ticket is submitted by user
+  2. **Open** - Ticket is pending review
+  3. **In Progress** - Support team is working on the issue
+  4. **Resolved** - Issue has been addressed
+  5. **Closed** - Ticket is closed after resolution confirmation
+</Note>
+
+## Attachment Management
+
+Support tickets can include file attachments (screenshots, documents, etc.) through the `attachments` relationship. The `SupportTicketsAttachment` model is linked via a one-to-many relationship, allowing multiple files per ticket.
+
+<Tip>
+  When creating tickets with attachments, you may need to use multipart/form-data encoding and upload files separately, then associate them with the ticket ID.
+</Tip>

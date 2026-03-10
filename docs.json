@@ -1,122 +1,131 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Kin Conecta",
+  "theme": "almond",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#F59E0B",
+    "light": "#FCD34D",
+    "dark": "#D97706"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/isa-capa/KinConecta"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/isa-capa/KinConecta"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Overview",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "For Tourists",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "tourists/getting-started",
+              "tourists/finding-guides",
+              "tourists/booking-tours",
+              "tourists/profile-management"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "For Guides",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "guides/getting-started",
+              "guides/creating-tours",
+              "guides/managing-bookings",
+              "guides/profile-verification",
+              "guides/calendar-availability"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Features",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "features/matching-algorithm",
+              "features/messaging-system",
+              "features/reviews-ratings",
+              "features/notifications",
+              "features/search-filters"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Developer",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "API Reference",
             "pages": [
-              "api-reference/introduction"
+              "api/overview",
+              "api/authentication"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Users",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api/users/endpoints",
+              "api/users/tourist-profile",
+              "api/users/guide-profile"
+            ]
+          },
+          {
+            "group": "Tours & Bookings",
+            "pages": [
+              "api/tours/endpoints",
+              "api/tours/destinations",
+              "api/tours/categories",
+              "api/bookings/endpoints"
+            ]
+          },
+          {
+            "group": "Matching & Communication",
+            "pages": [
+              "api/matching/endpoints",
+              "api/messaging/endpoints",
+              "api/reviews/endpoints"
+            ]
+          },
+          {
+            "group": "Support",
+            "pages": [
+              "api/support/faq",
+              "api/support/tickets",
+              "api/support/contact"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Help & Support",
+            "pages": [
+              "resources/faq",
+              "resources/troubleshooting",
+              "resources/contact-support"
+            ]
+          },
+          {
+            "group": "About",
+            "pages": [
+              "resources/team",
+              "resources/contributing"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

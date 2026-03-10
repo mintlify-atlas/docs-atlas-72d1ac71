@@ -1,0 +1,599 @@
+---
+title: Profile Management
+description: Customize your tourist profile to receive better recommendations and connect with guides
+---
+
+## Profile Overview
+
+Your tourist profile (`dashboard-profile.html`) is your digital identity on Kin Conecta. A complete profile helps guides understand your travel style and provides you with more personalized recommendations.
+
+## Profile Data Structure
+
+The platform stores comprehensive profile information:
+
+```javascript
+const DEFAULT_TOURIST_PROFILE = {
+  // Basic Information
+  name: "Sofía Ramírez",
+  location: "Ciudad de México",
+  memberSince: "Ene 2023",
+  badge: "Viajera frecuente",
+  bio: "Amante de la naturaleza y la comida callejera.",
+  
+  // Travel Preferences
+  interests: ["Aventura", "Gastronomía", "Playa", "Fotografía"],
+  travelStyle: "Exploración cultural con itinerarios flexibles.",
+  tripType: "Escapadas de fin de semana y viajes urbanos.",
+  languages: ["Español", "Inglés"],
+  
+  // Activity Preferences
+  paceAndCompany: "Ritmo moderado en compañía de grupos pequeños.",
+  activityLevel: "Moderado",
+  groupPreference: "Pareja o grupos de 3 a 6 personas.",
+  
+  // Special Preferences
+  dietaryPreferences: "Sin restricciones, con prioridad en comida local.",
+  planningLevel: "Intermedio",
+  amenities: "Hospedajes céntricos, conectividad y descanso.",
+  transport: "Caminata y transporte público.",
+  photoPreference: "Fotos espontáneas y retratos naturales.",
+  accessibility: "Sin necesidades especiales actualmente.",
+  additionalNotes: "Disponible para ajustar actividades según clima e intereses.",
+  
+  // Media
+  avatar: "profile-image-url",
+  cover: "cover-image-url"
+};
+```
+
+<Note>
+  Profile data is stored both locally (`localStorage`) and synced with the backend API for cross-device access.
+</Note>
+
+## Profile Sections
+
+### Header Card
+
+The profile header displays your identity and membership status:
+
+<Steps>
+  <Step title="Cover Photo">
+    Full-width background image that personalizes your profile
+    ```javascript
+    if (dom.cover) {
+      dom.cover.style.backgroundImage = `url('${state.profile.cover}')`;
+    }
+    ```
+  </Step>
+  
+  <Step title="Profile Avatar">
+    Circular profile photo overlaid on the cover image
+    ```javascript
+    if (dom.avatar) {
+      dom.avatar.style.backgroundImage = `url('${state.profile.avatar}')`;
+    }
+    ```
+  </Step>
+  
+  <Step title="Name and Location">
+    Your display name and city/region
+  </Step>
+  
+  <Step title="Member Badge">
+    Status badge (e.g., "Viajera frecuente") showing your activity level
+  </Step>
+  
+  <Step title="Member Since">
+    Join date displayed as "Miembro desde [Date]"
+  </Step>
+</Steps>
+
+### Bio Section
+
+Share your travel personality:
+
+```html
+<div class="profile-section">
+  <h2>Acerca de mí</h2>
+  <p id="profileBio">Amante de la naturaleza y la comida callejera.</p>
+</div>
+```
+
+### Interests
+
+Hashtag-style interest chips:
+
+```javascript
+if (dom.interests) {
+  dom.interests.innerHTML = '';
+  state.profile.interests.forEach((tag) => {
+    const item = document.createElement('span');
+    item.textContent = `#${tag}`;
+    dom.interests.appendChild(item);
+  });
+}
+```
+
+<Tip>
+  Add 3-8 interests for optimal guide matching. Popular interests include: Aventura, Gastronomía, Historia, Fotografía, Playa, Montaña, Arte, Cultura.
+</Tip>
+
+### Travel Style
+
+Describe how you like to travel:
+
+```javascript
+// Examples of travel styles
+"Exploración cultural con itinerarios flexibles."
+"Viajes estructurados con actividades planificadas."
+"Aventuras espontáneas y descubrimiento libre."
+"Experiencias inmersivas con comunidades locales."
+```
+
+### Activity Preferences
+
+<Accordion title="Activity Level">
+  Choose your preferred intensity:
+  - **Ligero**: Paseos relajados, visitas culturales sin prisa
+  - **Moderado**: Caminatas de duración media, actividades variadas
+  - **Intenso**: Senderismo desafiante, deportes de aventura
+  
+  ```javascript
+  activityLevel: "Moderado"
+  ```
+</Accordion>
+
+<Accordion title="Group Preference">
+  Specify your ideal group composition:
+  ```javascript
+  groupPreference: "Pareja o grupos de 3 a 6 personas."
+  ```
+  
+  Common preferences:
+  - Solo traveler
+  - Pareja
+  - Familia (2-4 personas)
+  - Grupos pequeños (3-6)
+  - Grupos grandes (7+)
+</Accordion>
+
+<Accordion title="Pace and Company">
+  Describe your travel rhythm:
+  ```javascript
+  paceAndCompany: "Ritmo moderado en compañía de grupos pequeños."
+  ```
+</Accordion>
+
+### Special Preferences
+
+<CardGroup cols={2}>
+  <Card title="Dietary" icon="utensils">
+    Food restrictions and preferences
+    
+    ```javascript
+    dietaryPreferences: "Sin restricciones, con prioridad en comida local."
+    ```
+  </Card>
+  
+  <Card title="Accessibility" icon="wheelchair">
+    Mobility or accessibility requirements
+    
+    ```javascript
+    accessibility: "Sin necesidades especiales actualmente."
+    ```
+  </Card>
+  
+  <Card title="Photography" icon="camera">
+    Photo preferences during tours
+    
+    ```javascript
+    photoPreference: "Fotos espontáneas y retratos naturales."
+    ```
+  </Card>
+  
+  <Card title="Transport" icon="bus">
+    Preferred modes of transportation
+    
+    ```javascript
+    transport: "Caminata y transporte público."
+    ```
+  </Card>
+</CardGroup>
+
+### Trip History
+
+Your past experiences are displayed in a visual gallery:
+
+```javascript
+function renderHistory() {
+  if (!dom.history) return;
+  dom.history.innerHTML = '';
+  
+  state.history.forEach((item) => {
+    const row = document.createElement('article');
+    row.className = 'trip-history__item';
+    row.innerHTML = `
+      <div class="trip-history__image" style="background-image:url('${item.image}');"></div>
+      <div class="trip-history__body">
+        <h4 class="trip-history__title">${item.title}</h4>
+        <p class="trip-history__meta">
+          <span class="material-symbols-outlined">calendar_month</span>
+          ${item.dateLabel}
+        </p>
+      </div>
+    `;
+    dom.history.appendChild(row);
+  });
+}
+```
+
+## Editing Profile
+
+### Access Edit Mode
+
+Click "Editar perfil" in the navigation to access the edit page:
+
+```javascript
+dom.btnEditProfileNav?.addEventListener('click', () => {
+  window.location.href = './profileTouristEdit.html';
+});
+```
+
+### Edit Avatar
+
+Click the camera icon on your profile photo:
+
+```javascript
+dom.btnAvatarEdit?.addEventListener('click', () => openMediaModal('avatar'));
+```
+
+<Steps>
+  <Step title="Open Media Modal">
+    A modal dialog appears with file upload interface
+  </Step>
+  
+  <Step title="Select Image">
+    Choose an image file (JPG, PNG, WebP)
+    ```javascript
+    if (!file.type.startsWith('image/')) {
+      dom.mediaStatus.textContent = 'Selecciona un archivo de imagen válido.';
+      return;
+    }
+    ```
+  </Step>
+  
+  <Step title="Preview">
+    The image preview updates in real-time:
+    ```javascript
+    state.media.objectUrl = window.URL.createObjectURL(file);
+    dom.mediaPreview.src = state.media.objectUrl;
+    ```
+  </Step>
+  
+  <Step title="Save">
+    Click "Guardar" to upload and apply the new avatar
+  </Step>
+</Steps>
+
+### Edit Cover Photo
+
+Click the camera icon on your cover image:
+
+```javascript
+dom.btnCardEdit?.addEventListener('click', () => {
+  openMediaModal('cover');
+});
+```
+
+The process is identical to avatar editing but applies to the cover photo.
+
+### Media Upload Implementation
+
+```javascript
+async function handleMediaSave() {
+  if (!state.media.file) {
+    dom.mediaStatus.textContent = 'Selecciona una imagen antes de guardar.';
+    return;
+  }
+  
+  dom.mediaSave.setAttribute('disabled', 'disabled');
+  dom.mediaStatus.textContent = 'Guardando imagen...';
+  
+  try {
+    const encodedImage = await fileToDataUrl(state.media.file);
+    
+    if (state.media.mode === 'cover') {
+      state.profile.cover = encodedImage;
+    } else {
+      state.profile.avatar = encodedImage;
+    }
+    
+    persistProfile(state.profile);
+    renderProfile();
+    
+    // Sync with API
+    await syncMediaWithApi(state.media.mode, state.media.file);
+    
+    closeMediaModal();
+  } catch (error) {
+    dom.mediaStatus.textContent = error.message;
+  } finally {
+    dom.mediaSave.removeAttribute('disabled');
+  }
+}
+```
+
+## Local Storage
+
+Profile data is cached locally for offline access and faster loading:
+
+```javascript
+const TOURIST_PROFILE_STORAGE_KEY = 'kc_tourist_profile_v1';
+
+function readProfileFromStorage() {
+  try {
+    const raw = window.localStorage.getItem(TOURIST_PROFILE_STORAGE_KEY);
+    if (!raw) return cloneDefaultProfile();
+    return normalizeProfile(JSON.parse(raw));
+  } catch (error) {
+    console.warn('No se pudo leer el perfil local de turista.', error);
+    return cloneDefaultProfile();
+  }
+}
+
+function persistProfile(profile) {
+  try {
+    window.localStorage.setItem(
+      TOURIST_PROFILE_STORAGE_KEY,
+      JSON.stringify(profile)
+    );
+  } catch (error) {
+    console.warn('No se pudo guardar el perfil local de turista.', error);
+  }
+}
+```
+
+<Warning>
+  Local storage is limited to ~5-10MB per domain. Large base64-encoded images may reach this limit.
+</Warning>
+
+## API Endpoints
+
+### Get Profile
+
+Fetch your profile data:
+
+```javascript
+const profile = {
+  getMe: () => api.get('/tourist/profile/me')
+};
+
+// Usage
+const response = await window.KCTouristApi.profile.getMe();
+const data = response?.data || {};
+```
+
+### Update Profile
+
+Save profile changes:
+
+```javascript
+const profile = {
+  updateMe: (payload) => api.put('/tourist/profile/me', payload)
+};
+
+// Example payload
+const updates = {
+  name: "Sofía Ramírez",
+  bio: "Amante de la naturaleza y la comida callejera.",
+  interests: ["Aventura", "Gastronomía", "Playa"],
+  activityLevel: "Moderado"
+};
+
+await window.KCTouristApi.profile.updateMe(updates);
+```
+
+### Update Security
+
+Change password or security settings:
+
+```javascript
+const profile = {
+  updateSecurity: (payload) => api.put('/tourist/profile/me/security', payload)
+};
+
+// Example
+await profile.updateSecurity({
+  currentPassword: 'old-password',
+  newPassword: 'new-password'
+});
+```
+
+### Upload Avatar
+
+Upload a new profile photo:
+
+```javascript
+const profile = {
+  uploadAvatar: (formData) => api.post('/tourist/profile/me/avatar', formData, {
+    headers: {} // Let browser set Content-Type for FormData
+  })
+};
+
+// Usage
+const formData = new FormData();
+formData.append('avatar', file);
+await window.KCTouristApi.profile.uploadAvatar(formData);
+```
+
+### Upload Cover
+
+Upload a new cover image:
+
+```javascript
+const profile = {
+  uploadCover: (formData) => api.post('/tourist/profile/me/cover', formData, {
+    headers: {}
+  })
+};
+
+// Usage
+const formData = new FormData();
+formData.append('cover', file);
+await window.KCTouristApi.profile.uploadCover(formData);
+```
+
+## Data Normalization
+
+The platform ensures data consistency:
+
+```javascript
+function normalizeProfile(rawProfile) {
+  const base = cloneDefaultProfile();
+  if (!rawProfile || typeof rawProfile !== 'object') return base;
+  
+  base.name = normalizeText(rawProfile.name, base.name);
+  base.location = normalizeText(rawProfile.location, base.location);
+  base.bio = normalizeText(rawProfile.bio, base.bio);
+  base.interests = normalizeList(rawProfile.interests, base.interests);
+  base.languages = normalizeList(rawProfile.languages, base.languages);
+  // ... normalize all fields
+  
+  return base;
+}
+
+function normalizeText(rawValue, fallbackValue) {
+  const value = String(rawValue || '').trim();
+  return value || fallbackValue;
+}
+
+function normalizeList(rawValue, fallbackList) {
+  if (Array.isArray(rawValue)) {
+    const list = rawValue
+      .map(item => String(item || '').trim())
+      .filter(Boolean);
+    return list.length ? list : [...fallbackList];
+  }
+  
+  if (typeof rawValue === 'string') {
+    const list = rawValue
+      .split(/[\n,]+/g)
+      .map(item => item.trim())
+      .filter(Boolean);
+    return list.length ? list : [...fallbackList];
+  }
+  
+  return [...fallbackList];
+}
+```
+
+## API Mapping
+
+Backend data is mapped to the frontend profile structure:
+
+```javascript
+function mapApiProfile(raw) {
+  return {
+    name: raw.name || raw.fullName || '',
+    location: raw.location || '',
+    memberSince: raw.memberSince || '',
+    badge: raw.badge || '',
+    bio: raw.bio || raw.about || '',
+    interests: raw.interests || [],
+    travelStyle: raw.travelStyle || '',
+    tripType: raw.tripType || '',
+    languages: raw.languages || [],
+    paceAndCompany: raw.paceAndCompany || '',
+    activityLevel: raw.activityLevel || '',
+    groupPreference: raw.groupPreference || '',
+    dietaryPreferences: raw.dietaryPreferences || '',
+    planningLevel: raw.planningLevel || '',
+    amenities: raw.amenities || '',
+    transport: raw.transport || '',
+    photoPreference: raw.photoPreference || '',
+    accessibility: raw.accessibility || '',
+    additionalNotes: raw.additionalNotes || '',
+    avatar: raw.avatarUrl || raw.avatarImage || '',
+    cover: raw.coverUrl || raw.coverImage || ''
+  };
+}
+```
+
+## Profile Initialization
+
+The profile page loads data from multiple sources:
+
+```javascript
+async function init() {
+  bind();
+  setupActions();
+  renderLoadingState();
+  
+  // 1. Load from localStorage first (fast)
+  state.profile = readProfileFromStorage();
+  
+  // 2. Fetch from API (authoritative)
+  await hydrateFromApi();
+  
+  // 3. Render final state
+  renderProfile();
+  renderHistory();
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Complete Profile" icon="check-circle">
+    Fill in all sections for better guide recommendations
+  </Card>
+  
+  <Card title="High-Quality Photos" icon="image">
+    Use clear, recent photos for avatar and cover
+  </Card>
+  
+  <Card title="Specific Interests" icon="tags">
+    Be specific about your travel preferences
+  </Card>
+  
+  <Card title="Keep Updated" icon="refresh">
+    Update your profile as your interests evolve
+  </Card>
+</CardGroup>
+
+## Accessibility
+
+The profile interface includes accessibility features:
+
+```javascript
+// Loading state announcements
+<div class="guide-loading" role="status" aria-live="polite" aria-busy="true">
+  <span class="guide-loading__spinner" aria-hidden="true"></span>
+  <span>Cargando perfil...</span>
+</div>
+
+// Media modal labels
+<button aria-label="Editar foto de perfil">
+  <span class="material-symbols-outlined">photo_camera</span>
+</button>
+```
+
+<Note>
+  Screen readers announce loading states and modal titles automatically.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Finding Guides" icon="search" href="/tourists/finding-guides">
+    Discover guides that match your profile
+  </Card>
+  
+  <Card title="Booking Tours" icon="calendar-check" href="/tourists/booking-tours">
+    Start booking your first experience
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api-reference/tourist/profile">
+    Explore profile management endpoints
+  </Card>
+</CardGroup>

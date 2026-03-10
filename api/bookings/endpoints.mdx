@@ -1,0 +1,316 @@
+---
+title: 'Trip Bookings'
+description: 'API endpoints for managing trip bookings in Kin Conecta'
+---
+
+## Base URL
+
+```
+http://localhost:8080/kinconecta/api/tours/trip-booking
+```
+
+## Get All Trip Bookings
+
+<ParamField path="GET /kinconecta/api/tours/trip-booking" type="endpoint">
+  Retrieve a list of all trip bookings in the platform.
+</ParamField>
+
+### Response
+
+<ResponseField name="bookings" type="array">
+  Array of trip booking objects
+  
+  <Expandable title="Trip Booking Object">
+    <ResponseField name="tripId" type="long">
+      Unique identifier for the trip booking
+    </ResponseField>
+    
+    <ResponseField name="startDatetime" type="date">
+      Start date and time of the trip
+    </ResponseField>
+    
+    <ResponseField name="endDatetime" type="date">
+      End date and time of the trip
+    </ResponseField>
+    
+    <ResponseField name="status" type="enum">
+      Trip status enum value (e.g., PENDING, CONFIRMED, CANCELLED, COMPLETED)
+    </ResponseField>
+    
+    <ResponseField name="cancelReason" type="string">
+      Reason for cancellation (if applicable)
+    </ResponseField>
+    
+    <ResponseField name="notes" type="text">
+      Additional notes or comments about the trip
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="date">
+      Date when the booking was created
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="date">
+      Date when the booking was last updated
+    </ResponseField>
+    
+    <ResponseField name="favorites" type="boolean">
+      Whether this trip is marked as favorite
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/tours/trip-booking
+```
+
+```json Response
+[
+  {
+    "tripId": 1,
+    "startDatetime": "2024-04-15T09:00:00",
+    "endDatetime": "2024-04-20T18:00:00",
+    "status": "CONFIRMED",
+    "cancelReason": null,
+    "notes": "Looking forward to this trip!",
+    "createdAt": "2024-03-01",
+    "updatedAt": "2024-03-05T14:30:00",
+    "favorites": true
+  },
+  {
+    "tripId": 2,
+    "startDatetime": "2024-05-10T10:00:00",
+    "endDatetime": "2024-05-15T16:00:00",
+    "status": "PENDING",
+    "cancelReason": null,
+    "notes": "Need to confirm hotel reservations",
+    "createdAt": "2024-03-08",
+    "updatedAt": "2024-03-08T10:15:00",
+    "favorites": false
+  }
+]
+```
+</CodeGroup>
+
+---
+
+## Get Trip Booking by ID
+
+<ParamField path="GET /kinconecta/api/tours/trip-booking/{tripId}" type="endpoint">
+  Retrieve details of a specific trip booking by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tripId" type="long" required>
+  The unique identifier of the trip booking
+</ParamField>
+
+### Response
+
+Returns a single trip booking object with the same structure as described in Get All Trip Bookings.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X GET http://localhost:8080/kinconecta/api/tours/trip-booking/1
+```
+
+```json Response
+{
+  "tripId": 1,
+  "startDatetime": "2024-04-15T09:00:00",
+  "endDatetime": "2024-04-20T18:00:00",
+  "status": "CONFIRMED",
+  "cancelReason": null,
+  "notes": "Looking forward to this trip!",
+  "createdAt": "2024-03-01",
+  "updatedAt": "2024-03-05T14:30:00",
+  "favorites": true
+}
+```
+</CodeGroup>
+
+---
+
+## Create Trip Booking
+
+<ParamField path="POST /kinconecta/api/tours/trip-booking" type="endpoint">
+  Create a new trip booking in the system.
+</ParamField>
+
+### Request Body
+
+<ParamField body="startDatetime" type="date" required>
+  Start date and time of the trip
+</ParamField>
+
+<ParamField body="endDatetime" type="date" required>
+  End date and time of the trip
+</ParamField>
+
+<ParamField body="status" type="enum" required>
+  Trip status (e.g., PENDING, CONFIRMED, CANCELLED, COMPLETED)
+</ParamField>
+
+<ParamField body="cancelReason" type="string">
+  Reason for cancellation (optional, used when status is CANCELLED)
+</ParamField>
+
+<ParamField body="notes" type="text">
+  Additional notes or comments about the trip
+</ParamField>
+
+<ParamField body="favorites" type="boolean">
+  Whether this trip should be marked as favorite
+</ParamField>
+
+### Response
+
+Returns the created trip booking object including the generated `tripId` and timestamps.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X POST http://localhost:8080/kinconecta/api/tours/trip-booking \
+  -H "Content-Type: application/json" \
+  -d '{
+    "startDatetime": "2024-06-01T08:00:00",
+    "endDatetime": "2024-06-07T20:00:00",
+    "status": "PENDING",
+    "notes": "Summer vacation trip",
+    "favorites": true
+  }'
+```
+
+```json Response
+{
+  "tripId": 3,
+  "startDatetime": "2024-06-01T08:00:00",
+  "endDatetime": "2024-06-07T20:00:00",
+  "status": "PENDING",
+  "cancelReason": null,
+  "notes": "Summer vacation trip",
+  "createdAt": "2024-03-10",
+  "updatedAt": "2024-03-10T11:00:00",
+  "favorites": true
+}
+```
+</CodeGroup>
+
+---
+
+## Update Trip Booking
+
+<ParamField path="PUT /kinconecta/api/tours/trip-booking/{tripId}" type="endpoint">
+  Update an existing trip booking by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tripId" type="long" required>
+  The unique identifier of the trip booking to update
+</ParamField>
+
+### Request Body
+
+Accepts the same fields as Create Trip Booking. All fields are optional - only include fields you want to update.
+
+<ParamField body="startDatetime" type="date">
+  Start date and time of the trip
+</ParamField>
+
+<ParamField body="endDatetime" type="date">
+  End date and time of the trip
+</ParamField>
+
+<ParamField body="status" type="enum">
+  Trip status
+</ParamField>
+
+<ParamField body="cancelReason" type="string">
+  Reason for cancellation
+</ParamField>
+
+<ParamField body="notes" type="text">
+  Additional notes or comments
+</ParamField>
+
+<ParamField body="favorites" type="boolean">
+  Whether this trip is marked as favorite
+</ParamField>
+
+### Response
+
+Returns the updated trip booking object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X PUT http://localhost:8080/kinconecta/api/tours/trip-booking/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "CONFIRMED",
+    "notes": "Hotel and flights confirmed. Ready to go!"
+  }'
+```
+
+```json Response
+{
+  "tripId": 1,
+  "startDatetime": "2024-04-15T09:00:00",
+  "endDatetime": "2024-04-20T18:00:00",
+  "status": "CONFIRMED",
+  "cancelReason": null,
+  "notes": "Hotel and flights confirmed. Ready to go!",
+  "createdAt": "2024-03-01",
+  "updatedAt": "2024-03-10T12:00:00",
+  "favorites": true
+}
+```
+</CodeGroup>
+
+---
+
+## Delete Trip Booking
+
+<ParamField path="DELETE /kinconecta/api/tours/trip-booking/{tripId}" type="endpoint">
+  Delete a trip booking by its ID.
+</ParamField>
+
+### Path Parameters
+
+<ParamField path="tripId" type="long" required>
+  The unique identifier of the trip booking to delete
+</ParamField>
+
+### Response
+
+Returns the deleted trip booking object.
+
+### Example
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE http://localhost:8080/kinconecta/api/tours/trip-booking/1
+```
+
+```json Response
+{
+  "tripId": 1,
+  "startDatetime": "2024-04-15T09:00:00",
+  "endDatetime": "2024-04-20T18:00:00",
+  "status": "CANCELLED",
+  "cancelReason": "Trip cancelled by user",
+  "notes": "Looking forward to this trip!",
+  "createdAt": "2024-03-01",
+  "updatedAt": "2024-03-10T15:00:00",
+  "favorites": true
+}
+```
+</CodeGroup>

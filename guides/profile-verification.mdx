@@ -1,0 +1,543 @@
+---
+title: 'Profile Verification'
+description: 'Build trust with verification badges and certifications on your guide profile'
+icon: 'badge-check'
+---
+
+## Verification Overview
+
+Profile verification helps build trust with tourists by confirming your identity, qualifications, and experience. Verified guides receive more booking requests and higher ratings.
+
+<Note>
+  Verification is an ongoing process. As you add certifications and complete tours, your profile trust score increases.
+</Note>
+
+## Verification Badges
+
+The platform displays verification badges on your public profile to build credibility with tourists.
+
+### Available Badges
+
+<CardGroup cols={2}>
+  <Card title="Verified Guide" icon="circle-check">
+    **Identity Confirmed**
+
+    Your identity has been verified by the platform.
+
+    - Government ID verified
+    - Email confirmed
+    - Phone number validated
+    - Background check completed
+  </Card>
+
+  <Card title="Certified Professional" icon="certificate">
+    **Qualifications Verified**
+
+    Your professional certifications have been validated.
+
+    - Tourism guide license
+    - First aid certification
+    - Language proficiency
+    - Industry credentials
+  </Card>
+
+  <Card title="Experienced Guide" icon="star">
+    **Proven Track Record**
+
+    Demonstrated experience through completed tours.
+
+    - 50+ completed tours
+    - High average rating
+    - Positive review history
+    - Platform seniority
+  </Card>
+
+  <Card title="Highly Rated" icon="heart">
+    **Excellent Reviews**
+
+    Consistently high ratings from tourists.
+
+    - 4.5+ average rating
+    - 100+ reviews received
+    - Recent positive feedback
+    - Low cancellation rate
+  </Card>
+</CardGroup>
+
+## Profile Certifications
+
+Add your professional certifications to your profile for verification.
+
+### Managing Certifications
+
+From your profile edit page, add certifications in the dedicated section:
+
+```javascript
+// From dashboard-profile-edit.js
+const DEFAULT_GUIDE_PROFILE = {
+  certifications: [
+    "Primeros auxilios básicos",
+    "Acreditación local de guía de turismo cultural",
+  ]
+};
+```
+
+<Steps>
+  <Step title="Access Profile Editor">
+    Navigate to **"Editar perfil"** from your dashboard.
+
+    ```javascript
+    // Profile storage from dashboard-profile-edit.js
+    const GUIDE_PROFILE_STORAGE_KEY = "kc_guide_profile_v1";
+    ```
+  </Step>
+
+  <Step title="Add Certifications">
+    In the certifications field, list your qualifications:
+
+    **Format**: One per line or comma-separated
+
+    ```javascript
+    // Processing certifications
+    function textToList(rawValue) {
+      return String(rawValue || "")
+        .split(/[\n,]+/g)
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+    ```
+
+    **Common Certifications**:
+    - First aid and CPR
+    - Licensed tour guide
+    - Language proficiency certificates
+    - Cultural heritage training
+    - Hospitality certifications
+    - Safety and emergency training
+  </Step>
+
+  <Step title="Provide Documentation">
+    Upload supporting documents for verification:
+
+    - Certificate scans or photos
+    - License numbers
+    - Issuing authority details
+    - Expiration dates
+
+    <Warning>
+      Certifications are reviewed by the platform team. Providing false information may result in account suspension.
+    </Warning>
+  </Step>
+
+  <Step title="Save and Submit">
+    Click **"Guardar cambios"** to save your certifications.
+
+    ```javascript
+    // Validation from dashboard-profile-edit.js
+    function validatePayload(profile) {
+      if (!profile.name.trim()) return "Ingresa el nombre del guía.";
+      if (!profile.areasExperience.length) return "Agrega al menos un área de experiencia.";
+      if (!profile.locations.length) return "Agrega al menos una ubicación.";
+      if (!profile.languages.length) return "Agrega al menos un idioma.";
+      return "";
+    }
+    ```
+  </Step>
+</Steps>
+
+## Public Profile Display
+
+Your certifications appear on your public profile visible to tourists.
+
+```javascript
+// From dashboard-profile.js
+const profile = {
+  name: "Juan Ariel Alarcón García",
+  summary: "¡Hola! Soy Juan, apasionado de la historia y tecnología de Ciudad de México.",
+  rating: 4.8,
+  reviewsCount: 80,
+  locationLabel: "Ciudad de México, México",
+  experienceLevel: "3+ años de experiencia",
+  certifications: ["Guía verificado", "Atención al visitante"],
+  avatarImage: "../../../assets/team/juanAboutUs.png",
+  coverImage: "https://images.unsplash.com/..."
+};
+```
+
+### Profile Sections
+
+<AccordionGroup>
+  <Accordion title="Header Section" icon="user" defaultOpen>
+    Displays your verification status prominently:
+
+    ```javascript
+    // Profile display rendering
+    function renderProfile(profile) {
+      setField("name", profile.name);
+      setField("statusText", profile.statusText);
+      setField("ratingInline", formatRatingInline(profile));
+      setField("experienceLevel", profile.experienceLevel);
+    }
+    ```
+
+    **Shown Information**:
+    - Name and profile photo
+    - Verification badges
+    - Availability status
+    - Overall rating
+  </Accordion>
+
+  <Accordion title="Professional Details" icon="briefcase">
+    Comprehensive information about your expertise:
+
+    ```javascript
+    // Areas of experience tags
+    areasExperience: ["Historia", "Deporte", "Tecnología"]
+    ```
+
+    **Includes**:
+    - Areas of expertise
+    - Locations covered
+    - Languages spoken
+    - Experience level
+  </Accordion>
+
+  <Accordion title="Certifications List" icon="certificate">
+    All verified certifications displayed as a list:
+
+    ```javascript
+    // Certifications rendering
+    renderList(dom.certificationsList, profile.certifications);
+    ```
+
+    Tourists can see:
+    - Certification names
+    - Badge icons
+    - Verification status
+  </Accordion>
+
+  <Accordion title="Adaptations & Accessibility" icon="universal-access">
+    Special accommodations you provide:
+
+    ```javascript
+    adaptations: [
+      "Rutas alternativas para movilidad reducida",
+      "Ritmo adaptable para familias con menores"
+    ]
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Identity Verification Process
+
+Complete identity verification to unlock full platform features.
+
+### Step 1: Email Verification
+
+<Steps>
+  <Step title="Confirm Email Address">
+    Click the verification link sent to your registered email.
+
+    ```javascript
+    // Auth endpoints from auth-api-services.js
+    const endpoints = {
+      verifyEmail: "/auth/verify-email",
+      resendVerification: "/auth/resend-verification"
+    };
+    ```
+  </Step>
+</Steps>
+
+### Step 2: Phone Verification
+
+Validate your phone number for account security and tourist communication.
+
+### Step 3: Government ID
+
+Upload a government-issued ID for identity confirmation:
+
+- Passport
+- National ID card
+- Driver's license
+
+<Warning>
+  Your ID information is encrypted and used only for verification purposes. It is never shared with tourists.
+</Warning>
+
+## Profile Completeness Score
+
+The platform calculates a completeness score for your profile:
+
+```javascript
+// Profile validation from dashboard-profile-edit.js
+function validatePayload(profile) {
+  let score = 0;
+
+  // Required fields (20 points each)
+  if (profile.name.trim()) score += 20;
+  if (profile.areasExperience.length) score += 20;
+  if (profile.locations.length) score += 20;
+  if (profile.languages.length) score += 20;
+
+  // Optional but recommended fields (5 points each)
+  if (profile.certifications.length) score += 5;
+  if (profile.adaptations.length) score += 5;
+  if (profile.photoStyle.trim()) score += 5;
+  if (profile.additionalNotes.trim()) score += 5;
+
+  return score; // Max 100 points
+}
+```
+
+### Completeness Checklist
+
+<CardGroup cols={2}>
+  <Card title="Essential (80%)" icon="list-check">
+    **Required for Profile Activation**
+
+    - ✅ Full name
+    - ✅ Profile summary
+    - ✅ At least 1 area of experience
+    - ✅ At least 1 location
+    - ✅ At least 1 language
+    - ✅ Profile photo
+    - ✅ Email verified
+  </Card>
+
+  <Card title="Recommended (100%)" icon="star">
+    **For Maximum Visibility**
+
+    - ✅ Professional story
+    - ✅ Certifications added
+    - ✅ Adaptations listed
+    - ✅ Cover image uploaded
+    - ✅ Tour style defined
+    - ✅ Group preferences set
+    - ✅ Phone verified
+  </Card>
+</CardGroup>
+
+## Photo Verification
+
+High-quality photos increase trust and booking rates.
+
+### Profile Photo Guidelines
+
+<AccordionGroup>
+  <Accordion title="Photo Requirements" icon="camera">
+    **Technical Specifications**:
+    - Minimum 400x400 pixels
+    - Maximum file size: 5MB
+    - Formats: JPG, PNG, WebP
+    - Square aspect ratio recommended
+
+    ```javascript
+    // Photo upload from dashboard-profile.js
+    function handleMediaInputChange(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        if (dom.mediaStatus) dom.mediaStatus.textContent = "Selecciona un archivo de imagen válido.";
+        return;
+      }
+
+      state.media.file = file;
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Quality Standards" icon="check">
+    **Best Practices**:
+    - Clear, well-lit face photo
+    - Professional appearance
+    - No sunglasses or hats
+    - Neutral or tourism-related background
+    - Recent photo (within 1 year)
+    - Solo photo (no groups)
+
+    <Tip>
+      Photos showing you in action as a guide (with tourist permission) perform 40% better than studio portraits.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Cover Image" icon="image">
+    Your cover image should represent your guiding style:
+
+    ```javascript
+    // Cover image from dashboard-profile.js
+    if (dom.cover) {
+      dom.cover.style.backgroundImage = 
+        `linear-gradient(120deg, rgba(7, 80, 86, 0.45), rgba(6, 31, 43, 0.5)), url("${profile.coverImage}")`;
+    }
+    ```
+
+    **Ideal Cover Images**:
+    - Iconic locations you tour
+    - Cultural landmarks
+    - Local attractions
+    - Tour activity photos
+  </Accordion>
+</AccordionGroup>
+
+### Uploading Photos
+
+```javascript
+// Photo upload API from guide-api-services.js
+profile: {
+  uploadAvatar: "/guides/{guideId}/profile/avatar",
+  settings: "/guides/{guideId}/profile/settings",
+  publicProfile: "/guides/{guideId}/profile/public"
+}
+
+// Upload implementation from dashboard-profile.js
+async function syncMediaWithApi(mode, file, encodedImage) {
+  const api = window.KCGuideApi;
+  const guideId = getGuideId();
+
+  if (mode === "avatar") {
+    if (api?.profile?.uploadAvatar) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("avatar", file);
+      await api.profile.uploadAvatar(guideId, formData);
+      return;
+    }
+  }
+}
+```
+
+## Building Trust Through Reviews
+
+Maintain verification status through excellent service:
+
+```javascript
+// Reviews API from guide-api-services.js
+reviews: {
+  overview: "/guides/{guideId}/reviews/overview",
+  list: "/guides/{guideId}/reviews",
+  reply: "/guides/{guideId}/reviews/{reviewId}/reply"
+}
+```
+
+### Review Management
+
+<Steps>
+  <Step title="Monitor Reviews">
+    Check your reviews regularly from the dashboard.
+
+    ```javascript
+    // Review overview data
+    const reviewOverview = {
+      averageRating: 4.8,
+      totalReviews: 80,
+      recentReviews: [...]
+    };
+    ```
+  </Step>
+
+  <Step title="Respond Professionally">
+    Reply to reviews to show you value feedback.
+
+    ```javascript
+    reply: (guideId, reviewId, payload) =>
+      api.post(path("/guides/{guideId}/reviews/{reviewId}/reply", 
+        { guideId, reviewId }), payload)
+    ```
+  </Step>
+
+  <Step title="Address Concerns">
+    If you receive negative feedback:
+    - Respond professionally
+    - Acknowledge concerns
+    - Explain your perspective
+    - Offer to resolve issues
+  </Step>
+</Steps>
+
+<Note>
+  Guides who respond to 100% of reviews receive a "Responsive Guide" badge.
+</Note>
+
+## Verification Benefits
+
+<CardGroup cols={2}>
+  <Card title="Increased Visibility" icon="eye">
+    Verified profiles appear higher in search results and recommendations.
+
+    - Priority placement
+    - Featured in spotlight
+    - Better search ranking
+    - More profile views
+  </Card>
+
+  <Card title="Higher Booking Rate" icon="chart-line">
+    Tourists are 3x more likely to book with verified guides.
+
+    - Increased trust
+    - More inquiries
+    - Higher conversion
+    - Better pricing power
+  </Card>
+
+  <Card title="Platform Features" icon="star">
+    Unlock advanced features with verification.
+
+    - Priority support
+    - Early access to new features
+    - Marketing opportunities
+    - Partnership programs
+  </Card>
+
+  <Card title="Professional Credibility" icon="award">
+    Stand out as a legitimate professional.
+
+    - Badge display
+    - Verification mark
+    - Trust indicators
+    - Professional status
+  </Card>
+</CardGroup>
+
+## Maintaining Verification
+
+Keep your verification status active:
+
+<Steps>
+  <Step title="Keep Profile Updated">
+    Update certifications when they renew and add new qualifications as you earn them.
+  </Step>
+
+  <Step title="Maintain Service Quality">
+    Consistently provide excellent tours to maintain high ratings.
+  </Step>
+
+  <Step title="Stay Active">
+    Regular platform activity maintains verification status.
+  </Step>
+
+  <Step title="Renew Certifications">
+    Update expired certifications promptly to maintain verified status.
+  </Step>
+</Steps>
+
+<Warning>
+  Verification can be revoked if:
+  - Service quality drops significantly
+  - Multiple tourist complaints
+  - Fraudulent information discovered
+  - Terms of service violations
+</Warning>
+
+## Next Steps
+
+After completing verification:
+
+1. [Create compelling tours](/guides/creating-tours) to attract bookings
+2. [Manage your calendar](/guides/calendar-availability) to show availability
+3. [Handle bookings professionally](/guides/managing-bookings)
+4. Collect positive reviews to strengthen your profile
+
+<Tip>
+  Verified guides with 50+ completed tours and 4.5+ ratings are invited to join the Kin Conecta Pro program with additional benefits.
+</Tip>

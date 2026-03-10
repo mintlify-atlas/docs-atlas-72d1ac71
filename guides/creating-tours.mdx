@@ -1,0 +1,405 @@
+---
+title: 'Creating Tours'
+description: 'Learn how to create, edit, and publish tour offerings on Kin Conecta'
+icon: 'map-location-dot'
+---
+
+## Tour Management Overview
+
+Tours are the core offerings you provide to tourists. The platform allows you to create multiple tours, each with its own details, pricing, and availability.
+
+<Note>
+  Tours go through a review process before becoming active. Draft tours can be edited freely until you're ready to publish.
+</Note>
+
+## Creating Your First Tour
+
+Access the tour creation interface from your dashboard under "Mis recorridos" (My Tours).
+
+<Steps>
+  <Step title="Open the Tour Modal">
+    Click the **"Crear nuevo recorrido"** button to open the tour creation form.
+
+    ```javascript
+    // From dashboard-tours.js
+    function openModalForCreate() {
+      dom.modalTitle.textContent = "Crear nuevo recorrido";
+      resetForm();
+      dom.modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+      captureModalSnapshot();
+    }
+    ```
+  </Step>
+
+  <Step title="Fill in Basic Information">
+    ### Required Fields
+
+    <AccordionGroup>
+      <Accordion title="Tour Title" icon="heading">
+        **Minimum Length**: 5 characters
+
+        The title is the first thing tourists see. Make it descriptive and engaging.
+
+        **Good Examples**:
+        - "Tacos, Salsas y Cultura (CDMX)"
+        - "Amanecer en Teotihuacán"
+        - "Arquitectura y Barrios Tradicionales"
+
+        ```javascript
+        // Validation from dashboard-tours.js
+        const title = dom.fieldTitle.value.trim();
+        if (title.length < 5) {
+          showFieldError(dom.fieldTitle, "El título debe tener al menos 5 caracteres.");
+          isValid = false;
+        }
+        ```
+      </Accordion>
+
+      <Accordion title="Description" icon="align-left">
+        **Minimum Length**: 20 characters
+
+        Provide a detailed description of what tourists will experience. Include highlights, what makes your tour unique, and what to expect.
+
+        ```javascript
+        const description = dom.fieldDescription.value.trim();
+        if (description.length < 20) {
+          showFieldError(dom.fieldDescription, "La descripción debe tener al menos 20 caracteres.");
+          isValid = false;
+        }
+        ```
+      </Accordion>
+
+      <Accordion title="Category" icon="tags">
+        **Required Field**
+
+        Select the category that best describes your tour:
+        - Cultural & Historical
+        - Food & Gastronomy
+        - Adventure & Outdoors
+        - Art & Architecture
+        - Nightlife & Entertainment
+
+        ```javascript
+        const category = dom.fieldCategory.value.trim();
+        if (!category) {
+          showFieldError(dom.fieldCategory, "La categoría es obligatoria.");
+          isValid = false;
+        }
+        ```
+      </Accordion>
+    </AccordionGroup>
+  </Step>
+
+  <Step title="Set Pricing and Logistics">
+    ### Tour Details
+
+    | Field | Validation | Description |
+    |-------|-----------|-------------|
+    | **Price** | ≥ 0 | Tour price in MXN or your currency |
+    | **Duration** | 1-12 hours | How long the tour lasts |
+    | **Max Group Size** | 1-50 people | Maximum participants per tour |
+    | **Meeting Point** | ≥ 5 characters | Where tourists should meet you |
+
+    ```javascript
+    // Payload structure from dashboard-tours.js
+    function getFormPayload() {
+      return {
+        title: dom.fieldTitle.value.trim(),
+        description: dom.fieldDescription.value.trim(),
+        price: Number(dom.fieldPrice.value),
+        currency: "MXN",
+        category: dom.fieldCategory.value.trim(),
+        duration: Number(dom.fieldDuration.value),
+        maxGroupSize: Number(dom.fieldMaxGroup.value),
+        meetingPoint: dom.fieldMeetingPoint.value.trim(),
+        includedItems: dom.fieldIncluded.value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+        status: dom.fieldStatus.value,
+      };
+    }
+    ```
+
+    <Tip>
+      Set realistic group sizes based on your comfort level and the tour type. Smaller groups often lead to better reviews.
+    </Tip>
+  </Step>
+
+  <Step title="Add Included Items">
+    List everything included in the tour price. This helps set expectations and justifies your pricing.
+
+    **Format**: Comma-separated list
+
+    **Examples**:
+    ```text
+    Guía profesional, Degustación de tacos, Transporte local, Fotos digitales
+    ```
+
+    ```javascript
+    // Processing included items
+    includedItems: dom.fieldIncluded.value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+    ```
+
+    ### Common Included Items
+    - Professional guide service
+    - Food tastings
+    - Entry tickets
+    - Transportation
+    - Digital photos
+    - Bottled water
+    - Safety equipment
+  </Step>
+
+  <Step title="Choose Tour Status">
+    Tours have three statuses:
+
+    <CardGroup cols={3}>
+      <Card title="Draft" icon="file-lines">
+        **Not Visible to Tourists**
+
+        Use draft status while completing your tour details. You can continue editing without restrictions.
+
+        - Not published
+        - No bookings accepted
+        - Fully editable
+      </Card>
+
+      <Card title="Pending" icon="hourglass">
+        **Under Review**
+
+        Submitted for platform review. Limited editing during review process.
+
+        - Awaiting approval
+        - Not yet bookable
+        - Review in progress
+      </Card>
+
+      <Card title="Active" icon="check-circle">
+        **Live and Bookable**
+
+        Published and accepting bookings. Appears in tourist search results.
+
+        - Publicly visible
+        - Accepting bookings
+        - Generating revenue
+      </Card>
+    </CardGroup>
+
+    ```javascript
+    // Status handling from dashboard-tours.js
+    function getStatusText(status) {
+      const map = {
+        active: "Activo",
+        draft: "Borrador",
+        pending: "Pendiente",
+      };
+      return map[status] || "Sin estado";
+    }
+    ```
+  </Step>
+</Steps>
+
+## Managing Existing Tours
+
+### Tour Card Display
+
+Your tours are displayed in a grid on the dashboard. Each card shows:
+
+```javascript
+// Tour card structure from dashboard-tours.js
+const tour = {
+  id: tour.id,
+  title: "Tour Title",
+  description: "Tour description",
+  price: 500,
+  currency: "MXN",
+  bookings: 42,
+  rating: 4.9,
+  status: "active",
+  category: "Cultural",
+  duration: 3,
+  maxGroupSize: 10,
+  includedItems: ["Guide", "Tastings", "Transport"],
+  meetingPoint: "Plaza Principal"
+};
+```
+
+<CardGroup cols={2}>
+  <Card title="Tour Statistics" icon="chart-line">
+    - **Bookings**: Total confirmed reservations
+    - **Rating**: Average review score (1-5)
+    - **Price**: Displayed with currency
+    - **Views**: Tourist profile views (coming soon)
+  </Card>
+
+  <Card title="Available Actions" icon="ellipsis">
+    - **Edit**: Modify tour details
+    - **View Reservations**: See booking calendar
+    - **Duplicate**: Create similar tour
+    - **Delete**: Remove tour (draft only)
+  </Card>
+</CardGroup>
+
+### Editing Tours
+
+Click **"Editar"** on any tour card to modify details.
+
+```javascript
+// Edit functionality from dashboard-tours.js
+function openModalForEdit(tourId) {
+  const tour = state.tours.find((item) => String(item.id) === String(tourId));
+  if (!tour) return;
+  dom.modalTitle.textContent = "Editar recorrido";
+  fillFormWithTour(tour);
+  clearFormErrors();
+  dom.modal.classList.add("show");
+  document.body.style.overflow = "hidden";
+  captureModalSnapshot();
+}
+```
+
+<Warning>
+  **Unsaved Changes Warning**: The system detects unsaved changes and prompts before closing the modal to prevent data loss.
+</Warning>
+
+## API Integration
+
+Tours sync with the backend through the API client:
+
+```javascript
+// API endpoints from guide-api-services.js
+tours: {
+  listByGuide: (guideId, filters) =>
+    api.get(withQuery(path("/guides/{guideId}/tours", { guideId }), filters)),
+  create: (guideId, payload) => 
+    api.post(path("/guides/{guideId}/tours", { guideId }), payload),
+  update: (guideId, tourId, payload) =>
+    api.put(path("/guides/{guideId}/tours/{tourId}", { guideId, tourId }), payload),
+  remove: (guideId, tourId) =>
+    api.delete(path("/guides/{guideId}/tours/{tourId}", { guideId, tourId })),
+  publish: (guideId, tourId) =>
+    api.post(path("/guides/{guideId}/tours/{tourId}/publish", { guideId, tourId })),
+}
+```
+
+### Creating a Tour via API
+
+```javascript
+// From dashboard-tours.js
+async function createTour(payload) {
+  if (window.KCGuideApi) {
+    try {
+      const response = await window.KCGuideApi.tours.create(state.guideId, payload);
+      const created = response?.data || payload;
+      return normalizeTour({
+        ...created,
+        bookings: created.bookings ?? 0,
+        rating: created.rating ?? null,
+        imageClass: created.imageClass || getRandomImageClass(),
+      });
+    } catch (error) {
+      console.warn("Create tour pending backend implementation:", error);
+    }
+  }
+  // Fallback for local development
+  return normalizeTour({ ...payload, id: uidFromTours(), bookings: 0, rating: null });
+}
+```
+
+## Form Validation
+
+The platform validates all tour data before submission:
+
+```javascript
+// Complete validation logic
+function validateForm() {
+  clearFormErrors();
+  let isValid = true;
+
+  // Title validation (min 5 characters)
+  const title = dom.fieldTitle.value.trim();
+  if (title.length < 5) {
+    showFieldError(dom.fieldTitle, "El título debe tener al menos 5 caracteres.");
+    isValid = false;
+  }
+
+  // Description validation (min 20 characters)
+  const description = dom.fieldDescription.value.trim();
+  if (description.length < 20) {
+    showFieldError(dom.fieldDescription, "La descripción debe tener al menos 20 caracteres.");
+    isValid = false;
+  }
+
+  // Price validation (must be positive number)
+  const price = Number(dom.fieldPrice.value);
+  if (Number.isNaN(price) || price < 0) {
+    showFieldError(dom.fieldPrice, "Ingresa un precio válido.");
+    isValid = false;
+  }
+
+  // Duration validation (1-12 hours)
+  const duration = Number(dom.fieldDuration.value);
+  if (Number.isNaN(duration) || duration < 1 || duration > 12) {
+    showFieldError(dom.fieldDuration, "La duración debe estar entre 1 y 12 horas.");
+    isValid = false;
+  }
+
+  // Group size validation (1-50 people)
+  const maxGroup = Number(dom.fieldMaxGroup.value);
+  if (Number.isNaN(maxGroup) || maxGroup < 1 || maxGroup > 50) {
+    showFieldError(dom.fieldMaxGroup, "El grupo debe estar entre 1 y 50 personas.");
+    isValid = false;
+  }
+
+  return isValid;
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Compelling Titles" icon="sparkles">
+    - Use descriptive, action-oriented language
+    - Include location for clarity
+    - Keep under 60 characters
+    - Highlight unique aspects
+  </Card>
+
+  <Card title="Detailed Descriptions" icon="book-open">
+    - Paint a picture of the experience
+    - Mention highlights and unique features
+    - Set clear expectations
+    - Include physical requirements
+  </Card>
+
+  <Card title="Competitive Pricing" icon="dollar-sign">
+    - Research similar tours in your area
+    - Consider your experience level
+    - Include value-adds in pricing
+    - Adjust seasonally if needed
+  </Card>
+
+  <Card title="Realistic Logistics" icon="clock">
+    - Set achievable durations
+    - Keep group sizes manageable
+    - Choose accessible meeting points
+    - List all inclusions accurately
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+After creating your tours:
+
+1. [Set up calendar availability](/guides/calendar-availability) - Block unavailable dates
+2. [Manage incoming bookings](/guides/managing-bookings) - Accept and organize requests
+3. Build your reputation through excellent service and reviews
+
+<Tip>
+  Popular tours with high ratings appear higher in search results and receive more booking requests.
+</Tip>

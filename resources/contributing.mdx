@@ -1,0 +1,574 @@
+---
+title: 'Contributing to Kin Conecta'
+description: 'Guidelines for contributing to the Kin Conecta project'
+icon: 'code-pull-request'
+---
+
+## Welcome Contributors!
+
+Thank you for your interest in contributing to Kin Conecta! We're building a platform that connects travelers with authentic local experiences, and we welcome contributions from developers, designers, writers, and community members.
+
+<Note>
+  Kin Conecta is an open-source project developed by the Bugbusters team as part of Generation Bootcamp CH63. We encourage community involvement to help the platform grow and improve.
+</Note>
+
+## Ways to Contribute
+
+There are many ways to contribute to Kin Conecta beyond writing code:
+
+<CardGroup cols={2}>
+  <Card title="Code Contributions" icon="code">
+    Implement new features, fix bugs, optimize performance, or refactor existing code.
+  </Card>
+  
+  <Card title="Documentation" icon="book">
+    Improve API docs, write tutorials, translate content, or clarify existing documentation.
+  </Card>
+  
+  <Card title="Testing & QA" icon="flask">
+    Write tests, report bugs, verify fixes, or help with test coverage.
+  </Card>
+  
+  <Card title="Design & UX" icon="palette">
+    Improve UI/UX, create graphics, design new features, or enhance accessibility.
+  </Card>
+  
+  <Card title="Community Support" icon="users">
+    Answer questions, help other users, review pull requests, or participate in discussions.
+  </Card>
+  
+  <Card title="Ideas & Feedback" icon="lightbulb">
+    Suggest features, report usability issues, or share insights from using the platform.
+  </Card>
+</CardGroup>
+
+## Getting Started
+
+### Prerequisites
+
+Before contributing code, ensure you have:
+
+- **Java JDK 17+** installed
+- **Maven** or **Gradle** for dependency management
+- **MySQL Server 8.0+** for database
+- **Git** for version control
+- A **GitHub account**
+- A code editor or IDE (IntelliJ IDEA, Eclipse, VS Code, etc.)
+
+### Setting Up Your Development Environment
+
+<AccordionGroup>
+  <Accordion title="1. Fork and Clone the Repository">
+    ```bash
+    # Fork the repository on GitHub first
+    # Then clone your fork
+    git clone https://github.com/YOUR_USERNAME/kin-conecta.git
+    cd kin-conecta
+    
+    # Add upstream remote
+    git remote add upstream https://github.com/bugbusters/kin-conecta.git
+    ```
+  </Accordion>
+  
+  <Accordion title="2. Configure Database">
+    Create the MySQL database:
+    
+    ```bash
+    mysql -u root -p
+    ```
+    
+    ```sql
+    CREATE DATABASE kin_conecta CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+    ```
+    
+    Load the schema and seed data:
+    
+    ```bash
+    mysql -u root -p kin_conecta < kinConnect.sql
+    mysql -u root -p kin_conecta < seed_kinconecta_5_registros.sql
+    ```
+    
+    Configure `src/main/resources/application.properties`:
+    
+    ```properties
+    spring.datasource.url=jdbc:mysql://localhost:3306/kin_conecta
+    spring.datasource.username=your_mysql_username
+    spring.datasource.password=your_mysql_password
+    spring.jpa.hibernate.ddl-auto=update
+    ```
+  </Accordion>
+  
+  <Accordion title="3. Build and Run">
+    Using Gradle:
+    
+    ```bash
+    cd socialNetwork
+    ./gradlew test --no-daemon --console=plain
+    ./gradlew bootRun
+    ```
+    
+    Windows PowerShell:
+    
+    ```powershell
+    cd socialNetwork
+    .\gradlew.bat test --no-daemon --console=plain
+    .\gradlew.bat bootRun
+    ```
+    
+    The application will start on `http://localhost:8080`
+  </Accordion>
+  
+  <Accordion title="4. Verify Setup">
+    Test that everything works:
+    
+    ```bash
+    # Check API health (if health endpoint exists)
+    curl http://localhost:8080/actuator/health
+    
+    # Test a simple endpoint
+    curl http://localhost:8080/api/tours
+    ```
+    
+    Or open Postman and test available endpoints.
+  </Accordion>
+</AccordionGroup>
+
+For detailed setup instructions, see the [Development Guide](/development).
+
+## Contribution Workflow
+
+### 1. Find or Create an Issue
+
+Before starting work:
+
+- **Check existing issues** on GitHub to see if someone is already working on it
+- **Create a new issue** if you're proposing a new feature or found a bug
+- **Discuss your approach** in the issue comments before starting significant work
+- **Get assigned** to the issue to avoid duplicate efforts
+
+<Note>
+  For first-time contributors, look for issues labeled `good first issue` or `help wanted`.
+</Note>
+
+### 2. Create a Branch
+
+Create a descriptive branch for your work:
+
+```bash
+# Update your main branch
+git checkout main
+git pull upstream main
+
+# Create a feature branch
+git checkout -b feature/add-user-notifications
+
+# Or for bug fixes
+git checkout -b fix/login-validation-error
+```
+
+**Branch naming conventions:**
+- `feature/` - New features
+- `fix/` - Bug fixes
+- `docs/` - Documentation updates
+- `refactor/` - Code refactoring
+- `test/` - Adding or updating tests
+- `chore/` - Maintenance tasks
+
+### 3. Make Your Changes
+
+<AccordionGroup>
+  <Accordion title="Code Style Guidelines">
+    **Java Code:**
+    - Follow standard Java naming conventions
+    - Use meaningful variable and method names
+    - Keep methods focused and concise
+    - Add comments for complex logic
+    - Use proper access modifiers
+    
+    **Spring Boot Best Practices:**
+    - Use dependency injection properly
+    - Keep controllers thin, business logic in services
+    - Use DTOs for data transfer
+    - Implement proper exception handling
+    - Use appropriate HTTP status codes
+    
+    **Frontend:**
+    - Follow consistent JavaScript style
+    - Use semantic HTML5
+    - Ensure responsive design (Bootstrap guidelines)
+    - Test across different browsers
+  </Accordion>
+  
+  <Accordion title="Database Changes">
+    If your changes require database schema updates:
+    
+    1. **Document the changes** in comments
+    2. **Create migration scripts** if applicable
+    3. **Update the schema SQL file** (`kinConnect.sql`)
+    4. **Provide sample data** for testing
+    5. **Update entity models** to match schema changes
+    6. **Test migrations** on a clean database
+    
+    Always ensure backward compatibility when possible.
+  </Accordion>
+  
+  <Accordion title="Writing Tests">
+    All new features should include tests:
+    
+    **Unit Tests:**
+    ```java
+    @Test
+    public void testUserRegistration() {
+        // Arrange
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("test@example.com");
+        
+        // Act
+        User result = userService.registerUser(userDTO);
+        
+        // Assert
+        assertNotNull(result.getUserId());
+        assertEquals("test@example.com", result.getEmail());
+    }
+    ```
+    
+    **Integration Tests:**
+    - Test API endpoints end-to-end
+    - Verify database interactions
+    - Test authentication/authorization
+    
+    **Test Coverage:**
+    - Aim for at least 70% code coverage
+    - Focus on critical business logic
+    - Test edge cases and error conditions
+  </Accordion>
+  
+  <Accordion title="API Documentation">
+    Document all API changes:
+    
+    ```java
+    /**
+     * Retrieves matched guides for a specific tourist.
+     * 
+     * @param touristId The ID of the tourist
+     * @param limit Maximum number of results (default: 10)
+     * @param offset Pagination offset (default: 0)
+     * @return List of matched guide profiles with compatibility scores
+     */
+    @GetMapping("/tourist/{touristId}/guides")
+    public ResponseEntity<MatchingResponse> getMatchedGuides(
+        @PathVariable Long touristId,
+        @RequestParam(defaultValue = "10") int limit,
+        @RequestParam(defaultValue = "0") int offset
+    ) {
+        // Implementation
+    }
+    ```
+    
+    Update API documentation if you:
+    - Add new endpoints
+    - Change request/response formats
+    - Modify authentication requirements
+    - Add or remove parameters
+  </Accordion>
+</AccordionGroup>
+
+### 4. Commit Your Changes
+
+Write clear, descriptive commit messages:
+
+```bash
+git add .
+git commit -m "feat: Add email notification system for booking confirmations
+
+- Implement EmailService with Spring Mail
+- Add email templates for booking confirmations
+- Create background job for sending notifications
+- Add configuration for SMTP settings
+- Include unit tests for email service
+
+Closes #123"
+```
+
+**Commit message format:**
+```
+type: Brief description (50 chars max)
+
+- Detailed bullet points explaining changes
+- Why the change was necessary
+- Any breaking changes
+- Related issue numbers
+
+Closes #issue_number
+```
+
+**Commit types:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation only
+- `style:` - Code style changes (formatting, no logic change)
+- `refactor:` - Code refactoring
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks
+- `perf:` - Performance improvements
+
+### 5. Push and Create Pull Request
+
+```bash
+# Push your branch to your fork
+git push origin feature/add-user-notifications
+```
+
+Then create a Pull Request on GitHub:
+
+<AccordionGroup>
+  <Accordion title="Pull Request Template">
+    ```markdown
+    ## Description
+    Brief summary of the changes and why they're needed.
+    
+    ## Related Issue
+    Closes #123
+    
+    ## Changes Made
+    - Added email notification service
+    - Implemented booking confirmation emails
+    - Created email templates
+    - Added SMTP configuration
+    
+    ## Type of Change
+    - [ ] Bug fix
+    - [x] New feature
+    - [ ] Breaking change
+    - [ ] Documentation update
+    
+    ## Testing
+    - [x] Unit tests added/updated
+    - [x] Integration tests added/updated
+    - [x] Manual testing completed
+    
+    ## Checklist
+    - [x] Code follows project style guidelines
+    - [x] Self-review completed
+    - [x] Comments added for complex logic
+    - [x] Documentation updated
+    - [x] No new warnings generated
+    - [x] Tests pass locally
+    - [x] Database migrations included (if applicable)
+    
+    ## Screenshots (if applicable)
+    [Add screenshots for UI changes]
+    
+    ## Additional Notes
+    Requires SMTP configuration in application.properties for email sending to work.
+    ```
+  </Accordion>
+  
+  <Accordion title="PR Review Process">
+    After submitting your PR:
+    
+    1. **Automated checks** will run (tests, linting)
+    2. **Team members** will review your code
+    3. **Address feedback** by pushing additional commits
+    4. **Resolve conflicts** if the main branch has changed
+    5. **Approval required** from at least one maintainer
+    6. **Merge** once approved (squash and merge preferred)
+    
+    **During review:**
+    - Be responsive to feedback
+    - Ask questions if feedback is unclear
+    - Make requested changes promptly
+    - Be open to suggestions and alternative approaches
+  </Accordion>
+</AccordionGroup>
+
+## Contribution Guidelines
+
+### Code Quality Standards
+
+<AccordionGroup>
+  <Accordion title="Code Review Checklist">
+    Before submitting, verify:
+    
+    **Functionality:**
+    - [ ] Code works as intended
+    - [ ] All edge cases handled
+    - [ ] Error handling implemented
+    - [ ] Input validation included
+    
+    **Quality:**
+    - [ ] Code is clean and readable
+    - [ ] No unnecessary complexity
+    - [ ] Follows DRY principle (Don't Repeat Yourself)
+    - [ ] Proper use of design patterns
+    
+    **Testing:**
+    - [ ] Unit tests written and passing
+    - [ ] Integration tests included
+    - [ ] Test coverage adequate
+    - [ ] Tests cover edge cases
+    
+    **Documentation:**
+    - [ ] Code comments where needed
+    - [ ] API documentation updated
+    - [ ] README updated if necessary
+    - [ ] User-facing docs updated
+    
+    **Security:**
+    - [ ] No sensitive data exposed
+    - [ ] Input sanitization implemented
+    - [ ] Authentication/authorization checked
+    - [ ] SQL injection prevention
+    
+    **Performance:**
+    - [ ] No obvious performance issues
+    - [ ] Database queries optimized
+    - [ ] Appropriate caching used
+    - [ ] Resource cleanup implemented
+  </Accordion>
+  
+  <Accordion title="What to Avoid">
+    **Don't:**
+    - Commit sensitive data (passwords, API keys, tokens)
+    - Include large binary files without justification
+    - Make massive changes without prior discussion
+    - Break existing functionality
+    - Ignore test failures
+    - Submit untested code
+    - Copy code without proper attribution
+    - Commit commented-out code (remove it instead)
+    - Use offensive or inappropriate language
+    
+    **Anti-patterns:**
+    - God objects (classes doing too much)
+    - Tight coupling between components
+    - Hard-coded values (use configuration)
+    - Ignoring exceptions
+    - Premature optimization
+  </Accordion>
+</AccordionGroup>
+
+### Specific Contribution Areas
+
+<AccordionGroup>
+  <Accordion title="Frontend Contributions">
+    **UI Components:**
+    - Follow Bootstrap 5 conventions
+    - Ensure responsive design (mobile-first)
+    - Maintain consistent styling
+    - Test on multiple browsers
+    - Consider accessibility (ARIA labels, keyboard navigation)
+    
+    **JavaScript:**
+    - Use vanilla JavaScript or approved libraries
+    - Avoid jQuery unless already in use
+    - Handle async operations properly
+    - Implement proper error handling
+    - Validate user input client-side
+  </Accordion>
+  
+  <Accordion title="Backend Contributions">
+    **REST APIs:**
+    - Follow RESTful principles
+    - Use appropriate HTTP methods and status codes
+    - Implement proper request/response DTOs
+    - Add input validation
+    - Include error responses
+    
+    **Services:**
+    - Keep business logic in service layer
+    - Use transactions appropriately
+    - Implement proper exception handling
+    - Consider scalability
+    
+    **Database:**
+    - Optimize queries with proper indexing
+    - Use prepared statements (prevent SQL injection)
+    - Consider data integrity
+    - Document schema changes
+  </Accordion>
+  
+  <Accordion title="Matching Algorithm Contributions">
+    The matching system is a core feature. When contributing:
+    
+    **Understand the algorithm:**
+    - Read `/socialNetwork/src/main/java/org/generation/socialNetwork/matching/README.md`
+    - Review the scoring rules and weights
+    - Understand the research foundation
+    
+    **Testing requirements:**
+    - Test with diverse profile data
+    - Verify score calculations
+    - Check pagination behavior
+    - Validate match field evidence
+    
+    **Performance considerations:**
+    - Optimize database queries
+    - Consider caching strategies
+    - Test with large datasets
+    - Profile query performance
+  </Accordion>
+</AccordionGroup>
+
+## Community Guidelines
+
+<Note>
+  Kin Conecta is committed to providing a welcoming and inclusive environment for all contributors.
+</Note>
+
+### Code of Conduct
+
+**We expect all contributors to:**
+- Be respectful and considerate
+- Welcome newcomers and help them learn
+- Accept constructive criticism gracefully
+- Focus on what's best for the community
+- Show empathy towards other community members
+
+**Unacceptable behavior includes:**
+- Harassment or discrimination of any kind
+- Trolling, insulting, or derogatory comments
+- Publishing others' private information
+- Other conduct that would be inappropriate in a professional setting
+
+### Getting Help
+
+<CardGroup cols={2}>
+  <Card title="GitHub Discussions" icon="comments">
+    Ask questions, share ideas, and discuss features with the community
+  </Card>
+  
+  <Card title="Issues" icon="circle-exclamation">
+    Report bugs or request features through GitHub Issues
+  </Card>
+  
+  <Card title="Documentation" icon="book" href="/introduction">
+    Read comprehensive guides and API references
+  </Card>
+  
+  <Card title="Contact Team" icon="users" href="/resources/team">
+    Reach out to the Bugbusters team directly
+  </Card>
+</CardGroup>
+
+## Recognition
+
+We value every contribution! Contributors will be:
+- Listed in the project contributors page
+- Mentioned in release notes for significant contributions
+- Invited to join the Kin Conecta community
+- Thanked publicly for their efforts
+
+## License
+
+By contributing to Kin Conecta, you agree that your contributions will be licensed under the project's license.
+
+---
+
+<Card title="Ready to Contribute?" icon="code-branch">
+  Start by exploring our [GitHub repository](https://github.com/bugbusters/kin-conecta) and finding an issue to work on!
+</Card>
+
+<div style="text-align: center; padding: 2rem 0;">
+  <p style="font-size: 1.1rem;">Thank you for helping make Kin Conecta better! ⌨️ ❤️</p>
+</div>

@@ -1,0 +1,474 @@
+---
+title: 'Managing Bookings'
+description: 'Learn how to view, accept, and manage tour bookings from tourists'
+icon: 'calendar-check'
+---
+
+## Booking Management Overview
+
+Bookings are the lifeblood of your guiding business. The Kin Conecta platform provides tools to track, manage, and organize your confirmed tours and pending requests.
+
+<Note>
+  All bookings are synchronized between your dashboard and the backend API for real-time updates.
+</Note>
+
+## Dashboard Overview
+
+Your guide dashboard provides a comprehensive view of your booking activity.
+
+### Key Metrics
+
+The dashboard displays three main statistics:
+
+```javascript
+// From dashboard-home.js
+const stats = {
+  rating: 4.9,
+  ratingDelta: "+0.2 este mes",
+  toursCompleted: 124,
+  toursDelta: "+12 recorridos",
+  monthlyIncomeMXN: 25000,
+  incomeDelta: "+15% vs mes anterior"
+};
+```
+
+<CardGroup cols={3}>
+  <Card title="Rating" icon="star">
+    **Average Rating**: 4.9/5.0
+
+    Your overall rating from tourist reviews, updated after each completed tour.
+
+    - Displayed with delta change
+    - Shows monthly trend
+    - Visible to tourists
+  </Card>
+
+  <Card title="Tours Completed" icon="flag-checkered">
+    **Total: 124 tours**
+
+    Cumulative count of all completed tours since joining the platform.
+
+    - Increases credibility
+    - Shows experience level
+    - Tracks monthly growth
+  </Card>
+
+  <Card title="Monthly Income" icon="money-bill">
+    **$25,000 MXN**
+
+    Total earnings from completed tours this month.
+
+    - Formatted in local currency
+    - Percentage change displayed
+    - Tracks performance trends
+  </Card>
+</CardGroup>
+
+## Today's Schedule
+
+The schedule section shows your bookings for the current day in a timeline format.
+
+### Schedule Item Structure
+
+```javascript
+// Schedule display from dashboard-home.js
+const scheduleItem = {
+  id: "ev_1",
+  status: "in_progress",  // or "upcoming" or "empty"
+  start: "09:00",
+  end: "11:30",
+  title: "Paseo por el Centro Histórico (CDMX)",
+  guests: 4,
+  organizer: "Juan P."
+};
+```
+
+### Booking Statuses
+
+<AccordionGroup>
+  <Accordion title="In Progress" icon="circle-play" defaultOpen>
+    **Active Tour Happening Now**
+
+    Tours currently underway are highlighted with a green indicator.
+
+    ```javascript
+    // Visual indicators from dashboard-home.js
+    if (item.status === "in_progress") {
+      dot.classList.add("schedule-item__dot--active");
+      time.textContent = `${item.start} - ${item.end} • En curso`;
+    }
+    ```
+
+    **Display Features**:
+    - Green pulsing dot
+    - "En curso" label
+    - Full tour card with details
+    - Click to view full details
+  </Accordion>
+
+  <Accordion title="Upcoming" icon="clock">
+    **Scheduled for Later Today**
+
+    Tours scheduled for later in the day appear in neutral style.
+
+    ```javascript
+    if (item.status === "upcoming") {
+      dot.classList.add("schedule-item__dot--upcoming");
+      time.textContent = `${item.start} - ${item.end}`;
+    }
+    ```
+
+    **Display Features**:
+    - Grey dot indicator
+    - Time range displayed
+    - Tour title and guest count
+    - Organizer name shown
+  </Accordion>
+
+  <Accordion title="Empty Slot" icon="calendar">
+    **No Booking Scheduled**
+
+    Time slots without bookings show availability.
+
+    ```javascript
+    if (item.status === "empty") {
+      card.className = "schedule-item__card schedule-item__card--plain";
+      card.innerHTML = '<div class="timeline__empty">Sin reservas por ahora</div>';
+    }
+    ```
+
+    **Display Features**:
+    - Light styling
+    - "Sin reservas" message
+    - Available for new bookings
+  </Accordion>
+</AccordionGroup>
+
+## Viewing Tour Bookings
+
+Access detailed bookings for specific tours through the tour management interface.
+
+### From Tour Dashboard
+
+On tours with **active** status, click **"Ver reservas"** to view the booking calendar:
+
+```javascript
+// Action buttons from dashboard-tours.js
+function getTourActionButtonsHtml(tour) {
+  if (tour.status === "active") {
+    return `
+      <button class="btn-edit" type="button" data-action="edit" data-tour-id="${tour.id}">
+        <span class="material-symbols-outlined">edit</span> Editar
+      </button>
+      <button class="btn-view" type="button" data-action="bookings" data-tour-id="${tour.id}">
+        <span class="material-symbols-outlined">calendar_month</span> Ver reservas
+      </button>
+    `;
+  }
+}
+```
+
+### Tour Performance Metrics
+
+Each tour card displays key booking metrics:
+
+| Metric | Description | Display |
+|--------|-------------|----------|
+| **Bookings** | Total confirmed reservations | Count with group icon |
+| **Rating** | Average review score | Stars with numeric value |
+| **Price** | Tour cost | Formatted with currency |
+| **Views** | Profile views (coming soon) | Count with eye icon |
+
+```javascript
+// Tour card display from dashboard-home.js
+const tourCard = `
+  <div class="tour-card__meta">
+    <span class="tour-card__meta-item">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <span>${tour.bookings} reservas</span>
+    </span>
+    <span class="tour-card__meta-item">
+      <span class="material-symbols-outlined">visibility</span>
+      <span>${formatViews(tour.views)}</span>
+    </span>
+  </div>
+`;
+```
+
+## Booking Trends and Analytics
+
+The dashboard includes a visual trend chart showing your booking activity over time.
+
+### Time Range Selection
+
+```javascript
+// From dashboard-home.js
+const insights = {
+  range: "6m",  // or "12m"
+  points6m: [
+    { label: "May", value: 42 },
+    { label: "Jun", value: 58 },
+    { label: "Jul", value: 48 },
+    { label: "Ago", value: 85 },
+    { label: "Sep", value: 72 },
+    { label: "Oct", value: 124, highlight: true }
+  ]
+};
+```
+
+<CardGroup cols={2}>
+  <Card title="6-Month View" icon="chart-bar">
+    Shows recent booking trends with monthly data points.
+
+    - Ideal for short-term planning
+    - Highlights current month
+    - Shows seasonal patterns
+  </Card>
+
+  <Card title="12-Month View" icon="chart-line">
+    Full year of booking history for long-term analysis.
+
+    - Annual performance review
+    - Identifies peak seasons
+    - Year-over-year comparison
+  </Card>
+</CardGroup>
+
+### Insights Chart Rendering
+
+```javascript
+// Chart visualization from dashboard-home.js
+const renderInsights = () => {
+  const points = getTrendPoints();
+  const max = points.reduce((m, p) => Math.max(m, Number(p.value || 0)), 1);
+
+  points.forEach((point) => {
+    const col = document.createElement("div");
+    col.className = "bar__col";
+    col.style.height = `${clamp((Number(point.value || 0) / max) * 100, 8, 100)}%`;
+    if (point.highlight) col.classList.add("bar__col--highlight");
+    col.innerHTML = `<div class="bar__tooltip">${point.value}</div>`;
+  });
+};
+```
+
+<Tip>
+  The current month is highlighted in the chart. Hover over any bar to see the exact booking count.
+</Tip>
+
+## API Integration
+
+Booking data is fetched from the backend API with fallback support:
+
+```javascript
+// From dashboard-home.js
+async function hydrateFromApi() {
+  if (!window.KCGuideApi) {
+    seedFallbackSchedule();
+    return;
+  }
+
+  try {
+    const [summaryRes, scheduleRes, trendRes, popularRes, spotlightRes] = await Promise.all([
+      window.KCGuideApi.dashboard.getSummary(),
+      window.KCGuideApi.dashboard.getTodaySchedule(),
+      window.KCGuideApi.dashboard.getReservationsTrend(state.insights.range),
+      window.KCGuideApi.dashboard.getPopularTours(),
+      window.KCGuideApi.dashboard.getSpotlightTours(),
+    ]);
+
+    mapSummaryResponse(summaryRes?.data);
+    mapScheduleResponse(scheduleRes?.data?.items || scheduleRes?.data || []);
+    mapTrendResponse(trendRes?.data || {}, state.insights.range);
+  } catch (error) {
+    console.warn("Dashboard API fallback enabled:", error);
+    seedFallbackSchedule();
+  }
+}
+```
+
+### Dashboard API Endpoints
+
+```javascript
+// From guide-api-services.js
+dashboard: {
+  summary: "/guide/dashboard/summary",
+  scheduleToday: "/guide/dashboard/schedule/today",
+  reservationsTrend: "/guide/dashboard/reservations/trend",
+  popularTours: "/guide/dashboard/tours/popular",
+  spotlightTours: "/guide/dashboard/tours/spotlight",
+}
+```
+
+## Popular Tours Display
+
+The dashboard highlights your most successful tours:
+
+```javascript
+// Popular tours from dashboard-home.js
+const toursPopular = [
+  {
+    id: "tour_1",
+    title: "Tacos, Salsas y Cultura (CDMX)",
+    rating: 4.9,
+    bookings: 42,
+    views: 1200,
+    image: "https://..."
+  },
+  {
+    id: "tour_2",
+    title: "Amanecer en Teotihuacan",
+    rating: 5.0,
+    bookings: 38,
+    views: 980,
+    image: "https://..."
+  }
+];
+```
+
+<Note>
+  Tours are ranked by a combination of bookings, ratings, and recent activity. Maintaining high quality leads to better visibility.
+</Note>
+
+## Real-Time Updates
+
+The platform supports real-time booking notifications:
+
+```javascript
+// From guide-api-services.js
+notifications: {
+  list: "/guide/notifications",
+  markAsRead: "/guide/notifications/{notificationId}/read",
+  markAllAsRead: "/guide/notifications/read-all",
+}
+```
+
+### Notification Features
+
+<CardGroup cols={2}>
+  <Card title="Booking Alerts" icon="bell">
+    - New booking requests
+    - Booking confirmations
+    - Cancellation notices
+    - Schedule changes
+  </Card>
+
+  <Card title="Message Notifications" icon="envelope">
+    - Tourist messages
+    - Support updates
+    - System announcements
+    - Reminder alerts
+  </Card>
+</CardGroup>
+
+## Chat with Tourists
+
+Communicate with tourists who have booked or are interested in your tours:
+
+```javascript
+// Chat API from guide-api-services.js
+chat: {
+  threads: "/guide/chat/threads",
+  messages: "/guide/chat/threads/{threadId}/messages",
+  sendMessage: "/guide/chat/threads/{threadId}/messages",
+}
+```
+
+### Using the Chat Interface
+
+<Steps>
+  <Step title="Access Chat Threads">
+    View all active conversations from the messages icon in your dashboard header.
+
+    ```javascript
+    // Unread message badge
+    user: {
+      id: "guide_001",
+      name: "Carlos Rivera",
+      unreadMessages: 3
+    }
+    ```
+  </Step>
+
+  <Step title="Send Messages">
+    Respond to tourist questions and coordinate tour details.
+
+    ```javascript
+    sendMessage: (threadId, payload) =>
+      api.post(path("/guide/chat/threads/{threadId}/messages", { threadId }), payload)
+    ```
+  </Step>
+
+  <Step title="Quick Responses">
+    Use the chat to:
+    - Confirm meeting points
+    - Answer pre-tour questions
+    - Share additional information
+    - Coordinate last-minute changes
+  </Step>
+</Steps>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Prompt Responses" icon="bolt">
+    - Reply to bookings within 24 hours
+    - Answer questions quickly
+    - Confirm details early
+    - Send reminders before tours
+  </Card>
+
+  <Card title="Clear Communication" icon="comments">
+    - Provide detailed meeting instructions
+    - Set clear expectations
+    - Confirm special requests
+    - Share emergency contact info
+  </Card>
+
+  <Card title="Schedule Management" icon="calendar">
+    - Check your daily schedule each morning
+    - Update availability regularly
+    - Block off personal time
+    - Plan for travel between tours
+  </Card>
+
+  <Card title="Professional Service" icon="award">
+    - Arrive early to meeting points
+    - Bring all included items
+    - Follow your tour plan
+    - Ask for reviews after tours
+  </Card>
+</CardGroup>
+
+## Income Tracking
+
+Monitor your earnings through the income dashboard:
+
+```javascript
+// Income API from guide-api-services.js
+incomes: {
+  kpis: "/guides/{guideId}/incomes/kpis",
+  chart: "/guides/{guideId}/incomes/chart",
+  transactions: "/guides/{guideId}/incomes/transactions",
+  withdraw: "/guides/{guideId}/incomes/withdraw",
+  export: "/guides/{guideId}/incomes/export"
+}
+```
+
+<Warning>
+  Payment processing and withdrawal features are handled through the backend API. Ensure your payment details are up to date.
+</Warning>
+
+## Next Steps
+
+To optimize your booking management:
+
+1. [Set up calendar availability](/guides/calendar-availability) - Keep your calendar accurate
+2. [Get profile verification](/guides/profile-verification) - Build trust with badges
+3. Monitor your performance metrics regularly
+4. Respond promptly to all booking requests
+5. Maintain high service quality for good reviews
+
+<Tip>
+  Guides who respond within 1 hour receive 50% more bookings than those who respond within 24 hours.
+</Tip>

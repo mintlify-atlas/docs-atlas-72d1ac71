@@ -1,0 +1,520 @@
+---
+title: 'Reviews API'
+description: 'Review and rating system for tours and guide experiences'
+---
+
+## Overview
+
+The Reviews API allows tourists to rate and review their tour experiences, and enables guides to respond to reviews. Reviews include ratings, comments, and engagement metrics like likes and replies.
+
+## Get All Reviews
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/reviews" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/reviews', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const reviews = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.kinconecta.com/api/reviews',
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+reviews = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+GET /api/reviews
+```
+
+### Response
+
+Returns an array of all reviews.
+
+<ResponseField name="reviews" type="Array<Review>">
+  List of all reviews in the system
+  
+  <Expandable title="Review properties">
+    <ResponseField name="id" type="Long">
+      Unique identifier for the review
+    </ResponseField>
+    
+    <ResponseField name="tripId" type="Long">
+      ID of the trip being reviewed
+    </ResponseField>
+    
+    <ResponseField name="tourId" type="Long">
+      ID of the tour that was taken
+    </ResponseField>
+    
+    <ResponseField name="guideId" type="Long">
+      ID of the guide who led the tour
+    </ResponseField>
+    
+    <ResponseField name="touristId" type="Long">
+      ID of the tourist who wrote the review
+    </ResponseField>
+    
+    <ResponseField name="rating" type="Short">
+      Star rating from 1 to 5
+    </ResponseField>
+    
+    <ResponseField name="comment" type="String">
+      Written review comment (optional)
+    </ResponseField>
+    
+    <ResponseField name="likesCount" type="Integer">
+      Number of likes this review has received
+    </ResponseField>
+    
+    <ResponseField name="repliesCount" type="Integer">
+      Number of replies to this review
+    </ResponseField>
+    
+    <ResponseField name="createdAt" type="Date">
+      Timestamp when the review was created
+    </ResponseField>
+    
+    <ResponseField name="updatedAt" type="Date">
+      Timestamp when the review was last updated
+    </ResponseField>
+    
+    <ResponseField name="deletedAt" type="Date">
+      Soft delete timestamp (null if not deleted)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get Review by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/reviews/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/reviews/123', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+const review = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    'https://api.kinconecta.com/api/reviews/123',
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+review = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+GET /api/reviews/{id}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The unique identifier of the review to retrieve
+</ParamField>
+
+### Response
+
+Returns a single Review object or 404 if not found. See the "Get All Reviews" section above for the full Review object structure.
+
+---
+
+## Create Review
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.kinconecta.com/api/reviews" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tripId": 456,
+    "tourId": 789,
+    "guideId": 101,
+    "touristId": 202,
+    "rating": 5,
+    "comment": "Amazing tour of Barcelona! Carlos was incredibly knowledgeable about Gaudi and made the experience unforgettable."
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/reviews', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    tripId: 456,
+    tourId: 789,
+    guideId: 101,
+    touristId: 202,
+    rating: 5,
+    comment: 'Amazing tour of Barcelona! Carlos was incredibly knowledgeable about Gaudi and made the experience unforgettable.'
+  })
+});
+const review = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    'https://api.kinconecta.com/api/reviews',
+    headers={
+        'Authorization': 'Bearer YOUR_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'tripId': 456,
+        'tourId': 789,
+        'guideId': 101,
+        'touristId': 202,
+        'rating': 5,
+        'comment': 'Amazing tour of Barcelona! Carlos was incredibly knowledgeable about Gaudi and made the experience unforgettable.'
+    }
+)
+review = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+POST /api/reviews
+```
+
+### Request Body
+
+<ParamField body="tripId" type="Long" required>
+  ID of the trip being reviewed
+</ParamField>
+
+<ParamField body="tourId" type="Long" required>
+  ID of the tour that was taken
+</ParamField>
+
+<ParamField body="guideId" type="Long" required>
+  ID of the guide who led the tour
+</ParamField>
+
+<ParamField body="touristId" type="Long" required>
+  ID of the tourist writing the review
+</ParamField>
+
+<ParamField body="rating" type="Short" required>
+  Star rating from 1 to 5
+  - 1: Poor
+  - 2: Fair
+  - 3: Good
+  - 4: Very Good
+  - 5: Excellent
+</ParamField>
+
+<ParamField body="comment" type="String">
+  Optional written review comment describing the experience
+</ParamField>
+
+### Response
+
+Returns the created Review object with generated fields (id, createdAt, updatedAt, likesCount, repliesCount).
+
+### Example Response
+
+```json
+{
+  "id": 123,
+  "tripId": 456,
+  "tourId": 789,
+  "guideId": 101,
+  "touristId": 202,
+  "rating": 5,
+  "comment": "Amazing tour of Barcelona! Carlos was incredibly knowledgeable about Gaudi and made the experience unforgettable.",
+  "likesCount": 0,
+  "repliesCount": 0,
+  "createdAt": "2026-03-10T15:30:00Z",
+  "updatedAt": "2026-03-10T15:30:00Z",
+  "deletedAt": null
+}
+```
+
+---
+
+## Update Review
+
+<CodeGroup>
+```bash cURL
+curl -X PUT "https://api.kinconecta.com/api/reviews/123" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "rating": 5,
+    "comment": "Updated: Amazing tour of Barcelona! Carlos was incredibly knowledgeable."
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/reviews/123', {
+  method: 'PUT',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    rating: 5,
+    comment: 'Updated: Amazing tour of Barcelona! Carlos was incredibly knowledgeable.'
+  })
+});
+const review = await response.json();
+```
+
+```python Python
+import requests
+
+response = requests.put(
+    'https://api.kinconecta.com/api/reviews/123',
+    headers={
+        'Authorization': 'Bearer YOUR_TOKEN',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'rating': 5,
+        'comment': 'Updated: Amazing tour of Barcelona! Carlos was incredibly knowledgeable.'
+    }
+)
+review = response.json()
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+PUT /api/reviews/{id}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The unique identifier of the review to update
+</ParamField>
+
+### Request Body
+
+Include the fields you want to update. Typically rating and/or comment.
+
+<ParamField body="rating" type="Short">
+  Updated star rating (1-5)
+</ParamField>
+
+<ParamField body="comment" type="String">
+  Updated review comment
+</ParamField>
+
+### Response
+
+Returns the updated Review object or 404 if not found.
+
+---
+
+## Delete Review
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://api.kinconecta.com/api/reviews/123" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/reviews/123', {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN'
+  }
+});
+// Returns 204 No Content on success
+```
+
+```python Python
+import requests
+
+response = requests.delete(
+    'https://api.kinconecta.com/api/reviews/123',
+    headers={'Authorization': 'Bearer YOUR_TOKEN'}
+)
+# Returns 204 No Content on success
+```
+</CodeGroup>
+
+### Endpoint
+
+```
+DELETE /api/reviews/{id}
+```
+
+### Path Parameters
+
+<ParamField path="id" type="Long" required>
+  The unique identifier of the review to delete
+</ParamField>
+
+### Response
+
+Returns 204 No Content on successful deletion (soft delete - sets deletedAt timestamp).
+
+---
+
+## Review Replies
+
+Guides can respond to reviews left by tourists. Review replies are managed through a separate endpoint.
+
+### Get All Review Replies
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/review-replies" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/review-replies`
+
+Returns an array of all review replies.
+
+### Get Review Reply by ID
+
+<CodeGroup>
+```bash cURL
+curl -X GET "https://api.kinconecta.com/api/review-replies/456" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+**Endpoint:** `GET /api/review-replies/{id}`
+
+### Create Review Reply
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://api.kinconecta.com/api/review-replies" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reviewId": 123,
+    "guideId": 101,
+    "message": "Thank you so much for your kind words! It was a pleasure showing you around Barcelona."
+  }'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api.kinconecta.com/api/review-replies', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_TOKEN',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    reviewId: 123,
+    guideId: 101,
+    message: 'Thank you so much for your kind words! It was a pleasure showing you around Barcelona.'
+  })
+});
+const reply = await response.json();
+```
+</CodeGroup>
+
+**Endpoint:** `POST /api/review-replies`
+
+#### Request Body
+
+<ParamField body="reviewId" type="Long" required>
+  ID of the review being replied to
+</ParamField>
+
+<ParamField body="guideId" type="Long" required>
+  ID of the guide writing the reply
+</ParamField>
+
+<ParamField body="message" type="String" required>
+  The reply message content
+</ParamField>
+
+#### ReviewReply Response Fields
+
+<ResponseField name="id" type="Long">
+  Unique identifier for the reply
+</ResponseField>
+
+<ResponseField name="reviewId" type="Long">
+  ID of the parent review
+</ResponseField>
+
+<ResponseField name="guideId" type="Long">
+  ID of the guide who wrote the reply
+</ResponseField>
+
+<ResponseField name="message" type="String">
+  The reply message content
+</ResponseField>
+
+<ResponseField name="createdAt" type="Date">
+  Timestamp when the reply was created
+</ResponseField>
+
+<ResponseField name="updatedAt" type="Date">
+  Timestamp when the reply was last updated
+</ResponseField>
+
+### Update Review Reply
+
+**Endpoint:** `PUT /api/review-replies/{id}`
+
+### Delete Review Reply
+
+**Endpoint:** `DELETE /api/review-replies/{id}`
+
+Returns 204 No Content on successful deletion.
+
+---
+
+## Best Practices
+
+### Review Verification
+Only allow tourists to review tours they have actually completed. Verify the trip status before accepting review submissions.
+
+### Rating Calculations
+When displaying guide ratings, calculate the average from all their reviews and display the total review count for credibility.
+
+### Moderation
+Implement content moderation for review comments to prevent spam or inappropriate content.
+
+### Engagement Metrics
+The `likesCount` and `repliesCount` fields help surface the most helpful reviews. Consider implementing like functionality and displaying guide replies prominently.

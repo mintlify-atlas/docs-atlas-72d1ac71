@@ -1,0 +1,201 @@
+---
+title: Getting Started as a Tourist
+description: Learn how to create your profile and start discovering authentic local experiences in Mexico
+---
+
+## Welcome to Kin Conecta
+
+Kin Conecta connects you with verified local guides across Mexico who offer authentic, personalized experiences. Whether you're looking for culinary adventures, historical tours, outdoor activities, or cultural immersion, our platform makes it easy to find and book the perfect guide for your journey.
+
+<Note>
+  All guides on Kin Conecta are locally-based experts who provide genuine insights into their regions.
+</Note>
+
+## Creating Your Account
+
+<Steps>
+  <Step title="Sign Up">
+    Visit the Kin Conecta homepage and click on the sign-up button. You'll be guided through an authentication flow that securely creates your tourist account.
+    
+    The platform uses session-based authentication stored locally:
+    ```javascript
+    // Session data structure
+    {
+      "fullName": "Your Name",
+      "role": "tourist",
+      "avatarUrl": "profile-image-url",
+      "authToken": "secure-token"
+    }
+    ```
+  </Step>
+
+  <Step title="Complete Onboarding">
+    After account creation, you'll be prompted with an onboarding modal that helps you:
+    - Set your travel preferences
+    - Choose your interests (Adventure, Gastronomy, Culture, History, etc.)
+    - Configure language preferences
+    - Accept terms and conditions
+  </Step>
+
+  <Step title="Set Up Your Profile">
+    Navigate to your profile page to add detailed information that helps guides understand your travel style:
+    - Upload a profile photo and cover image
+    - Add your location and languages spoken
+    - Specify travel interests and activity levels
+    - Set dietary preferences and accessibility needs
+  </Step>
+</Steps>
+
+## Dashboard Overview
+
+Once logged in, you'll access your tourist dashboard at `dashboard-home.html` with the following features:
+
+### Next Trip Card
+
+Your upcoming trip is prominently displayed with:
+- Destination and trip title
+- Travel dates and confirmation status
+- Guide information with avatar and name
+- Quick actions to chat with your guide or view trip details
+
+```javascript
+// Example trip data structure
+{
+  "id": "trip_100",
+  "destination": "Oaxaca, México",
+  "title": "Ruta cultural y gastronómica",
+  "dates": "15 Oct - 20 Oct, 2026",
+  "status": "Confirmado",
+  "guide": {
+    "id": "guide_210",
+    "name": "María López",
+    "avatar": "avatar-url"
+  }
+}
+```
+
+### Recommended Guides
+
+Browse personalized guide recommendations based on your interests:
+- **Rating Display**: See guide ratings with star icons
+- **Specialization Tags**: Quick view of guide expertise (Montaña, Historia, Gastronomía, Arte)
+- **Pricing**: Hourly rates displayed in MXN
+- **Contact Button**: Directly message guides from the card
+
+### Popular Destinations
+
+Explore trending destinations across Mexico:
+- Featured destination cards with imagery
+- Cultural highlights and subtitles
+- Click any destination to view available experiences
+
+### Saved Guides
+
+Quick access to your favorite guides:
+- View saved guide profiles
+- See their locations
+- Remove from favorites with one click
+
+## Navigation
+
+The sidebar provides access to all major sections:
+
+<CardGroup cols={2}>
+  <Card title="Home" icon="home">
+    Dashboard with your next trip and recommendations
+  </Card>
+  
+  <Card title="Explore" icon="compass">
+    Discover experiences and guides by category
+  </Card>
+  
+  <Card title="Trips" icon="calendar">
+    Manage all your bookings and trip history
+  </Card>
+  
+  <Card title="Favorites" icon="heart">
+    Access your saved guides and experiences
+  </Card>
+</CardGroup>
+
+## Search Functionality
+
+The dashboard includes a powerful search bar that filters guides in real-time:
+
+```javascript
+// Search filters by name, description, and tags
+function applyLocalSearch(query) {
+  const normalized = query.trim().toLowerCase();
+  return guides.filter(guide => 
+    guide.name.toLowerCase().includes(normalized) ||
+    guide.desc.toLowerCase().includes(normalized) ||
+    guide.tags.some(tag => tag.toLowerCase().includes(normalized))
+  );
+}
+```
+
+<Tip>
+  Use specific keywords like "gastronomía", "senderismo", or "fotografía" to find specialized guides.
+</Tip>
+
+## Mobile Experience
+
+The platform is fully responsive with mobile-optimized features:
+- Collapsible sidebar navigation
+- Touch-friendly card interactions
+- Mobile-specific chat interface
+- Backdrop overlays for modals
+
+```javascript
+// Mobile drawer mode detection
+const isMobileDrawerMode = () => {
+  return window.matchMedia("(max-width: 767px)").matches;
+};
+```
+
+## Notifications
+
+Stay updated with real-time notifications:
+- New trip proposals from guides
+- Guide responses to your inquiries
+- Booking updates and confirmations
+- Badge counter showing unread notifications
+
+<Warning>
+  Notifications currently use polling. Websocket support will be added in future updates for real-time push notifications.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Finding Guides" icon="search" href="/tourists/finding-guides">
+    Learn how to search and filter guides by your preferences
+  </Card>
+  
+  <Card title="Booking Tours" icon="calendar-check" href="/tourists/booking-tours">
+    Understand the booking process and trip management
+  </Card>
+  
+  <Card title="Profile Setup" icon="user" href="/tourists/profile-management">
+    Customize your profile for better guide matching
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api-reference/tourist/overview">
+    Explore the tourist API endpoints
+  </Card>
+</CardGroup>
+
+## Support
+
+Need help? Access the help section from the sidebar or contact support:
+- FAQ section with common questions
+- Ticket submission system
+- Live chat with support team
+
+```javascript
+// Access help features
+const help = {
+  getFaq: () => api.get('/support/faq'),
+  sendTicket: (payload) => api.post('/support/tickets', payload)
+};
+```
